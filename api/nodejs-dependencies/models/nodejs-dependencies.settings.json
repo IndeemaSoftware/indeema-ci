@@ -1,0 +1,26 @@
+{
+  "connection": "default",
+  "collectionName": "NodejsDependencies",
+  "info": {
+    "name": "Nodejs Dependencies"
+  },
+  "options": {
+    "increments": true,
+    "timestamps": true
+  },
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "label": {
+      "type": "string",
+      "required": true
+    },
+    "projects": {
+      "via": "nodejs_dependencies",
+      "collection": "project",
+      "dominant": true
+    }
+  }
+}

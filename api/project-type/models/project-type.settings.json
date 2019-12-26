@@ -1,0 +1,25 @@
+{
+  "connection": "default",
+  "collectionName": "ProjectTypes",
+  "info": {
+    "name": "Project Type"
+  },
+  "options": {
+    "increments": true,
+    "timestamps": true
+  },
+  "attributes": {
+    "value": {
+      "type": "integer",
+      "required": true
+    },
+    "label": {
+      "type": "string",
+      "required": true
+    },
+    "projects": {
+      "via": "project_type",
+      "collection": "project"
+    }
+  }
+}

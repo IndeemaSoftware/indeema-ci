@@ -1,0 +1,72 @@
+{
+  "connection": "default",
+  "collectionName": "projects",
+  "info": {
+    "name": "Project"
+  },
+  "options": {
+    "increments": true,
+    "timestamps": true
+  },
+  "attributes": {
+    "project_name": {
+      "type": "string",
+      "required": true,
+      "unique": true
+    },
+    "app_name": {
+      "type": "string",
+      "required": true
+    },
+    "app_port": {
+      "type": "integer",
+      "required": true
+    },
+    "ssh_host": {
+      "type": "string",
+      "required": true
+    },
+    "ssh_username": {
+      "type": "string",
+      "required": true
+    },
+    "ssh_pem": {
+      "model": "file",
+      "via": "related",
+      "plugin": "upload",
+      "required": true
+    },
+    "user": {
+      "plugin": "users-permissions",
+      "model": "user",
+      "via": "projects"
+    },
+    "project_status": {
+      "type": "enumeration",
+      "enum": [
+        "waiting",
+        "progress",
+        "success",
+        "failed"
+      ],
+      "default": "waiting",
+      "required": true
+    },
+    "project_type": {
+      "model": "project-type",
+      "via": "projects"
+    },
+    "server_dependencies": {
+      "collection": "server-dependencies",
+      "via": "projects"
+    },
+    "nodejs_dependencies": {
+      "collection": "nodejs-dependencies",
+      "via": "projects"
+    },
+    "console": {
+      "collection": "console",
+      "via": "project"
+    }
+  }
+}

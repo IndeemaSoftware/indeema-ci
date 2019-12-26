@@ -1,0 +1,33 @@
+{
+  "connection": "default",
+  "collectionName": "ServerDependencies",
+  "info": {
+    "name": "Server Dependencies"
+  },
+  "options": {
+    "increments": true,
+    "timestamps": true
+  },
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "label": {
+      "type": "string",
+      "required": true
+    },
+    "repo": {
+      "type": "string"
+    },
+    "package": {
+      "type": "string",
+      "required": true
+    },
+    "projects": {
+      "via": "server_dependencies",
+      "collection": "project",
+      "dominant": true
+    }
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "connection": "default",
+  "collectionName": "Console",
+  "info": {
+    "name": "Console"
+  },
+  "options": {
+    "increments": true,
+    "timestamps": true
+  },
+  "attributes": {
+    "message": {
+      "type": "text",
+      "required": true
+    },
+    "project": {
+      "via": "console",
+      "model": "project"
+    },
+    "type": {
+      "type": "enumeration",
+      "enum": [
+        "message",
+        "error",
+        "end",
+        "build_error",
+        "build_success"
+      ],
+      "default": "message",
+      "required": true
+    }
+  }
+}
