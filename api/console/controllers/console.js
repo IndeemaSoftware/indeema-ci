@@ -113,6 +113,19 @@ module.exports = {
     command += '-u ' + entity.ssh_username + ' ';
     command += '-s ' + filePath + ' ';
 
+
+    //SSL params
+    if(entity.domain_name)
+      command += '-b ' + entity.domain_name + ' ';
+
+    if(entity.lets_encrypt)
+      command += '-e 1 ';
+    else
+      command += '-e 0 ';
+
+    if(entity.custom_ssl_key && entity.custom_ssl_crt && entity.custom_ssl_pem)
+      command += `-c "${path.resolve() + '/public' + entity.custom_ssl_key.url} ${path.resolve() + '/public' + entity.custom_ssl_crt.url} ${path.resolve() + '/public' + entity.custom_ssl_pem.url}" `
+
     const PROJECT_ID = entity._id.toString();
 
     //Exec command

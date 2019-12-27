@@ -65,6 +65,13 @@ module.exports = {
       data.user = user._id;
       entity = await strapi.services.project.create(data, { files });
     } else {
+
+      if(typeof ctx.request.body.server_dependencies !== typeof [])
+        ctx.request.body.server_dependencies = [];
+
+      if(typeof ctx.request.body.nodejs_dependencies !== typeof [])
+        ctx.request.body.nodejs_dependencies = [];
+
       ctx.request.body.user = user._id;
       entity = await strapi.services.project.create(ctx.request.body);
     }
@@ -96,6 +103,32 @@ module.exports = {
     }
 
     return sanitizeEntity(entity, { model: strapi.models.project });
+  },
+
+  /**
+   * Cleanup project
+   * @param ctx
+   * @returns {Promise<void>}
+   */
+  async cleanupProject(ctx){
+    const user = ctx.state.user;
+
+    //Check project owner
+    const project = await strapi.services.project.findOne(ctx.params);
+
+    //For non admin roles
+    if(user.role.type !== 'administrator' && (!project.user || project.user._id.toString() !== user._id.toString()))
+      return ctx.notFound();
+
+    //Start cleanup
+    await strapi.services.project.update({
+      id: project._id.toString()
+    }, {
+      project_status: 'cleanup'
+    });
+    strapi.services.project.cleanupProject(project);
+
+    ctx.send({ok: true});
   },
 
   /**

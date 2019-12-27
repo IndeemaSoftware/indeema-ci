@@ -12,7 +12,7 @@
     "project_name": {
       "type": "string",
       "required": true,
-      "unique": true
+      "unique": false
     },
     "app_name": {
       "type": "string",
@@ -47,7 +47,10 @@
         "waiting",
         "progress",
         "success",
-        "failed"
+        "failed",
+        "cleanup",
+        "cleanup_success",
+        "cleanup_failed"
       ],
       "default": "waiting",
       "required": true
@@ -67,6 +70,39 @@
     "console": {
       "collection": "console",
       "via": "project"
+    },
+    "custom_ssl_key": {
+      "model": "file",
+      "via": "related",
+      "plugin": "upload",
+      "required": false
+    },
+    "custom_ssl_crt": {
+      "model": "file",
+      "via": "related",
+      "plugin": "upload",
+      "required": false
+    },
+    "custom_ssl_pem": {
+      "model": "file",
+      "via": "related",
+      "plugin": "upload",
+      "required": false
+    },
+    "domain_name": {
+      "type": "string"
+    },
+    "lets_encrypt": {
+      "type": "boolean",
+      "default": false,
+      "required": true
+    },
+    "os": {
+      "type": "enumeration",
+      "enum": [
+        "ubuntu"
+      ],
+      "default": "ubuntu"
     }
   }
 }

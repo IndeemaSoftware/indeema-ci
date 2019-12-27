@@ -42,6 +42,14 @@
     },
     {
       "method": "DELETE",
+      "path": "/projects/cleanup/:id",
+      "handler": "project.cleanupProject",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "DELETE",
       "path": "/projects/:id",
       "handler": "project.deleteProject",
       "config": {
