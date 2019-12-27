@@ -11,6 +11,7 @@
   },
   "devDependencies": {},
   "dependencies": {
+    "ldapjs": "^1.0.2",
     "socket.io": "^2.3.0",
     "strapi": "3.0.0-beta.18.1",
     "strapi-admin": "3.0.0-beta.18.1",
