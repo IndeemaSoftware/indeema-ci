@@ -1,6 +1,6 @@
 #Project deploy variables
 variables:
-  APP_NAME: "api"
+  APP_NAME: "indeema_ci_api"
   DEPLOY_PATH: "/home/gitlab-runner/runner/connect-runner-web"
   BACKUP_PATH: "/home/gitlab-runner/runner/connect-runner-web/backups"
   URL_DEV: "localhost:1337"
