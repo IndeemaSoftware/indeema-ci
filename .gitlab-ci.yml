@@ -1,0 +1,155 @@
+#Project deploy variables
+#variables:
+  APP_NAME: "api"
+  DEPLOY_PATH: "/home/gitlab-runner/runner/connect-runner-web"
+  BACKUP_PATH: "/home/gitlab-runner/runner/connect-runner-web/backups"
+  URL_DEV: "localhost:1337"
+  URL_PROD: "localhost:1337"
+  #DEV_HOST: "gitlab-runner@194.168.1.124"
+  #PROD_HOST: "gitlab-runner@192.168.1.124"
+#######################################################################################################
+##!!!Important!!! Do not change the following code start from line 10 if you don`t know how it works!##
+#######################################################################################################
+stages:
+  - install
+  - launch
+  - helthcheck
+  - restore
+#Jobs templates
+.job_install: &tpl_install
+  stage: install
+  script:
+    - echo "Install dependencies"
+    - npm install
+    - echo "Compress project folder"
+    - tar -czf $APP_NAME.tar.gz ./*
+    - echo "Create project folder on server, where all resources will be copy to"
+    - mkdir -p $DEPLOY_PATH/$APP_NAME
+    - cp $APP_NAME.tar.gz /tmp
+    - echo "Make backup, uncompress project, remove archive"
+    - mkdir -p $BACKUP_PATH
+    - rm -rf $BACKUP_PATH/$APP_NAME
+    - mv $DEPLOY_PATH/$APP_NAME $BACKUP_PATH/
+    - mkdir -p $DEPLOY_PATH/$APP_NAME
+    - cd $DEPLOY_PATH/$APP_NAME
+    - tar -xzf /tmp/$APP_NAME.tar.gz
+    - rm -fr /tmp/$APP_NAME.tar.gz"
+.job_launch: &tpl_launch
+  stage: launch
+  script:
+    - echo "Launch back-end service"
+    - ssh -o StrictHostKeyChecking=no $HOST -t "source ~/.profile;
+        cd $DEPLOY_PATH/$APP_NAME;
+        pm2 stop $APP_NAME;
+        sleep 5;
+        pm2 start yarn --interpreter bash --name $APP_NAME -- start
+.job_helthcheck: &tpl_helthcheck
+  stage: helthcheck
+  script:
+    - curl $URL --connect-timeout 10 -s -f -o /dev/null && echo 'Success! API is working' || echo "Error! API is not answering on $URL"
+    - curl $URL --connect-timeout 10 -s -f -o /dev/null && echo 'No need to show PM2 logs' || ssh -o StrictHostKeyChecking=no $HOST -t "source ~/.profile; pm2 logs --nostream"
+    - curl $URL --connect-timeout 10 -s -f -o /dev/null && echo 'No need to stop deployment' || exit 1
+.job_restore: &tpl_restore
+  stage: restore
+  script:
+    - echo "Restore from previous version"
+    - ssh -o StrictHostKeyChecking=no $HOST -t "source ~/.profile;
+        rm -fr $DEPLOY_PATH/$APP_NAME;
+        mv $BACKUP_PATH/$APP_NAME $DEPLOY_PATH/$APP_NAME;
+        cd $DEPLOY_PATH/$APP_NAME;
+        pm2 stop $APP_NAME;
+        sleep 5;
+        pm2 start $JS_SERVER_FILE --name $APP_NAME"
+  when: on_failure
+#Stages for devevelopment
+development install:
+  variables:
+    HOST: $DEV_HOST
+  environment:
+    name: development
+    url: $URL_DEV
+  tags:
+    - web
+  only:
+    - development
+  <<: *tpl_install
+development launch:
+  variables:
+    HOST: $DEV_HOST
+  environment:
+    name: development
+    url: $URL_DEV
+  tags:
+    - web
+  only:
+    - development
+  <<: *tpl_launch
+development helthcheck:
+  variables:
+    URL: $URL_DEV
+    HOST: $DEV_HOST
+  environment:
+    name: development
+    url: $URL_DEV
+  tags:
+    - web
+  only:
+    - development
+  <<: *tpl_helthcheck
+development restore:
+  variables:
+    HOST: $DEV_HOST
+  environment:
+    name: development
+    url: $URL_DEV
+  tags:
+    - web
+  only:
+    - development
+  <<: *tpl_restore
+#Stages for production
+production install:
+  variables:
+    HOST: $PROD_HOST
+  environment:
+    name: production
+    url: $URL_PROD
+  tags:
+    - scripts
+  only:
+    - ci_api
+  <<: *tpl_install
+production launch:
+  variables:
+    HOST: $PROD_HOST
+  environment:
+    name: production
+    url: $URL_PROD
+  tags:
+    - scripts
+  only:
+    - ci_api
+  <<: *tpl_launch
+production helthcheck:
+  variables:
+    URL: $URL_PROD
+    HOST: $PROD_HOST
+  environment:
+    name: production
+    url: $URL_PROD
+  tags:
+    - scripts
+  only:
+    - ci_api
+  <<: *tpl_helthcheck
+production restore:
+  variables:
+    HOST: $PROD_HOST
+  environment:
+    name: production
+    url: $URL_PROD
+  tags:
+    - scripts
+  only:
+    - ci_api
+  <<: *tpl_restore
