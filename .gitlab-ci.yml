@@ -38,28 +38,28 @@ stages:
   stage: launch
   script:
     - echo "Launch back-end service"
-    - ssh -o StrictHostKeyChecking=no $HOST -t "source ~/.profile;
-        cd $DEPLOY_PATH/$APP_NAME;
-        pm2 stop $APP_NAME;
-        sleep 5;
-        pm2 start yarn --interpreter bash --name $APP_NAME -- start
+    - source ~/.profile
+    - cd $DEPLOY_PATH/$APP_NAME
+    - pm2 stop $APP_NAME
+    - sleep 5
+    - pm2 start yarn --interpreter bash --name $APP_NAME -- start
 .job_helthcheck: &tpl_helthcheck
   stage: helthcheck
   script:
     - curl $URL --connect-timeout 10 -s -f -o /dev/null && echo 'Success! API is working' || echo "Error! API is not answering on $URL"
-    - curl $URL --connect-timeout 10 -s -f -o /dev/null && echo 'No need to show PM2 logs' || ssh -o StrictHostKeyChecking=no $HOST -t "source ~/.profile; pm2 logs --nostream"
+    - curl $URL --connect-timeout 10 -s -f -o /dev/null && echo 'No need to show PM2 logs' || source ~/.profile; pm2 logs --nostream
     - curl $URL --connect-timeout 10 -s -f -o /dev/null && echo 'No need to stop deployment' || exit 1
 .job_restore: &tpl_restore
   stage: restore
   script:
     - echo "Restore from previous version"
-    - ssh -o StrictHostKeyChecking=no $HOST -t "source ~/.profile;
-        rm -fr $DEPLOY_PATH/$APP_NAME;
-        mv $BACKUP_PATH/$APP_NAME $DEPLOY_PATH/$APP_NAME;
-        cd $DEPLOY_PATH/$APP_NAME;
-        pm2 stop $APP_NAME;
-        sleep 5;
-        pm2 start $JS_SERVER_FILE --name $APP_NAME"
+    - source ~/.profile
+    - rm -fr $DEPLOY_PATH/$APP_NAME
+    - mv $BACKUP_PATH/$APP_NAME $DEPLOY_PATH/$APP_NAME
+    - cd $DEPLOY_PATH/$APP_NAME
+    - pm2 stop $APP_NAME
+    - sleep 5
+    - pm2 start $JS_SERVER_FILE --name $APP_NAME
   when: on_failure
 #Stages for devevelopment
 development install:
