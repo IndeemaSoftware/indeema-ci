@@ -33,7 +33,7 @@ stages:
     - mkdir -p $DEPLOY_PATH/$APP_NAME
     - cd $DEPLOY_PATH/$APP_NAME
     - tar -xzf /tmp/$APP_NAME.tar.gz
-    - rm -fr /tmp/$APP_NAME.tar.gz"
+    - rm -fr /tmp/$APP_NAME.tar.gz
 .job_launch: &tpl_launch
   stage: launch
   script:
