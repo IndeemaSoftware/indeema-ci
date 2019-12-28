@@ -42,7 +42,7 @@ stages:
     - cd $DEPLOY_PATH/$APP_NAME
     - pm2 stop $APP_NAME
     - sleep 5
-    - pm2 start yarn --interpreter bash --name $APP_NAME -- start
+    - pm2 start --name $APP_NAME npm -- start
 .job_helthcheck: &tpl_helthcheck
   stage: helthcheck
   script:
