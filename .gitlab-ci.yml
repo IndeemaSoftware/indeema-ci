@@ -35,7 +35,7 @@ stages:
     - cd $DEPLOY_PATH/$APP_NAME
     - tar -xzf /tmp/$APP_NAME.tar.gz
     - rm -fr /tmp/$APP_NAME.tar.gz
-    - cp -r $BACKUP_PATH/public/uploads/* $DEPLOY_PATH/$APP_NAME/public/uploads/
+    - cp -r $BACKUP_PATH/$APP_NAME/public/uploads/* $DEPLOY_PATH/$APP_NAME/public/uploads/
 .job_launch: &tpl_launch
   stage: launch
   script:
