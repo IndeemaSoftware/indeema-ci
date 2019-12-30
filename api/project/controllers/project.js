@@ -19,7 +19,7 @@ module.exports = {
 
     //Get path of file
     const path = require('path');
-    const filePath = path.resolve() + `/public/uploads/builds/${entity.project_name}/${entity.app_name}/gitlab-ci.yml`;
+    const filePath = path.resolve() + `/public/uploads/builds/${entity.project_name}/${entity.app_name}/.gitlab-ci.yml`;
     if(!fs.existsSync(filePath))
       return ctx.notFound();
 
