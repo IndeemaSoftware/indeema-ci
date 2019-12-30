@@ -147,8 +147,20 @@ module.exports = {
     if(user.role.type !== 'administrator' && (!project.user || project.user._id.toString() !== user._id.toString()))
       return ctx.notFound();
 
-    const entity = await strapi.services.project.delete(ctx.params);
-    return sanitizeEntity(entity, { model: strapi.models.project });
+    //Start cleanup
+    await strapi.services.project.update({
+      id: project._id.toString()
+    }, {
+      project_status: 'cleanup'
+    });
+    const isCleanup = await strapi.services.project.cleanupProject(project);
+
+    if(isCleanup){
+      const entity = await strapi.services.project.delete(ctx.params);
+      return sanitizeEntity(entity, { model: strapi.models.project });
+    }else{
+      return ctx.send({ok: false});
+    }
   },
 
 };
