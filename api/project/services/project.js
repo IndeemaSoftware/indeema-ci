@@ -33,7 +33,7 @@ module.exports = {
     }
 
     //Setup command
-    var command = 'cleanup_server ';
+    var command = '~/scripts/cleanup_server ';
 
     //Get path of file
     const path = require('path');

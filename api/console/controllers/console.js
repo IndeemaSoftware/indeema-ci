@@ -60,7 +60,7 @@ module.exports = {
     }
 
     //Setup command
-    var command = 'setup_server ';
+    var command = '~/scripts/setup_server ';
 
     //One line command for setup repos
     if(entity.server_dependencies && entity.server_dependencies.length){
@@ -129,7 +129,7 @@ module.exports = {
     const PROJECT_ID = entity._id.toString();
 
     //Exec command
-    const commandConnect = exec(`connect_runner ${filePath} ~/.ssh/gitlab-runner-shared-id-rsa.pub ${entity.ssh_username}@${entity.ssh_host}`);
+    const commandConnect = exec(`~/scripts/connect_runner ${filePath} ~/.ssh/gitlab-runner-shared-id-rsa.pub ${entity.ssh_username}@${entity.ssh_host}`);
     commandConnect.stdout.on('data', async function(data){
       if(data !== ''){
         const consoleItem = await strapi.services.console.create({
