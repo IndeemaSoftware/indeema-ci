@@ -112,7 +112,7 @@ module.exports = {
       command += '-w "' + entity.avaliable_ports + '" ';
     command += '-u ' + entity.ssh_username + ' ';
     command += '-s ' + filePath + ' ';
-
+    command += '-d ' + entity.ssh_host + ' ';
 
     //SSL params
     if(entity.domain_name)

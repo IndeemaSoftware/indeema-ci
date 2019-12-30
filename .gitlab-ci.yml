@@ -59,9 +59,9 @@ stages:
     - rm -fr $DEPLOY_PATH/$APP_NAME
     - mv $BACKUP_PATH/$APP_NAME $DEPLOY_PATH/$APP_NAME
     - cd $DEPLOY_PATH/$APP_NAME
-    - pm2 stop $APP_NAME
+    - pm2 delete $APP_NAME
     - sleep 5
-    - pm2 start $JS_SERVER_FILE --name $APP_NAME
+    - pm2 start --name $APP_NAME npm -- start
   when: on_failure
 #Stages for devevelopment
 development install:
