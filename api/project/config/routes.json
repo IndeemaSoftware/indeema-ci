@@ -25,6 +25,14 @@
       }
     },
     {
+      "method": "GET",
+      "path": "/project/download/yml/:id",
+      "handler": "project.downloadYmlProject",
+      "config": {
+        "policies": []
+      }
+    },
+    {
       "method": "POST",
       "path": "/projects/new",
       "handler": "project.newProject",

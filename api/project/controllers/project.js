@@ -1,12 +1,32 @@
 'use strict';
 
 const { parseMultipartData, sanitizeEntity } = require('strapi-utils');
+const fs = require('fs');
 
 /**
  * default bookshelf controller
  *
  */
 module.exports = {
+
+  /**
+   * Download yml file of project
+   * @param ctx
+   * @returns {Promise<void>}
+   */
+  async downloadYmlProject(ctx){
+    const entity = await strapi.services.project.findOne(ctx.params);
+
+    //Get path of file
+    const path = require('path');
+    const filePath = path.resolve() + `/public/uploads/builds/${entity.project_name}/${entity.app_name}/gitlab-ci.yml`;
+    if(!fs.existsSync(filePath))
+      return ctx.notFound();
+
+    ctx.body = fs.createReadStream(filePath);
+    ctx.attachment(filePath);
+  },
+
 
   /**
    * Find projects records.
