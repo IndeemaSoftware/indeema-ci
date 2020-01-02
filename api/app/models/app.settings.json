@@ -1,0 +1,115 @@
+{
+  "connection": "default",
+  "collectionName": "App",
+  "info": {
+    "name": "App"
+  },
+  "options": {
+    "increments": true,
+    "timestamps": true
+  },
+  "attributes": {
+    "app_name": {
+      "type": "string",
+      "required": true
+    },
+    "app_port": {
+      "type": "integer"
+    },
+    "ssh_host": {
+      "type": "string",
+      "required": true
+    },
+    "ssh_username": {
+      "type": "string",
+      "required": true
+    },
+    "ssh_pem": {
+      "model": "file",
+      "via": "related",
+      "plugin": "upload",
+      "required": true
+    },
+    "project_type": {
+      "via": "apps",
+      "model": "project-type"
+    },
+    "server_dependencies": {
+      "collection": "server-dependencies",
+      "via": "apps",
+      "dominant": true
+    },
+    "nodejs_dependencies": {
+      "collection": "nodejs-dependencies",
+      "via": "apps",
+      "dominant": true
+    },
+    "custom_ssl_key": {
+      "model": "file",
+      "via": "related",
+      "plugin": "upload",
+      "required": false
+    },
+    "custom_ssl_crt": {
+      "model": "file",
+      "via": "related",
+      "plugin": "upload",
+      "required": false
+    },
+    "custom_ssl_pem": {
+      "model": "file",
+      "via": "related",
+      "plugin": "upload",
+      "required": false
+    },
+    "domain_name": {
+      "type": "string"
+    },
+    "lets_encrypt": {
+      "type": "boolean",
+      "default": false,
+      "required": true
+    },
+    "os": {
+      "type": "enumeration",
+      "enum": [
+        "ubuntu"
+      ],
+      "default": "ubuntu",
+      "required": true
+    },
+    "project": {
+      "model": "project",
+      "via": "apps"
+    },
+    "environment": {
+      "type": "enumeration",
+      "enum": [
+        "development",
+        "staging",
+        "production"
+      ],
+      "default": "development",
+      "required": true
+    },
+    "app_status": {
+      "type": "enumeration",
+      "enum": [
+        "waiting",
+        "progress",
+        "success",
+        "failed",
+        "cleanup",
+        "cleanup_success",
+        "cleanup_failed"
+      ],
+      "default": "waiting",
+      "required": true
+    },
+    "console": {
+      "collection": "console",
+      "via": "app",
+      "private": true
+    }
+  }
+}

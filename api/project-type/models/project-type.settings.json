@@ -11,15 +11,16 @@
   "attributes": {
     "value": {
       "type": "integer",
-      "required": true
+      "required": true,
+      "unique": true
     },
     "label": {
       "type": "string",
       "required": true
     },
-    "projects": {
-      "via": "project_type",
-      "collection": "project"
+    "apps": {
+      "collection": "app",
+      "via": "project_type"
     }
   }
 }

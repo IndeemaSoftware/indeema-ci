@@ -13,10 +13,6 @@
       "type": "text",
       "required": true
     },
-    "project": {
-      "via": "console",
-      "model": "project"
-    },
     "type": {
       "type": "enumeration",
       "enum": [
@@ -28,6 +24,11 @@
       ],
       "default": "message",
       "required": true
+    },
+    "app": {
+      "via": "console",
+      "model": "app",
+      "private": true
     }
   }
 }

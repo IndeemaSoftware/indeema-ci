@@ -17,10 +17,9 @@
       "type": "string",
       "required": true
     },
-    "projects": {
+    "apps": {
       "via": "nodejs_dependencies",
-      "collection": "project",
-      "dominant": true
+      "collection": "app"
     }
   }
 }

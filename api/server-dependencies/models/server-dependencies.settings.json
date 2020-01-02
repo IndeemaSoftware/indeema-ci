@@ -24,10 +24,9 @@
       "type": "string",
       "required": true
     },
-    "projects": {
+    "apps": {
       "via": "server_dependencies",
-      "collection": "project",
-      "dominant": true
+      "collection": "app"
     }
   }
 }

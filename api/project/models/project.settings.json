@@ -14,95 +14,14 @@
       "required": true,
       "unique": false
     },
-    "app_name": {
-      "type": "string",
-      "required": true
-    },
-    "app_port": {
-      "type": "integer",
-      "required": true
-    },
-    "ssh_host": {
-      "type": "string",
-      "required": true
-    },
-    "ssh_username": {
-      "type": "string",
-      "required": true
-    },
-    "ssh_pem": {
-      "model": "file",
-      "via": "related",
-      "plugin": "upload",
-      "required": true
-    },
     "user": {
       "plugin": "users-permissions",
       "model": "user",
       "via": "projects"
     },
-    "project_status": {
-      "type": "enumeration",
-      "enum": [
-        "waiting",
-        "progress",
-        "success",
-        "failed",
-        "cleanup",
-        "cleanup_success",
-        "cleanup_failed"
-      ],
-      "default": "waiting",
-      "required": true
-    },
-    "project_type": {
-      "model": "project-type",
-      "via": "projects"
-    },
-    "server_dependencies": {
-      "collection": "server-dependencies",
-      "via": "projects"
-    },
-    "nodejs_dependencies": {
-      "collection": "nodejs-dependencies",
-      "via": "projects"
-    },
-    "console": {
-      "collection": "console",
-      "via": "project"
-    },
-    "custom_ssl_key": {
-      "model": "file",
-      "via": "related",
-      "plugin": "upload",
-      "required": false
-    },
-    "custom_ssl_crt": {
-      "model": "file",
-      "via": "related",
-      "plugin": "upload",
-      "required": false
-    },
-    "custom_ssl_pem": {
-      "model": "file",
-      "via": "related",
-      "plugin": "upload",
-      "required": false
-    },
-    "domain_name": {
-      "type": "string"
-    },
-    "lets_encrypt": {
-      "type": "boolean",
-      "default": false,
-      "required": true
-    },
-    "os": {
-      "type": "enumeration",
-      "enum": [
-        "ubuntu"
-      ],
-      "default": "ubuntu"
+    "apps": {
+      "via": "project",
+      "collection": "app"
     }
   }
 }

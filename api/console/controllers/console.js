@@ -35,21 +35,61 @@ module.exports = {
   },
 
   /**
-   * Start setup project
+   * Get project output console
+   *
    * @param ctx
    * @returns {Promise<void>}
    */
-  setupProject: async (ctx) => {
+  getAppConsole: async (ctx) => {
     const user = ctx.state.user;
 
-    const entity = await strapi.services.project.findOne(ctx.params);
+    const entity = await strapi.services.app.findOne(ctx.params);
+    if(!entity.project)
+      return ctx.notFound();
+
+    const project = await strapi.services.project.findOne({
+      _id: entity.project._id.toString()
+    });
+
+    //For non admin roles
+    if(user.role.type !== 'administrator' && (!project.user || project.user._id.toString() !== user._id.toString()))
+      return ctx.notFound();
 
     //For non admin roles
     if(user.role.type !== 'administrator' && (!entity.user || entity.user._id.toString() !== user._id.toString()))
       return ctx.notFound();
 
     const output = await strapi.services.console.find({
-      project: entity._id.toString()
+      app: entity._id.toString()
+    });
+
+    return sanitizeEntity(output, { model: strapi.models.console });
+  },
+
+  /**
+   * Start setup app
+   * @param ctx
+   * @returns {Promise<void>}
+   */
+  setupApp: async (ctx) => {
+    const user = ctx.state.user;
+
+    const entity = await strapi.services.app.findOne({
+      id: ctx.params.app_id
+    });
+    if(!entity.project || (entity.project._id.toString() !== ctx.params.id))
+      return ctx.notFound();
+
+    const project = await strapi.services.project.findOne({
+      _id: entity.project._id.toString()
+    });
+
+    //For non admin roles
+    if(user.role.type !== 'administrator' && (!project.user || project.user._id.toString() !== user._id.toString()))
+      return ctx.notFound();
+
+    const output = await strapi.services.console.find({
+      app: entity._id.toString()
     });
 
     //Clean output
@@ -104,7 +144,7 @@ module.exports = {
     fs.chmodSync(filePath, 400);
 
     //Add project details
-    command += '-n "' + entity.project_name + '" ';
+    command += '-n "' + project.project_name + '" ';
     command += '-a "' + entity.app_name + '" ';
     command += '-f ' + entity.project_type.value + ' ';
     command += '-p ' + entity.app_port + ' ';
@@ -126,7 +166,7 @@ module.exports = {
     if(entity.custom_ssl_key && entity.custom_ssl_crt && entity.custom_ssl_pem)
       command += `-c "${path.resolve() + '/public' + entity.custom_ssl_key.url} ${path.resolve() + '/public' + entity.custom_ssl_crt.url} ${path.resolve() + '/public' + entity.custom_ssl_pem.url}" `
 
-    const PROJECT_ID = entity._id.toString();
+    const APP_ID = entity._id.toString();
 
     //Exec command
     const commandConnect = exec(`~/scripts/connect_runner ${filePath} ~/.ssh/gitlab-runner-shared-id-rsa.pub ${entity.ssh_username}@${entity.ssh_host}`);
@@ -135,19 +175,19 @@ module.exports = {
         const consoleItem = await strapi.services.console.create({
           message: data,
           type: 'message',
-          project: PROJECT_ID
+          app: APP_ID
         });
 
         //Set status project
-        await strapi.services.project.update({
-          id: PROJECT_ID
+        await strapi.services.app.update({
+          id: APP_ID
         }, {
-          project_status: 'progress'
+          app_status: 'progress'
         });
 
         //Send message
         strapi.eventEmitter.emit('system::notify', {
-          topic: `/console/setup/${PROJECT_ID}/message`,
+          topic: `/console/setup/${APP_ID}/message`,
           data: consoleItem.message
         });
       }
@@ -157,19 +197,19 @@ module.exports = {
         const consoleItem = await strapi.services.console.create({
           message: data,
           type: 'error',
-          project: PROJECT_ID
+          app: APP_ID
         });
 
         //Set status project
-        await strapi.services.project.update({
-          id: PROJECT_ID
+        await strapi.services.app.update({
+          id: APP_ID
         }, {
-          project_status: 'failed'
+          app_status: 'failed'
         });
 
         //Send message
         strapi.eventEmitter.emit('system::notify', {
-          topic: `/console/setup/${PROJECT_ID}/error`,
+          topic: `/console/setup/${APP_ID}/error`,
           data: consoleItem.message
         });
       }
@@ -178,11 +218,11 @@ module.exports = {
       const consoleItem = await strapi.services.console.create({
         message: `Child process exited with code ${code}`,
         type: 'end',
-        project: PROJECT_ID
+        app: APP_ID
       });
       //Send message
       strapi.eventEmitter.emit('system::notify', {
-        topic: `/console/setup/${PROJECT_ID}/end`,
+        topic: `/console/setup/${APP_ID}/end`,
         data: consoleItem.message
       });
 
@@ -190,30 +230,30 @@ module.exports = {
         const consoleItem = await strapi.services.console.create({
           message: `Setup failed`,
           type: 'build_error',
-          project: PROJECT_ID
+          app: APP_ID
         });
 
         //Set status project
-        await strapi.services.project.update({
-          id: PROJECT_ID
+        await strapi.services.app.update({
+          id: APP_ID
         }, {
-          project_status: 'failed'
+          app_status: 'failed'
         });
 
         //Send message
         strapi.eventEmitter.emit('system::notify', {
-          topic: `/console/setup/${PROJECT_ID}/build_error`,
+          topic: `/console/setup/${APP_ID}/build_error`,
           data: consoleItem.message
         });
       }else{
         const consoleItem = await strapi.services.console.create({
           message: `Server was connected to runner successfully!`,
           type: 'build_success',
-          project: PROJECT_ID
+          app: APP_ID
         });
         //Send message
         strapi.eventEmitter.emit('system::notify', {
-          topic: `/console/setup/${PROJECT_ID}/build_success`,
+          topic: `/console/setup/${APP_ID}/build_success`,
           data: consoleItem.message
         });
 
@@ -224,19 +264,19 @@ module.exports = {
             const consoleItem = await strapi.services.console.create({
               message: data,
               type: 'message',
-              project: PROJECT_ID
+              app: APP_ID
             });
 
             //Set status project
-            await strapi.services.project.update({
-              id: PROJECT_ID
+            await strapi.services.app.update({
+              id: APP_ID
             }, {
-              project_status: 'progress'
+              app_status: 'progress'
             });
 
             //Send message
             strapi.eventEmitter.emit('system::notify', {
-              topic: `/console/setup/${PROJECT_ID}/message`,
+              topic: `/console/setup/${APP_ID}/message`,
               data: consoleItem.message
             });
           }
@@ -246,19 +286,19 @@ module.exports = {
             const consoleItem = await strapi.services.console.create({
               message: data,
               type: 'error',
-              project: PROJECT_ID
+              app: APP_ID
             });
 
             //Set status project
-            await strapi.services.project.update({
-              id: PROJECT_ID
+            await strapi.services.app.update({
+              id: APP_ID
             }, {
-              project_status: 'failed'
+              app_status: 'failed'
             });
 
             //Send message
             strapi.eventEmitter.emit('system::notify', {
-              topic: `/console/setup/${PROJECT_ID}/error`,
+              topic: `/console/setup/${APP_ID}/error`,
               data: consoleItem.message
             });
           }
@@ -267,11 +307,11 @@ module.exports = {
           const consoleItem = await strapi.services.console.create({
             message: `Child process exited with code ${code}`,
             type: 'end',
-            project: PROJECT_ID
+            app: APP_ID
           });
           //Send message
           strapi.eventEmitter.emit('system::notify', {
-            topic: `/console/setup/${PROJECT_ID}/end`,
+            topic: `/console/setup/${APP_ID}/end`,
             data: consoleItem.message
           });
 
@@ -279,38 +319,38 @@ module.exports = {
             await strapi.services.console.create({
               message: `Setup failed`,
               type: 'build_error',
-              project: PROJECT_ID
+              app: APP_ID
             });
 
             //Set status project
-            await strapi.services.project.update({
-              id: PROJECT_ID
+            await strapi.services.app.update({
+              id: APP_ID
             }, {
-              project_status: 'failed'
+              app_status: 'failed'
             });
 
             //Send message
             strapi.eventEmitter.emit('system::notify', {
-              topic: `/console/setup/${PROJECT_ID}/build_error`,
+              topic: `/console/setup/${APP_ID}/build_error`,
               data: `Setup failed`
             });
           }else{
             const consoleItem = await strapi.services.console.create({
               message: `Setup success!`,
               type: 'build_success',
-              project: PROJECT_ID
+              app: APP_ID
             });
 
             //Set status project
-            await strapi.services.project.update({
-              id: PROJECT_ID
+            await strapi.services.app.update({
+              id: APP_ID
             }, {
-              project_status: 'success'
+              app_status: 'success'
             });
 
             //Send message
             strapi.eventEmitter.emit('system::notify', {
-              topic: `/console/setup/${PROJECT_ID}/build_success`,
+              topic: `/console/setup/${APP_ID}/build_success`,
               data: consoleItem.message
             });
           }

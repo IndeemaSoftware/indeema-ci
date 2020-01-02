@@ -10,6 +10,14 @@
     },
     {
       "method": "GET",
+      "path": "/console/app/:id",
+      "handler": "console.getAppConsole",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
       "path": "/consoles",
       "handler": "console.find",
       "config": {
@@ -42,8 +50,8 @@
     },
     {
       "method": "POST",
-      "path": "/console/setup/:id",
-      "handler": "console.setupProject",
+      "path": "/console/setup/:id/:app_id",
+      "handler": "console.setupApp",
       "config": {
         "policies": []
       }
