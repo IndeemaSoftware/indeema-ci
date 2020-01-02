@@ -1,6 +1,7 @@
 'use strict';
 
 const { parseMultipartData, sanitizeEntity } = require('strapi-utils');
+const fs = require('fs');
 
 /**
  * Read the documentation (https://strapi.io/documentation/3.0.0-beta.x/concepts/controllers.html#core-controllers)
@@ -15,17 +16,13 @@ module.exports = {
    * @returns {Promise<void>}
    */
   async downloadYmlApp(ctx){
-    const entity = await strapi.services.project.findOne(ctx.params);
+    const entity = await strapi.services.app.findOne(ctx.params);
     if(!entity.project)
       return ctx.notFound();
 
     const project = await strapi.services.project.findOne({
       id: entity.project._id.toString()
     });
-
-    //For non admin roles
-    if(user.role.type !== 'administrator' && (!project.user || project.user._id.toString() !== user._id.toString()))
-      return ctx.notFound();
 
     //Get path of file
     const path = require('path');
