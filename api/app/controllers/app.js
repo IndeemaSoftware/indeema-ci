@@ -20,7 +20,7 @@ module.exports = {
       return ctx.notFound();
 
     const project = await strapi.services.project.findOne({
-      _id: entity.project._id.toString()
+      id: entity.project._id.toString()
     });
 
     //For non admin roles
