@@ -193,8 +193,10 @@ module.exports = {
 
       //Cleanup empty fields
       for(let field of appModelFields){
-        if(!appModel[field] && typeof appModel[field] !== typeof true)
-          delete appModel[field];
+        if(!appModel[field] && typeof appModel[field] !== typeof true){
+          if(field === 'ssh_pem' || field === 'custom_ssl_key' ||  field === 'custom_ssl_crt' || field === 'custom_ssl_pem')
+            delete appModel[field];
+        }
       }
 
       //Create new app
