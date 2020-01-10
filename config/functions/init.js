@@ -42,6 +42,12 @@ module.exports = () => {
 
   //Handle system notifications
   strapi.eventEmitter.on('system::notify', async (notify) => {
+    if(notify.data && typeof notify.data === typeof 'str'){
+      notify.data = notify.data.replace(/\r/g, '');
+      notify.data = notify.data.replace(/\n/g, '');
+      notify.data = notify.data.replace(/\t/g, '');
+    }
+
     io.emit(notify.topic, JSON.stringify(notify.data));
     // let socketIds = await strapi.plugins['users-permissions'].services.user.findSocketUsers(notify.users);
     //
