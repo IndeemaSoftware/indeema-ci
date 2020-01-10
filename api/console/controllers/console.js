@@ -60,7 +60,7 @@ module.exports = {
       return ctx.notFound();
 
     const output = await strapi.services.console.find({
-      app: entity._id.toString()
+      app: entity._id.toString(),
       _limit: 9999999999
     });
 
