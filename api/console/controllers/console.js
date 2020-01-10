@@ -61,6 +61,7 @@ module.exports = {
 
     const output = await strapi.services.console.find({
       app: entity._id.toString()
+      _limit: 9999999999
     });
 
     return sanitizeEntity(output, { model: strapi.models.console });
