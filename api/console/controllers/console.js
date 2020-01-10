@@ -155,6 +155,17 @@ module.exports = {
     command += '-s ' + filePath + ' ';
     command += '-d ' + entity.ssh_host + ' ';
 
+    if(entity.environment){
+      if(entity.environment === 'development')
+        command += '-z 0 ';
+
+      if(entity.environment === 'staging')
+        command += '-z 1 ';
+
+      if(entity.environment === 'production')
+        command += '-z 2 ';
+    }
+
     //SSL params
     if(entity.domain_name)
       command += '-b ' + entity.domain_name + ' ';
