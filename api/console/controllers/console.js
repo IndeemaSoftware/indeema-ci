@@ -197,7 +197,8 @@ module.exports = {
     ciCommand += '-n "' + project.project_name + '" ';
     ciCommand += '-a "' + entity.app_name + '" ';
     ciCommand += '-f ' + entity.project_type.value + ' ';
-    ciCommand += '-p ' + entity.app_port + ' ';
+    if(entity.app_port)
+      ciCommand += '-p ' + entity.app_port + ' ';
 
     if(entity.environment){
       if(entity.environment === 'development')
