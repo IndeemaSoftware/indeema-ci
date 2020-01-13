@@ -211,7 +211,7 @@ module.exports = {
         ciCommand += '-z 3 ';
     }
 
-    if(entity.os !== 'aws_s3' && entity.s3_bucket_name)
+    if(entity.os === 'aws_s3' && entity.s3_bucket_name)
       ciCommand += '-s "' + entity.s3_bucket_name + '" ';
 
     //Exec command
