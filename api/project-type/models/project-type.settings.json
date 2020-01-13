@@ -19,8 +19,8 @@
       "required": true
     },
     "apps": {
-      "collection": "app",
-      "via": "project_type"
+      "via": "project_type",
+      "collection": "app"
     }
   }
 }

@@ -31,8 +31,8 @@
       "required": true
     },
     "project_type": {
-      "via": "apps",
-      "model": "project-type"
+      "model": "project-type",
+      "via": "apps"
     },
     "server_dependencies": {
       "collection": "server-dependencies",
@@ -108,8 +108,10 @@
     },
     "console": {
       "collection": "console",
-      "via": "app",
-      "private": true
+      "via": "app"
+    },
+    "avaliable_ports": {
+      "type": "string"
     }
   }
 }

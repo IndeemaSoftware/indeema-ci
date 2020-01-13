@@ -27,8 +27,7 @@
     },
     "app": {
       "via": "console",
-      "model": "app",
-      "private": true
+      "model": "app"
     }
   }
 }
