@@ -163,7 +163,7 @@ module.exports = {
         command += '-z 1 ';
 
       if(entity.environment === 'production')
-        command += '-z 2 ';
+        command += '-z 3 ';
     }
 
     //SSL params
