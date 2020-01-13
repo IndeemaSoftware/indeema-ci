@@ -73,7 +73,8 @@
     "os": {
       "type": "enumeration",
       "enum": [
-        "ubuntu"
+        "ubuntu",
+        "aws_s3"
       ],
       "default": "ubuntu",
       "required": true
@@ -87,6 +88,7 @@
       "enum": [
         "development",
         "staging",
+        "beta",
         "production"
       ],
       "default": "development",
@@ -113,10 +115,6 @@
     "avaliable_ports": {
       "type": "string"
     },
-    "s3_project": {
-      "type": "boolean",
-      "default": false
-    },
     "s3_bucket_name": {
       "type": "string"
     },
@@ -125,6 +123,14 @@
     },
     "aws_secret_access_key": {
       "type": "string"
+    },
+    "ci_template": {
+      "type": "enumeration",
+      "enum": [
+        "gitlab_ci"
+      ],
+      "default": "gitlab_ci",
+      "required": true
     }
   }
 }

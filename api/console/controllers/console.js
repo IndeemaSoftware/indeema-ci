@@ -210,11 +210,11 @@ module.exports = {
         ciCommand += '-z 3 ';
     }
 
-    if(entity.s3_project && entity.s3_bucket_name)
+    if(entity.os !== 'aws_s3' && entity.s3_bucket_name)
       ciCommand += '-s "' + entity.s3_bucket_name + '" ';
 
     //Exec command
-    if(filePath){
+    if(entity.os !== 'aws_s3'){
 
       const commandConnect = exec(`~/scripts/connect_runner ${filePath} ~/.ssh/gitlab-runner-shared-id-rsa.pub ${entity.ssh_username}@${entity.ssh_host}`);
       commandConnect.stdout.on('data', async function(data){

@@ -112,7 +112,7 @@ module.exports = {
 
     //Prepare apps model and create
     for(let app of ctx.request.body.apps){
-      const appModelFields = ['app_name', 'app_port', 'avaliable_ports', 'environment', 's3_project', 's3_bucket_name', 'aws_access_key_id', 'aws_secret_access_key', 'ssh_host', 'ssh_username', 'ssh_pem', 'project_type', 'server_dependencies', 'nodejs_dependencies', 'custom_ssl_key', 'custom_ssl_crt', 'custom_ssl_pem', 'domain_name', 'lets_encrypt', 'os'];
+      const appModelFields = ['app_name', 'app_port', 'avaliable_ports', 'environment', 's3_bucket_name', 'aws_access_key_id', 'aws_secret_access_key', 'ssh_host', 'ssh_username', 'ssh_pem', 'project_type', 'server_dependencies', 'nodejs_dependencies', 'custom_ssl_key', 'custom_ssl_crt', 'custom_ssl_pem', 'domain_name', 'lets_encrypt', 'os'];
       const appModel = _.pick(app, appModelFields);
       appModel.project = project._id.toString();
 
@@ -181,7 +181,7 @@ module.exports = {
 
     //Update all apps from body
     for(let app of ctx.request.body.apps){
-      const appModelFields = ['app_name', 'app_port', 'avaliable_ports', 'environment', 's3_project', 's3_bucket_name', 'aws_access_key_id', 'aws_secret_access_key', 'ssh_host', 'ssh_username', 'ssh_pem', 'project_type', 'server_dependencies', 'nodejs_dependencies', 'custom_ssl_key', 'custom_ssl_crt', 'custom_ssl_pem', 'domain_name', 'lets_encrypt', 'os'];
+      const appModelFields = ['app_name', 'app_port', 'avaliable_ports', 'environment', 's3_bucket_name', 'aws_access_key_id', 'aws_secret_access_key', 'ssh_host', 'ssh_username', 'ssh_pem', 'project_type', 'server_dependencies', 'nodejs_dependencies', 'custom_ssl_key', 'custom_ssl_crt', 'custom_ssl_pem', 'domain_name', 'lets_encrypt', 'os'];
       const appModel = _.pick(app, appModelFields);
       appModel.project = project._id.toString();
 
