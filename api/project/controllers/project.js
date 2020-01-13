@@ -223,6 +223,7 @@ module.exports = {
     const entity = await strapi.services.app.findOne({
       id: ctx.params.app_id
     });
+
     if(!entity.project || (entity.project._id.toString() !== ctx.params.id))
       return ctx.notFound();
 
@@ -233,6 +234,9 @@ module.exports = {
     //For non admin roles
     if(user.role.type !== 'administrator' && (!project.user || project.user._id.toString() !== user._id.toString()))
       return ctx.notFound();
+
+    if(entity.os === 'aws_s3')
+      return ctx.badRequest(null, 'This app cannot cleanup');
 
     //Start cleanup
     await strapi.services.app.update({
@@ -268,21 +272,28 @@ module.exports = {
     if(user.role.type !== 'administrator' && (!project.user || project.user._id.toString() !== user._id.toString()))
       return ctx.notFound();
 
-    //Start cleanup
-    await strapi.services.app.update({
-      id: entity._id.toString()
-    }, {
-      app_status: 'cleanup'
-    });
-    const isCleanup = await strapi.services.project.cleanupApp(project, entity);
-
-    if(isCleanup){
+    if(entity.os === 'aws_s3'){
       const deletedApp = await strapi.services.app.delete({
         id: entity._id.toString()
       });
       return sanitizeEntity(deletedApp, { model: strapi.models.app });
     }else{
-      return ctx.send({ok: false});
+      //Start cleanup
+      await strapi.services.app.update({
+        id: entity._id.toString()
+      }, {
+        app_status: 'cleanup'
+      });
+      const isCleanup = await strapi.services.project.cleanupApp(project, entity);
+
+      if(isCleanup){
+        const deletedApp = await strapi.services.app.delete({
+          id: entity._id.toString()
+        });
+        return sanitizeEntity(deletedApp, { model: strapi.models.app });
+      }else{
+        return ctx.send({ok: false});
+      }
     }
   },
 
@@ -312,9 +323,11 @@ module.exports = {
     }
     let isCleanup = true;
     for(let appProject of project.apps){
-      const appIsClean = await strapi.services.project.cleanupApp(project, appProject);
-      if(isCleanup)
-        isCleanup = appIsClean;
+      if(appProject.os !== 'aws_s3'){
+        const appIsClean = await strapi.services.project.cleanupApp(project, appProject);
+        if(isCleanup)
+          isCleanup = appIsClean;
+      }
     }
     if(isCleanup){
       const entity = await strapi.services.project.delete({
