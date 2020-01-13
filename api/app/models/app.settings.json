@@ -18,17 +18,17 @@
     },
     "ssh_host": {
       "type": "string",
-      "required": true
+      "required": false
     },
     "ssh_username": {
       "type": "string",
-      "required": true
+      "required": false
     },
     "ssh_pem": {
       "model": "file",
       "via": "related",
       "plugin": "upload",
-      "required": true
+      "required": false
     },
     "project_type": {
       "model": "project-type",
@@ -111,6 +111,19 @@
       "via": "app"
     },
     "avaliable_ports": {
+      "type": "string"
+    },
+    "s3_project": {
+      "type": "boolean",
+      "default": false
+    },
+    "s3_bucket_name": {
+      "type": "string"
+    },
+    "aws_access_key_id": {
+      "type": "string"
+    },
+    "aws_secret_access_key": {
       "type": "string"
     }
   }
