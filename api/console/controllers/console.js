@@ -386,6 +386,17 @@ module.exports = {
 
               //Generate CI template file
               const commandExec = exec(ciCommand);
+              const consoleItem = await strapi.services.console.create({
+                message: `Generate CI Template Command: ${ciCommand}`,
+                type: 'message',
+                app: APP_ID
+              });
+
+              //Send message
+              strapi.eventEmitter.emit('system::notify', {
+                topic: `/console/setup/${APP_ID}/message`,
+                data: `Generate CI Template Command: ${ciCommand}`
+              });
               commandExec.stdout.on('data', async function(data){
                 if(data !== ''){
                   const consoleItem = await strapi.services.console.create({
@@ -489,6 +500,17 @@ module.exports = {
     }else{
       //Generate CI template file
       const commandExec = exec(ciCommand);
+      const consoleItem = await strapi.services.console.create({
+        message: `Generate CI Template Command: ${ciCommand}`,
+        type: 'message',
+        app: APP_ID
+      });
+
+      //Send message
+      strapi.eventEmitter.emit('system::notify', {
+        topic: `/console/setup/${APP_ID}/message`,
+        data: `Generate CI Template Command: ${ciCommand}`
+      });
       commandExec.stdout.on('data', async function(data){
         if(data !== ''){
           const consoleItem = await strapi.services.console.create({
