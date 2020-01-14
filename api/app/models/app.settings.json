@@ -131,6 +131,9 @@
       ],
       "default": "gitlab_ci",
       "required": true
+    },
+    "s3_user": {
+      "type": "string"
     }
   }
 }
