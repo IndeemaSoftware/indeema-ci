@@ -190,9 +190,9 @@ module.exports = {
     if(entity.ssh_username)
       ciCommand += '-u ' + entity.ssh_username + ' ';
     if(filePath)
-      command += '-s ' + filePath + ' ';
+      ciCommand += '-s ' + filePath + ' ';
     if(entity.ssh_host)
-      command += '-d ' + entity.ssh_host + ' ';
+      ciCommand += '-d ' + entity.ssh_host + ' ';
 
     ciCommand += '-n "' + project.project_name + '" ';
     ciCommand += '-a "' + entity.app_name + '" ';
@@ -307,6 +307,17 @@ module.exports = {
 
           //Start main program
           const commandExec = exec(command);
+          await strapi.services.console.create({
+            message: `Start server setup script: ${command}`,
+            type: 'message',
+            app: APP_ID
+          });
+
+          //Send message
+          strapi.eventEmitter.emit('system::notify', {
+            topic: `/console/setup/${APP_ID}/message`,
+            data: `Start server setup script: ${ciCommand}`
+          });
           commandExec.stdout.on('data', async function(data){
             if(data !== ''){
               const consoleItem = await strapi.services.console.create({
