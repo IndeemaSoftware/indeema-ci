@@ -189,8 +189,6 @@ module.exports = {
     let ciCommand = '~/scripts/generate_gitlab_ci_config ';
     if(entity.ssh_username)
       ciCommand += '-u ' + entity.ssh_username + ' ';
-    if(filePath)
-      ciCommand += '-s ' + filePath + ' ';
     if(entity.ssh_host)
       ciCommand += '-d ' + entity.ssh_host + ' ';
 
