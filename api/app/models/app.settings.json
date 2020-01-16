@@ -80,8 +80,8 @@
       "required": true
     },
     "project": {
-      "model": "project",
-      "via": "apps"
+      "via": "apps",
+      "model": "project"
     },
     "environment": {
       "type": "enumeration",
@@ -134,6 +134,9 @@
     },
     "s3_user": {
       "type": "string"
+    },
+    "desc": {
+      "type": "text"
     }
   }
 }

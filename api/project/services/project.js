@@ -32,27 +32,37 @@ module.exports = {
       });
     }
 
-    //Setup command
-    var command = '~/scripts/cleanup_server ';
+    var command = '';
 
-    //Get path of file
-    const path = require('path');
-    const filePath = path.resolve() + '/public' + app.ssh_pem.url;
+    if(app.os === 'aws_s3'){
+      command = `~/scripts/cleanup_s3 -s ${app.s3_bucket_name} -k ${app.aws_secret_access_key} -i ${app.aws_access_key_id}`;
 
-    //Setup pem chmod
-    fs.chmodSync(filePath, 400);
+    }else{
 
-    //Add project details
-    command += '-n "' + project.project_name + '" ';
-    command += '-a "' + app.app_name + '" ';
-    command += '-u ' + app.ssh_username + ' ';
-    command += '-d ' + app.ssh_host + ' ';
-    command += '-s ' + filePath + ' ';
+      //Setup command
+      command = '~/scripts/cleanup_server ';
 
-    if(app.domain_name)
-      command += '-b ' + app.domain_name + ' ';
-    else
-      command += '-b ' + app.ssh_host + ' ';
+      //Get path of file
+      const path = require('path');
+      const filePath = path.resolve() + '/public' + app.ssh_pem.url;
+
+      //Setup pem chmod
+      fs.chmodSync(filePath, 400);
+
+      //Add project details
+      command += '-n "' + project.project_name + '" ';
+      command += '-a "' + app.app_name + '" ';
+      command += '-u ' + app.ssh_username + ' ';
+      command += '-d ' + app.ssh_host + ' ';
+      command += '-s ' + filePath + ' ';
+
+      if(app.domain_name)
+        command += '-b ' + app.domain_name + ' ';
+      else
+        command += '-b ' + app.ssh_host + ' ';
+
+
+    }
 
     //Start cleanup program
     return new Promise((rs, rj) => {

@@ -20,8 +20,11 @@
       "via": "projects"
     },
     "apps": {
-      "via": "project",
-      "collection": "app"
+      "collection": "app",
+      "via": "project"
+    },
+    "desc": {
+      "type": "text"
     }
   }
 }

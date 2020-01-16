@@ -106,13 +106,13 @@ module.exports = {
       return ctx.badRequest(null, 'Apps is required');
 
     //Prepare project model and create
-    const projectModel = _.pick(ctx.request.body, ['project_name', 'user']);
+    const projectModel = _.pick(ctx.request.body, ['project_name', 'desc', 'user']);
     projectModel.apps = [];
     const project = await strapi.services.project.create(projectModel);
 
     //Prepare apps model and create
     for(let app of ctx.request.body.apps){
-      const appModelFields = ['app_name', 'app_port', 'avaliable_ports', 'environment', 's3_user', 's3_bucket_name', 'aws_access_key_id', 'aws_secret_access_key', 'ssh_host', 'ssh_username', 'ssh_pem', 'project_type', 'server_dependencies', 'nodejs_dependencies', 'custom_ssl_key', 'custom_ssl_crt', 'custom_ssl_pem', 'domain_name', 'lets_encrypt', 'os'];
+      const appModelFields = ['app_name', 'desc', 'app_port', 'avaliable_ports', 'environment', 's3_user', 's3_bucket_name', 'aws_access_key_id', 'aws_secret_access_key', 'ssh_host', 'ssh_username', 'ssh_pem', 'project_type', 'server_dependencies', 'nodejs_dependencies', 'custom_ssl_key', 'custom_ssl_crt', 'custom_ssl_pem', 'domain_name', 'lets_encrypt', 'os'];
       const appModel = _.pick(app, appModelFields);
       appModel.project = project._id.toString();
 
@@ -154,7 +154,7 @@ module.exports = {
 
     //First let`s update project model
     ctx.request.body.user = user._id;
-    const projectModel = _.pick(ctx.request.body, ['project_name', 'user']);
+    const projectModel = _.pick(ctx.request.body, ['project_name', 'desc', 'user']);
     entity = await strapi.services.project.update(ctx.params, projectModel);
 
     //Find all apps and remove not needed apps
@@ -181,7 +181,7 @@ module.exports = {
 
     //Update all apps from body
     for(let app of ctx.request.body.apps){
-      const appModelFields = ['app_name', 'app_port', 'avaliable_ports', 'environment', 's3_user', 's3_bucket_name', 'aws_access_key_id', 'aws_secret_access_key', 'ssh_host', 'ssh_username', 'ssh_pem', 'project_type', 'server_dependencies', 'nodejs_dependencies', 'custom_ssl_key', 'custom_ssl_crt', 'custom_ssl_pem', 'domain_name', 'lets_encrypt', 'os'];
+      const appModelFields = ['app_name', 'desc', 'app_port', 'avaliable_ports', 'environment', 's3_user', 's3_bucket_name', 'aws_access_key_id', 'aws_secret_access_key', 'ssh_host', 'ssh_username', 'ssh_pem', 'project_type', 'server_dependencies', 'nodejs_dependencies', 'custom_ssl_key', 'custom_ssl_crt', 'custom_ssl_pem', 'domain_name', 'lets_encrypt', 'os'];
       const appModel = _.pick(app, appModelFields);
       appModel.project = project._id.toString();
 
@@ -235,9 +235,6 @@ module.exports = {
     if(user.role.type !== 'administrator' && (!project.user || project.user._id.toString() !== user._id.toString()))
       return ctx.notFound();
 
-    if(entity.os === 'aws_s3')
-      return ctx.badRequest(null, 'This app cannot cleanup');
-
     //Start cleanup
     await strapi.services.app.update({
       id: entity._id.toString()
@@ -272,7 +269,7 @@ module.exports = {
     if(user.role.type !== 'administrator' && (!project.user || project.user._id.toString() !== user._id.toString()))
       return ctx.notFound();
 
-    if(entity.os === 'aws_s3'){
+    if(entity.os === 'aws_s3' || entity.app_status === 'cleanup_success'){
       const deletedApp = await strapi.services.app.delete({
         id: entity._id.toString()
       });
@@ -323,7 +320,7 @@ module.exports = {
     }
     let isCleanup = true;
     for(let appProject of project.apps){
-      if(appProject.os !== 'aws_s3'){
+      if(appProject.os !== 'aws_s3' || appProject.app_status === 'cleanup_success'){
         const appIsClean = await strapi.services.project.cleanupApp(project, appProject);
         if(isCleanup)
           isCleanup = appIsClean;
