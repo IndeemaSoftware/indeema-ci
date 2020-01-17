@@ -310,17 +310,15 @@ module.exports = {
     if(user.role.type !== 'administrator' && (!project.user || project.user._id.toString() !== user._id.toString()))
       return ctx.notFound();
 
-    //Get all apps and cleanup each
-    for(let appProject of project.apps){
-      await strapi.services.app.update({
-        id: appProject._id.toString()
-      }, {
-        app_status: 'cleanup'
-      });
-    }
+    //Make cleanup
     let isCleanup = true;
     for(let appProject of project.apps){
       if(appProject.os !== 'aws_s3' || appProject.app_status === 'cleanup_success'){
+        await strapi.services.app.update({
+          id: appProject._id.toString()
+        }, {
+          app_status: 'cleanup'
+        });
         const appIsClean = await strapi.services.project.cleanupApp(project, appProject);
         if(isCleanup)
           isCleanup = appIsClean;
