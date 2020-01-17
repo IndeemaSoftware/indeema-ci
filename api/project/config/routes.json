@@ -2,6 +2,14 @@
   "routes": [
     {
       "method": "GET",
+      "path": "/aws/regions",
+      "handler": "project.getAWSRegions",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
       "path": "/projects",
       "handler": "project.findProjects",
       "config": {

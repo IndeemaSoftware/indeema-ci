@@ -9,6 +9,14 @@ const _ = require('lodash');
  *
  */
 module.exports = {
+  /**
+   * Get AWS Regions
+   * @param ctx
+   * @returns {Promise<void>}
+   */
+  async getAWSRegions(ctx){
+    return strapi.services.project.awsRegionsList();
+  },
 
   /**
    * Download yml file of project
@@ -269,29 +277,30 @@ module.exports = {
     if(user.role.type !== 'administrator' && (!project.user || project.user._id.toString() !== user._id.toString()))
       return ctx.notFound();
 
-    if(entity.os === 'aws_s3' || entity.app_status === 'cleanup_success'){
-      const deletedApp = await strapi.services.app.delete({
-        id: entity._id.toString()
-      });
-      return sanitizeEntity(deletedApp, { model: strapi.models.app });
-    }else{
-      //Start cleanup
-      await strapi.services.app.update({
-        id: entity._id.toString()
-      }, {
-        app_status: 'cleanup'
-      });
-      const isCleanup = await strapi.services.project.cleanupApp(project, entity);
+    const deletedApp = await strapi.services.app.delete({
+      id: entity._id.toString()
+    });
+    return sanitizeEntity(deletedApp, { model: strapi.models.app });
 
-      if(isCleanup){
-        const deletedApp = await strapi.services.app.delete({
-          id: entity._id.toString()
-        });
-        return sanitizeEntity(deletedApp, { model: strapi.models.app });
-      }else{
-        return ctx.send({ok: false});
-      }
-    }
+    //Auto cleanup is deprecated
+    // }else{
+    //   //Start cleanup
+    //   await strapi.services.app.update({
+    //     id: entity._id.toString()
+    //   }, {
+    //     app_status: 'cleanup'
+    //   });
+    //   const isCleanup = await strapi.services.project.cleanupApp(project, entity);
+    //
+    //   if(isCleanup){
+    //     const deletedApp = await strapi.services.app.delete({
+    //       id: entity._id.toString()
+    //     });
+    //     return sanitizeEntity(deletedApp, { model: strapi.models.app });
+    //   }else{
+    //     return ctx.send({ok: false});
+    //   }
+    // }
   },
 
   /**
@@ -311,27 +320,16 @@ module.exports = {
       return ctx.notFound();
 
     //Make cleanup
-    let isCleanup = true;
     for(let appProject of project.apps){
-      if(appProject.os !== 'aws_s3' || appProject.app_status === 'cleanup_success'){
-        await strapi.services.app.update({
-          id: appProject._id.toString()
-        }, {
-          app_status: 'cleanup'
-        });
-        const appIsClean = await strapi.services.project.cleanupApp(project, appProject);
-        if(isCleanup)
-          isCleanup = appIsClean;
-      }
-    }
-    if(isCleanup){
-      const entity = await strapi.services.project.delete({
-        id: project._id.toString()
+      await strapi.services.app.delete({
+        id: appProject._id.toString()
       });
-      return sanitizeEntity(project, { model: strapi.models.project });
-    }else{
-      return ctx.send({ok: false});
     }
+
+    const entity = await strapi.services.project.delete({
+      id: project._id.toString()
+    });
+    return sanitizeEntity(project, { model: strapi.models.project });
   },
 
 };

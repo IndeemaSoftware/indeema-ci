@@ -144,7 +144,8 @@
       "required": true
     },
     "s3_region": {
-      "type": "string"
+      "type": "string",
+      "required": true
     }
   }
 }

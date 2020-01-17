@@ -11,6 +11,37 @@ const exec = require('child_process').exec;
  */
 
 module.exports = {
+
+  /**
+   * Return AWS regions list
+   * @returns {Promise<void>}
+   */
+  awsRegionsList: async () =>{
+    return new Promise((rs, rj) => {
+      const commandExec = exec('aws lightsail get-regions');
+      commandExec.stdout.on('data', async function(data){
+        try{
+          data = JSON.parse(data);
+        }catch(e){
+          rs([]);
+        }
+
+        if(!data.regions) {
+          rs([]);
+          return;
+        }
+
+        rs(data.regions);
+      });
+      commandExec.stderr.on('data', async function(data){
+        rs(null);
+      });
+      commandExec.on('close', async (code) => {
+        //Not needed this
+      });
+    });
+  },
+
   /**
    * Make cleanup app of project
    *
@@ -36,6 +67,8 @@ module.exports = {
 
     if(app.os === 'aws_s3'){
       command = `~/scripts/cleanup_s3 -s ${app.s3_bucket_name} -k ${app.aws_secret_access_key} -i ${app.aws_access_key_id}`;
+      if(app.s3_region)
+        command += ` -r ${entity.s3_region}`;
 
     }else{
 
