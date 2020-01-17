@@ -80,8 +80,8 @@
       "required": true
     },
     "project": {
-      "via": "apps",
-      "model": "project"
+      "model": "project",
+      "via": "apps"
     },
     "environment": {
       "type": "enumeration",
@@ -137,6 +137,14 @@
     },
     "desc": {
       "type": "text"
+    },
+    "s3_https": {
+      "type": "boolean",
+      "default": false,
+      "required": true
+    },
+    "s3_region": {
+      "type": "string"
     }
   }
 }
