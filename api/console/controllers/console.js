@@ -112,7 +112,7 @@ module.exports = {
       //Prepare string
       command += '-r "';
       for(let item of entity.server_dependencies){
-        if(item.repo !== '')
+        if(item.repo && item.repo !== '')
           command += item.repo + '; ';
 
         packagesNames.push(item.package);

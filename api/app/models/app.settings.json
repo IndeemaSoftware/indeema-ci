@@ -140,12 +140,10 @@
     },
     "s3_https": {
       "type": "boolean",
-      "default": false,
-      "required": true
+      "default": false
     },
     "s3_region": {
-      "type": "string",
-      "required": true
+      "type": "string"
     }
   }
 }
