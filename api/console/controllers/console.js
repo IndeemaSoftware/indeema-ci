@@ -314,7 +314,7 @@ module.exports = {
           //Send message
           strapi.eventEmitter.emit('system::notify', {
             topic: `/console/setup/${APP_ID}/message`,
-            data: `Start server setup script: ${ciCommand}`
+            data: `Start server setup script: ${command}`
           });
           commandExec.stdout.on('data', async function(data){
             if(data !== ''){
