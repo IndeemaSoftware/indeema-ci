@@ -162,7 +162,7 @@ module.exports = {
     if(app.os === 'aws_s3'){
       command = `~/scripts/cleanup_s3 -s ${app.s3_bucket_name} -k ${app.aws_secret_access_key} -i ${app.aws_access_key_id}`;
       if(app.s3_region)
-        command += ` -r ${entity.s3_region}`;
+        command += ` -r ${app.s3_region}`;
 
     }else{
 
