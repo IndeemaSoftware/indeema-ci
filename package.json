@@ -20,7 +20,7 @@
     "strapi-plugin-content-type-builder": "3.0.0-beta.18.1",
     "strapi-plugin-email": "3.0.0-beta.18.1",
     "strapi-plugin-upload": "3.0.0-beta.18.1",
-    "strapi-plugin-users-permissions": "3.0.0-beta.18.1",
+    "strapi-plugin-users-permissions": "^3.0.0-next.41",
     "strapi-utils": "3.0.0-beta.18.1"
   },
   "author": {

@@ -1,0 +1,4 @@
+[submodule "scripts"]
+	path = scripts
+	url = git@git.indeema.com:volodymyr-shevchyk/connect_runner.git
+	branch = dynamic_settings
