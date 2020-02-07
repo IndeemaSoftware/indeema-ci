@@ -31,12 +31,13 @@ async getTemplate(ctx) {
 },
 
 async writeTemplate(ctx) {
+  console.log(ctx.request.body);
   const entity = ctx.params;
   const path = require('path');
   const directoryPath = path.resolve() +  `/scripts/ci_templates/${entity.name}`;
 
   return new Promise((rs, rj) => {
-    fs.writeFile(directoryPath, entity.body, (err) => {
+    fs.writeFile(directoryPath, ctx.request.body, (err) => {
       if (err) rs({"status":"ok", "data":err});
 
       rs({"status":"ok", "data":entity.name});
