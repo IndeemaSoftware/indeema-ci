@@ -1,0 +1,37 @@
+{
+  "routes": [
+    {
+      "method": "GET",
+      "path": "/servers/download/:name",
+      "handler": "servers.getServer",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/servers/:name",
+      "handler": "servers.writeServer",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "DELETE",
+      "path": "/servers/:name",
+      "handler": "servers.deleteServer",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/servers/listAll",
+      "handler": "servers.getListOfServers",
+      "config": {
+        "policies": []
+      }
+    }
+  ]
+}
+  
