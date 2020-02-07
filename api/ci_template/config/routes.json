@@ -9,6 +9,22 @@
       }
     },
     {
+      "method": "POST",
+      "path": "/ci_template/:name",
+      "handler": "ci_template.writeTemplate",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "DELETE",
+      "path": "/ci_template/:name",
+      "handler": "ci_template.deleteTemplate",
+      "config": {
+        "policies": []
+      }
+    },
+    {
       "method": "GET",
       "path": "/ci_template/listAll",
       "handler": "ci_template.getListOfTemplates",

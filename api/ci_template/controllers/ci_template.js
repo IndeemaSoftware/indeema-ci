@@ -16,17 +16,46 @@ module.exports = {
    * @param ctx
    * @returns {Promise<void>}
    */
-async getTemplate(ctx){
+async getTemplate(ctx) {
     const entity = ctx.params;
     const path = require('path');
-    const filePath = path.resolve() +  `/scripts/ci_templates/${entity.name}`;
+    const directoryPath = path.resolve() +  `/scripts/ci_templates/${entity.name}`;
 
     return new Promise((rs, rj) => {
-      fs.readFile(filePath, (err, data) => {
-        if (err) throw err;
+      fs.readFile(directoryPath, (err, data) => {
+        if (err) rs({"status":"bad", "data":err});
+
         rs({"status":"ok", "data": data.toString()});
       });
     });
+},
+
+async writeTemplate(ctx) {
+  const entity = ctx.params;
+  const path = require('path');
+  const directoryPath = path.resolve() +  `/scripts/ci_templates/${entity.name}`;
+
+  return new Promise((rs, rj) => {
+    fs.writeFile(directoryPath, entity.body, (err) => {
+      if (err) rs({"status":"ok", "data":err});
+
+      rs({"status":"ok", "data":entity.name});
+    }); 
+  }); 
+},
+
+async deleteTemplate(ctx) {
+  const entity = ctx.params;
+  const path = require('path');
+  const directoryPath = path.resolve() +  `/scripts/ci_templates/${entity.name}`;
+
+  return new Promise((rs, rj) => {
+    fs.unlink(directoryPath, (err) => {
+      if (err) rs({"status":"bad", "data":err});
+
+      rs({"status":"ok", "data":"The file was succesfully saved!"});
+    });
+  });
 },
 
 async getListOfTemplates(ctx) {
@@ -36,9 +65,8 @@ async getListOfTemplates(ctx) {
   return new Promise((rs, rj) => {
     fs.readdir(directoryPath, function (err, files) {
       files = files.filter(item => !(/(^|\/)\.[^\/\.]/g).test(item));
-      if (err) {
-        rs(console.log({"status":"bad", "data": err}));
-      } 
+      if (err) rs(console.log({"status":"bad", "data": err}));
+      
       rs({"status":"ok", "data":files});
     });
   });
