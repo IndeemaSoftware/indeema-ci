@@ -1,0 +1,21 @@
+{
+  "routes": [
+    {
+      "method": "GET",
+      "path": "/ci_template/download/:name",
+      "handler": "ci_template.getTemplate",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/ci_template/listAll",
+      "handler": "ci_template.getListOfTemplates",
+      "config": {
+        "policies": []
+      }
+    }
+  ]
+}
+  
