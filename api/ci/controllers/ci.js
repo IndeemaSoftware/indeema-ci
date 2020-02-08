@@ -16,10 +16,10 @@ module.exports = {
    * @param ctx
    * @returns {Promise<void>}
    */
-async getTemplate(ctx) {
+async getScript(ctx) {
     const entity = ctx.params;
     const path = require('path');
-    const directoryPath = path.resolve() +  `/scripts/ci_templates/${entity.name}`;
+    const directoryPath = path.resolve() +  `/scripts/ci_scripts/${entity.name}`;
 
     return new Promise((rs, rj) => {
       fs.readFile(directoryPath, (err, data) => {
@@ -30,11 +30,11 @@ async getTemplate(ctx) {
     });
 },
 
-async writeTemplate(ctx) {
+async writeScript(ctx) {
   console.log(ctx.request.body);
   const entity = ctx.params;
   const path = require('path');
-  const directoryPath = path.resolve() +  `/scripts/ci_templates/${entity.name}`;
+  const directoryPath = path.resolve() +  `/scripts/ci_scripts/${entity.name}`;
 
   return new Promise((rs, rj) => {
     fs.writeFile(directoryPath, ctx.request.body, (err) => {
@@ -45,10 +45,10 @@ async writeTemplate(ctx) {
   }); 
 },
 
-async deleteTemplate(ctx) {
+async deleteScript(ctx) {
   const entity = ctx.params;
   const path = require('path');
-  const directoryPath = path.resolve() +  `/scripts/ci_templates/${entity.name}`;
+  const directoryPath = path.resolve() +  `/scripts/ci_scripts/${entity.name}`;
 
   return new Promise((rs, rj) => {
     fs.unlink(directoryPath, (err) => {
@@ -59,9 +59,9 @@ async deleteTemplate(ctx) {
   });
 },
 
-async getListOfTemplates(ctx) {
+async getListOfScripts(ctx) {
   const path = require('path');
-  const directoryPath =  path.resolve() + '/scripts/ci_templates/';
+  const directoryPath =  path.resolve() + '/scripts/ci_scripts/';
   
   return new Promise((rs, rj) => {
     fs.readdir(directoryPath, function (err, files) {
