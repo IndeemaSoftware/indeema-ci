@@ -16,10 +16,10 @@ module.exports = {
    * @param ctx
    * @returns {Promise<void>}
    */
-async getServer(ctx) {
+async getPlatform(ctx) {
     const entity = ctx.params;
     const path = require('path');
-    const directoryPath = path.resolve() +  `/scripts/servers/${entity.name}`;
+    const directoryPath = path.resolve() +  `/scripts/platforms/${entity.name}`;
 
     return new Promise((rs, rj) => {
       fs.readFile(directoryPath, (err, data) => {
@@ -30,11 +30,11 @@ async getServer(ctx) {
     });
 },
 
-async writeServer(ctx) {
+async writePlatform(ctx) {
   console.log(ctx.request.body);
   const entity = ctx.params;
   const path = require('path');
-  const directoryPath = path.resolve() +  `/scripts/servers/${entity.name}`;
+  const directoryPath = path.resolve() +  `/scripts/platforms/${entity.name}`;
 
   return new Promise((rs, rj) => {
     fs.writeFile(directoryPath, ctx.request.body, (err) => {
@@ -45,10 +45,10 @@ async writeServer(ctx) {
   }); 
 },
 
-async deleteServer(ctx) {
+async deletePlatform(ctx) {
   const entity = ctx.params;
   const path = require('path');
-  const directoryPath = path.resolve() +  `/scripts/servers/${entity.name}`;
+  const directoryPath = path.resolve() +  `/scripts/platforms/${entity.name}`;
 
   return new Promise((rs, rj) => {
     fs.unlink(directoryPath, (err) => {
@@ -59,9 +59,9 @@ async deleteServer(ctx) {
   });
 },
 
-async getListOfServers(ctx) {
+async getListOfPlatforms(ctx) {
   const path = require('path');
-  const directoryPath =  path.resolve() + '/scripts/servers/';
+  const directoryPath =  path.resolve() + '/scripts/platforms/';
   
   return new Promise((rs, rj) => {
     fs.readdir(directoryPath, function (err, files) {

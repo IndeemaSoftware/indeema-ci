@@ -2,32 +2,32 @@
   "routes": [
     {
       "method": "GET",
-      "path": "/servers/download/:name",
-      "handler": "servers.getServer",
+      "path": "/platform/download/:name",
+      "handler": "platform.getPlatform",
       "config": {
         "policies": []
       }
     },
     {
       "method": "POST",
-      "path": "/servers/:name",
-      "handler": "servers.writeServer",
+      "path": "/platform/:name",
+      "handler": "platform.writePlatform",
       "config": {
         "policies": []
       }
     },
     {
       "method": "DELETE",
-      "path": "/servers/:name",
-      "handler": "servers.deleteServer",
+      "path": "/platform/:name",
+      "handler": "platform.deletePlatform",
       "config": {
         "policies": []
       }
     },
     {
       "method": "GET",
-      "path": "/servers/listAll",
-      "handler": "servers.getListOfServers",
+      "path": "/platform/listAll",
+      "handler": "platform.getListOfPlatforms",
       "config": {
         "policies": []
       }
