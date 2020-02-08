@@ -9,9 +9,25 @@
       }
     },
     {
+      "method": "GET",
+      "path": "/platform/cleanup/download/:name",
+      "handler": "platform.getPlatformCleanup",
+      "config": {
+        "policies": []
+      }
+    },
+    {
       "method": "POST",
       "path": "/platform/:name",
       "handler": "platform.writePlatform",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/platform/cleanup/:name",
+      "handler": "platform.writePlatformCleanup",
       "config": {
         "policies": []
       }
@@ -25,9 +41,25 @@
       }
     },
     {
+      "method": "DELETE",
+      "path": "/platform/:name",
+      "handler": "platform.deletePlatformCleanup",
+      "config": {
+        "policies": []
+      }
+    },
+    {
       "method": "GET",
       "path": "/platform/listAll",
       "handler": "platform.getListOfPlatforms",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/platform/cleanup/listAll",
+      "handler": "platform.getListOfPlatformsCleanup",
       "config": {
         "policies": []
       }
