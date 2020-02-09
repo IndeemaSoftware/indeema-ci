@@ -9,9 +9,25 @@
       }
     },
     {
+      "method": "GET",
+      "path": "/ci/template/download/:ci/:name",
+      "handler": "ci.getTemplate",
+      "config": {
+        "policies": []
+      }
+    },
+    {
       "method": "POST",
       "path": "/ci/script/:name",
       "handler": "ci.writeScript",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/ci/template/:ci/:name",
+      "handler": "ci.writeTemplate",
       "config": {
         "policies": []
       }
@@ -25,9 +41,25 @@
       }
     },
     {
+      "method": "DELETE",
+      "path": "/ci/template/:ci/:name",
+      "handler": "ci.deleteTemplate",
+      "config": {
+        "policies": []
+      }
+    },
+    {
       "method": "GET",
       "path": "/ci/script/listAll",
       "handler": "ci.getListOfScripts",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/ci/template/listAll/:script",
+      "handler": "ci.getListOfTemplates",
       "config": {
         "policies": []
       }

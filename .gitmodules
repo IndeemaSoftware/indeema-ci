@@ -2,3 +2,8 @@
 	path = scripts
 	url = git@git.indeema.com:volodymyr-shevchyk/connect_runner.git
 	branch = dynamic_settings
+
+[submodule "ci_templates"]
+	path = ci_templates
+	url = git@git.indeema.com:indeema-products/indeema-gitlab-ci-templates.git
+	branch = dynamic_settings
