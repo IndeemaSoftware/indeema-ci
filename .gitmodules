@@ -1,9 +1,14 @@
-[submodule "scripts"]
-	path = scripts
+[submodule "public/uploads/scripts"]
+	path = public/uploads/scripts
 	url = git@git.indeema.com:volodymyr-shevchyk/connect_runner.git
 	branch = dynamic_settings
 
-[submodule "ci_templates"]
-	path = ci_templates
+[submodule "public/uploads/ci_templates"]
+	path = public/uploads/ci_templates
 	url = git@git.indeema.com:indeema-products/indeema-gitlab-ci-templates.git
 	branch = dynamic_settings
+	
+[submodule "public/uploads/maintenance"]
+	path = public/uploads/maintenance
+	url = git@git.indeema.com:indeema-products/web_maintenance_page.git
+	branch = master

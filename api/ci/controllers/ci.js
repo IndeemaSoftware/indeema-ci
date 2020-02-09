@@ -2,8 +2,9 @@
 
 const { parseMultipartData, sanitizeEntity } = require('strapi-utils');
 const fs = require('fs');
-const path = require('path');
 const _ = require('lodash');
+const path = require('path');
+const resourcesPath = path.resolve() + "public/uploads/" 
 
 /**
  * default bookshelf controller
@@ -18,8 +19,7 @@ module.exports = {
    */
 async getScript(ctx) {
     const entity = ctx.params;
-    const path = require('path');
-    const directoryPath = path.resolve() +  `/scripts/ci_scripts/${entity.name}`;
+    const directoryPath = resourcesPath + `/scripts/ci_scripts/${entity.name}`;
 
     return new Promise((rs, rj) => {
       fs.readFile(directoryPath, (err, data) => {
@@ -38,8 +38,7 @@ async getScript(ctx) {
    */
   async getTemplate(ctx) {
     const entity = ctx.params;
-    const path = require('path');
-    const directoryPath = path.resolve() +  `/ci_templates/${entity.ci}/${entity.name}`;
+    const directoryPath = resourcesPath +  `/ci_templates/${entity.ci}/${entity.name}`;
 
     return new Promise((rs, rj) => {
       fs.readFile(directoryPath, (err, data) => {
@@ -52,8 +51,7 @@ async getScript(ctx) {
 
 async writeScript(ctx) {
   const entity = ctx.params;
-  const path = require('path');
-  const directoryPath = path.resolve() +  `/scripts/ci_scripts/${entity.name}`;
+  const directoryPath = resourcesPath +  `/scripts/ci_scripts/${entity.name}`;
 
   return new Promise((rs, rj) => {
     fs.writeFile(directoryPath, ctx.request.body, (err) => {
@@ -66,8 +64,7 @@ async writeScript(ctx) {
 
 async writeTemplate(ctx) {
   const entity = ctx.params;
-  const path = require('path');
-  const directoryPath = path.resolve() +  `/ci_templates/${entity.ci}/${entity.name}`;
+  const directoryPath = resourcesPath +  `/ci_templates/${entity.ci}/${entity.name}`;
 
   return new Promise((rs, rj) => {
     fs.writeFile(directoryPath, ctx.request.body, (err) => {
@@ -80,8 +77,7 @@ async writeTemplate(ctx) {
 
 async deleteScript(ctx) {
   const entity = ctx.params;
-  const path = require('path');
-  const directoryPath = path.resolve() +  `/scripts/ci_scripts/${entity.name}`;
+  const directoryPath = resourcesPath +  `/scripts/ci_scripts/${entity.name}`;
 
   return new Promise((rs, rj) => {
     fs.unlink(directoryPath, (err) => {
@@ -94,8 +90,7 @@ async deleteScript(ctx) {
 
 async deleteTemplate(ctx) {
   const entity = ctx.params;
-  const path = require('path');
-  const directoryPath = path.resolve() +  `/ci_templates/${entity.ci}/${entity.name}`;
+  const directoryPath = resourcesPath +  `/ci_templates/${entity.ci}/${entity.name}`;
 
   return new Promise((rs, rj) => {
     fs.unlink(directoryPath, (err) => {
@@ -107,8 +102,7 @@ async deleteTemplate(ctx) {
 },
 
 async getListOfScripts(ctx) {
-  const path = require('path');
-  const directoryPath =  path.resolve() + '/scripts/ci_scripts/';
+  const directoryPath =  resourcesPath + '/scripts/ci_scripts/';
   
   return new Promise((rs, rj) => {
     fs.readdir(directoryPath, function (err, files) {
@@ -122,8 +116,7 @@ async getListOfScripts(ctx) {
 
 async getListOfTemplates(ctx) {
   const entity = ctx.params;
-  const path = require('path');
-  const directoryPath =  path.resolve() + `/ci_templates/${entity.script}`;
+  const directoryPath =  resourcesPath + `/ci_templates/${entity.script}`;
   
   return new Promise((rs, rj) => {
     fs.readdir(directoryPath, function (err, files) {
