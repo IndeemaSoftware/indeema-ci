@@ -54,8 +54,12 @@
       "configurable": false
     },
     "projects": {
-      "via": "user",
-      "collection": "project"
+      "collection": "project",
+      "via": "user"
+    },
+    "servers": {
+      "collection": "server",
+      "via": "user"
     }
   }
 }

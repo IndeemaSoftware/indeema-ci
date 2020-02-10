@@ -144,6 +144,14 @@
     },
     "s3_region": {
       "type": "string"
+    },
+    "servers": {
+      "via": "user",
+      "collection": "server"
+    },
+    "server": {
+      "via": "apps",
+      "model": "server"
     }
   }
 }

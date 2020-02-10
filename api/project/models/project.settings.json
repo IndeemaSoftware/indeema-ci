@@ -15,9 +15,8 @@
       "unique": false
     },
     "user": {
-      "plugin": "users-permissions",
-      "model": "user",
-      "via": "projects"
+      "via": "projects",
+      "model": "user"
     },
     "apps": {
       "via": "project",
