@@ -4,7 +4,7 @@ const { parseMultipartData, sanitizeEntity } = require('strapi-utils');
 const fs = require('fs');
 const _ = require('lodash');
 const path = require('path');
-const resourcesPath = path.resolve() + "public/uploads/" 
+const resourcesPath = path.resolve() + "/public/uploads/" 
 
 /**
  * default bookshelf controller
@@ -19,7 +19,7 @@ module.exports = {
    */
 async getScript(ctx) {
     const entity = ctx.params;
-    const directoryPath = resourcesPath + `/scripts/ci_scripts/${entity.name}`;
+    const directoryPath = resourcesPath + `scripts/ci_scripts/${entity.name}`;
 
     return new Promise((rs, rj) => {
       fs.readFile(directoryPath, (err, data) => {
@@ -38,7 +38,7 @@ async getScript(ctx) {
    */
   async getTemplate(ctx) {
     const entity = ctx.params;
-    const directoryPath = resourcesPath +  `/ci_templates/${entity.ci}/${entity.name}`;
+    const directoryPath = resourcesPath + `ci_templates/${entity.ci}/${entity.name}`;
 
     return new Promise((rs, rj) => {
       fs.readFile(directoryPath, (err, data) => {
@@ -51,10 +51,13 @@ async getScript(ctx) {
 
 async writeScript(ctx) {
   const entity = ctx.params;
-  const directoryPath = resourcesPath +  `/scripts/ci_scripts/${entity.name}`;
+  const directoryPath = resourcesPath + `scripts/ci_scripts/${entity.name}`;
 
+  if (!fs.existsSync(resourcesPath + `ci_templates/${entity.name}`)){
+    fs.mkdirSync(resourcesPath + `ci_templates/${entity.name}`);
+  }
   return new Promise((rs, rj) => {
-    fs.writeFile(directoryPath, ctx.request.body, (err) => {
+    fs.writeFile(directoryPath, ctx.request.body.data, (err) => {
       if (err) rs({"status":"ok", "data":err});
 
       rs({"status":"ok", "data":entity.name});
@@ -64,10 +67,10 @@ async writeScript(ctx) {
 
 async writeTemplate(ctx) {
   const entity = ctx.params;
-  const directoryPath = resourcesPath +  `/ci_templates/${entity.ci}/${entity.name}`;
+  const directoryPath = resourcesPath + `ci_templates/${entity.ci}/${entity.name}`;
 
   return new Promise((rs, rj) => {
-    fs.writeFile(directoryPath, ctx.request.body, (err) => {
+    fs.writeFile(directoryPath, ctx.request.body.data, (err) => {
       if (err) rs({"status":"ok", "data":err});
 
       rs({"status":"ok", "data":entity.name});
@@ -77,7 +80,9 @@ async writeTemplate(ctx) {
 
 async deleteScript(ctx) {
   const entity = ctx.params;
-  const directoryPath = resourcesPath +  `/scripts/ci_scripts/${entity.name}`;
+  const directoryPath = resourcesPath + `scripts/ci_scripts/${entity.name}`;
+
+  deleteFolderRecursive(resourcesPath + `ci_templates/${entity.name}`);
 
   return new Promise((rs, rj) => {
     fs.unlink(directoryPath, (err) => {
@@ -90,7 +95,7 @@ async deleteScript(ctx) {
 
 async deleteTemplate(ctx) {
   const entity = ctx.params;
-  const directoryPath = resourcesPath +  `/ci_templates/${entity.ci}/${entity.name}`;
+  const directoryPath = resourcesPath + `ci_templates/${entity.ci}/${entity.name}`;
 
   return new Promise((rs, rj) => {
     fs.unlink(directoryPath, (err) => {
@@ -102,7 +107,7 @@ async deleteTemplate(ctx) {
 },
 
 async getListOfScripts(ctx) {
-  const directoryPath =  resourcesPath + '/scripts/ci_scripts/';
+  const directoryPath =  resourcesPath + 'scripts/ci_scripts/';
   
   return new Promise((rs, rj) => {
     fs.readdir(directoryPath, function (err, files) {
@@ -116,7 +121,7 @@ async getListOfScripts(ctx) {
 
 async getListOfTemplates(ctx) {
   const entity = ctx.params;
-  const directoryPath =  resourcesPath + `/ci_templates/${entity.script}`;
+  const directoryPath =  resourcesPath + `ci_templates/${entity.script}`;
   
   return new Promise((rs, rj) => {
     fs.readdir(directoryPath, function (err, files) {
@@ -128,4 +133,19 @@ async getListOfTemplates(ctx) {
   });
 }
 
+};
+
+var deleteFolderRecursive = function(path) {
+  console.log("Deleting");
+  if( fs.existsSync(path) ) {
+    fs.readdirSync(path).forEach(function(file,index){
+      var curPath = path + "/" + file;
+      if(fs.lstatSync(curPath).isDirectory()) { // recurse
+        deleteFolderRecursive(curPath);
+      } else { // delete file
+        fs.unlinkSync(curPath);
+      }
+    });
+    fs.rmdirSync(path);
+  }
 };

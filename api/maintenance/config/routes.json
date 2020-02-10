@@ -1,0 +1,37 @@
+{
+  "routes": [
+    {
+      "method": "GET",
+      "path": "/maintenance/download/:name",
+      "handler": "maintenance.getMaintenance",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/maintenance/:name",
+      "handler": "maintenance.writeMaintenance",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "DELETE",
+      "path": "/maintenance/:name",
+      "handler": "maintenance.deleteMaintenance",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/maintenance/listAll",
+      "handler": "maintenance.getListOfMaintenance",
+      "config": {
+        "policies": []
+      }
+    }
+  ]
+}
+  

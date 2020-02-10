@@ -4,7 +4,7 @@ const { parseMultipartData, sanitizeEntity } = require('strapi-utils');
 const fs = require('fs');
 const _ = require('lodash');
 const path = require('path');
-const resourcesPath = path.resolve() + "public/uploads/" 
+const resourcesPath = path.resolve() + "/public/uploads/scripts/" 
 
 /**
  * default bookshelf controller
@@ -19,7 +19,7 @@ module.exports = {
    */
 async getPlatform(ctx) {
     const entity = ctx.params;
-    const directoryPath = resourcesPath +  `/scripts/platforms/${entity.name}`;
+    const directoryPath = resourcesPath +  `platforms/${entity.name}`;
 
     return new Promise((rs, rj) => {
       fs.readFile(directoryPath, (err, data) => {
@@ -32,7 +32,7 @@ async getPlatform(ctx) {
 
 async getPlatformCleanup(ctx) {
   const entity = ctx.params;
-  const directoryPath = resourcesPath +  `/scripts/platforms_cleanup/${entity.name}`;
+  const directoryPath = resourcesPath + `platforms_cleanup/${entity.name}`;
 
   return new Promise((rs, rj) => {
     fs.readFile(directoryPath, (err, data) => {
@@ -45,10 +45,10 @@ async getPlatformCleanup(ctx) {
 
 async writePlatform(ctx) {
   const entity = ctx.params;
-  const directoryPath = resourcesPath +  `/scripts/platforms/${entity.name}`;
+  const directoryPath = resourcesPath + `platforms/${entity.name}`;
 
   return new Promise((rs, rj) => {
-    fs.writeFile(directoryPath, ctx.request.body, (err) => {
+    fs.writeFile(directoryPath, ctx.request.body.data, (err) => {
       if (err) rs({"status":"ok", "data":err});
 
       rs({"status":"ok", "data":entity.name});
@@ -58,10 +58,10 @@ async writePlatform(ctx) {
 
 async writePlatformCleanup(ctx) {
   const entity = ctx.params;
-  const directoryPath = resourcesPath +  `/scripts/platforms_cleanup/${entity.name}`;
+  const directoryPath = resourcesPath + `platforms_cleanup/${entity.name}`;
 
   return new Promise((rs, rj) => {
-    fs.writeFile(directoryPath, ctx.request.body, (err) => {
+    fs.writeFile(directoryPath, ctx.request.body.data, (err) => {
       if (err) rs({"status":"ok", "data":err});
 
       rs({"status":"ok", "data":entity.name});
@@ -71,7 +71,7 @@ async writePlatformCleanup(ctx) {
 
 async deletePlatform(ctx) {
   const entity = ctx.params;
-  const directoryPath = resourcesPath +  `/scripts/platforms/${entity.name}`;
+  const directoryPath = resourcesPath + `platforms/${entity.name}`;
 
   return new Promise((rs, rj) => {
     fs.unlink(directoryPath, (err) => {
@@ -84,7 +84,7 @@ async deletePlatform(ctx) {
 
 async deletePlatformCleanup(ctx) {
   const entity = ctx.params;
-  const directoryPath = resourcesPath +  `/scripts/platforms_cleanup/${entity.name}`;
+  const directoryPath = resourcesPath + `platforms_cleanup/${entity.name}`;
 
   return new Promise((rs, rj) => {
     fs.unlink(directoryPath, (err) => {
@@ -96,7 +96,7 @@ async deletePlatformCleanup(ctx) {
 },
 
 async getListOfPlatforms(ctx) {
-  const directoryPath =  resourcesPath + '/scripts/platforms/';
+  const directoryPath =  resourcesPath + 'platforms/';
   
   return new Promise((rs, rj) => {
     fs.readdir(directoryPath, function (err, files) {
@@ -109,7 +109,7 @@ async getListOfPlatforms(ctx) {
 },
 
 async getListOfPlatformsCleanup(ctx) {
-  const directoryPath =  resourcesPath + '/scripts/platforms_cleanup/';
+  const directoryPath =  resourcesPath + 'platforms_cleanup/';
   
   return new Promise((rs, rj) => {
     fs.readdir(directoryPath, function (err, files) {
