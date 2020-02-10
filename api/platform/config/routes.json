@@ -17,6 +17,14 @@
       }
     },
     {
+      "method": "GET",
+      "path": "/platform/firewall/download/:name",
+      "handler": "platform.getPlatformFirewall",
+      "config": {
+        "policies": []
+      }
+    },
+    {
       "method": "POST",
       "path": "/platform/:name",
       "handler": "platform.writePlatform",
@@ -33,6 +41,14 @@
       }
     },
     {
+      "method": "POST",
+      "path": "/platform/firewall/:name",
+      "handler": "platform.writePlatformFirewall",
+      "config": {
+        "policies": []
+      }
+    },
+    {
       "method": "DELETE",
       "path": "/platform/:name",
       "handler": "platform.deletePlatform",
@@ -42,8 +58,16 @@
     },
     {
       "method": "DELETE",
-      "path": "/platform/:name",
+      "path": "/platform/cleanup/:name",
       "handler": "platform.deletePlatformCleanup",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "DELETE",
+      "path": "/platform/firewall/:name",
+      "handler": "platform.deletePlatformFirewall",
       "config": {
         "policies": []
       }

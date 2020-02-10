@@ -43,6 +43,19 @@ async getPlatformCleanup(ctx) {
   });
 },
 
+async getPlatformFirewall(ctx) {
+  const entity = ctx.params;
+  const directoryPath = resourcesPath + `platforms_firewall/${entity.name}`;
+
+  return new Promise((rs, rj) => {
+    fs.readFile(directoryPath, (err, data) => {
+      if (err) rs({"status":"bad", "data":err});
+
+      rs({"status":"ok", "data": data.toString()});
+    });
+  });
+},
+
 async writePlatform(ctx) {
   const entity = ctx.params;
   const directoryPath = resourcesPath + `platforms/${entity.name}`;
@@ -69,6 +82,19 @@ async writePlatformCleanup(ctx) {
   }); 
 },
 
+async writePlatformFirewall(ctx) {
+  const entity = ctx.params;
+  const directoryPath = resourcesPath + `platforms_firewall/${entity.name}`;
+
+  return new Promise((rs, rj) => {
+    fs.writeFile(directoryPath, ctx.request.body.data, (err) => {
+      if (err) rs({"status":"ok", "data":err});
+
+      rs({"status":"ok", "data":entity.name});
+    }); 
+  }); 
+},
+
 async deletePlatform(ctx) {
   const entity = ctx.params;
   const directoryPath = resourcesPath + `platforms/${entity.name}`;
@@ -85,6 +111,19 @@ async deletePlatform(ctx) {
 async deletePlatformCleanup(ctx) {
   const entity = ctx.params;
   const directoryPath = resourcesPath + `platforms_cleanup/${entity.name}`;
+
+  return new Promise((rs, rj) => {
+    fs.unlink(directoryPath, (err) => {
+      if (err) rs({"status":"bad", "data":err});
+
+      rs({"status":"ok", "data":"The file was succesfully saved!"});
+    });
+  });
+},
+
+async deletePlatformFirewall(ctx) {
+  const entity = ctx.params;
+  const directoryPath = resourcesPath + `platforms_firewall/${entity.name}`;
 
   return new Promise((rs, rj) => {
     fs.unlink(directoryPath, (err) => {
