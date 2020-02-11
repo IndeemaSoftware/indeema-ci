@@ -53,13 +53,9 @@
       "plugin": "users-permissions",
       "configurable": false
     },
-    "projects": {
-      "collection": "project",
-      "via": "user"
-    },
     "servers": {
-      "collection": "server",
-      "via": "user"
+      "via": "users",
+      "collection": "server"
     }
   }
 }

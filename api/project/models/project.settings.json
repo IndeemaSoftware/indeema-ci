@@ -14,13 +14,9 @@
       "required": true,
       "unique": false
     },
-    "user": {
-      "via": "projects",
-      "model": "user"
-    },
     "apps": {
-      "via": "project",
-      "collection": "app"
+      "collection": "app",
+      "via": "project"
     },
     "desc": {
       "type": "text"

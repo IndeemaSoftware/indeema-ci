@@ -135,16 +135,21 @@ async deletePlatformFirewall(ctx) {
 },
 
 async getListOfPlatforms(ctx) {
-  const directoryPath =  resourcesPath + 'platforms/';
-  
-  return new Promise((rs, rj) => {
-    fs.readdir(directoryPath, function (err, files) {
-      files = files.filter(item => !(/(^|\/)\.[^\/\.]/g).test(item));
-      if (err) rs(console.log({"status":"bad", "data": err}));
-      
-      rs({"status":"ok", "data":files});
-    });
-  });
+  const user = ctx.state.user;
+  const query = ctx.query;
+
+  //For non admin roles
+  if(user.role.type !== 'administrator')
+    query.user = user._id.toString();
+
+  let entities;
+  if (query._q) {
+    entities = await strapi.services.platform.search(query);
+  } else {
+    entities = await strapi.services.platform.find(query);
+  }
+
+  return entities.map(entity => sanitizeEntity(entity, { model: strapi.models.platform }));
 },
 
 async getListOfPlatformsCleanup(ctx) {

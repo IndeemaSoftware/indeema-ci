@@ -10,32 +10,33 @@ const _ = require('lodash');
  */
 
 module.exports = {
-    async findAll(ctx) {
-        const user = ctx.state.user;
-        const query = ctx.query;
-    
-        //For non admin roles
-        if(user.role.type !== 'administrator')
-          query.user = user._id.toString();
-    
-        let entities;
-        if (query._q) {
-          entities = await strapi.services.server.search(query);
-        } else {
-          entities = await strapi.services.server.find(query);
-        }
-    
-        for(var e = 0; e < entities.length; e++){
-          if(entities[e].apps && entities[e].apps.length){
-            for(var i = 0; i < entities[e].apps.length; i++){
-              const app = await strapi.services.app.findOne({
-                id: entities[e].apps[i]._id.toString()
-              });
-              entities[e].apps[i] = sanitizeEntity(app, { model: strapi.models.app });
-            }
-          }
-        }
-    
-        return entities.map(entity => sanitizeEntity(entity, { model: strapi.models.server }));
+  async findAll(ctx) {
+    const user = ctx.state.user;
+    const query = ctx.query;
+
+    //For non admin roles
+    if(user.role.type !== 'administrator')
+      query.user = user._id.toString();
+
+    let entities;
+    if (query._q) {
+      entities = await strapi.services.server.search(query);
+    } else {
+      entities = await strapi.services.server.find(query);
     }
+  
+    return entities.map(entity => sanitizeEntity(entity, { model: strapi.models.server }));
+  },
+
+  async findServer(ctx) {
+    const user = ctx.state.user;
+
+    const entity = await strapi.services.server.findOne(ctx.params);
+
+    //For non admin roles
+    if(user.role.type !== 'administrator' && (!entity.user || entity.user._id.toString() !== user._id.toString()))
+      return ctx.notFound();
+
+    return sanitizeEntity(entity, { model: strapi.models.server });
+  }
 };

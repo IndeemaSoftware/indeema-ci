@@ -35,13 +35,13 @@
       "via": "apps"
     },
     "server_dependencies": {
-      "collection": "server-dependencies",
       "via": "apps",
+      "collection": "server-dependencies",
       "dominant": true
     },
     "nodejs_dependencies": {
-      "collection": "nodejs-dependencies",
       "via": "apps",
+      "collection": "nodejs-dependencies",
       "dominant": true
     },
     "custom_ssl_key": {
@@ -80,8 +80,8 @@
       "required": true
     },
     "project": {
-      "model": "project",
-      "via": "apps"
+      "via": "apps",
+      "model": "project"
     },
     "environment": {
       "type": "enumeration",
@@ -144,10 +144,6 @@
     },
     "s3_region": {
       "type": "string"
-    },
-    "servers": {
-      "via": "user",
-      "collection": "server"
     },
     "server": {
       "via": "apps",

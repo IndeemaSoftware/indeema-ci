@@ -1,0 +1,25 @@
+{
+  "connection": "default",
+  "collectionName": "platforms",
+  "info": {
+    "name": "Platform"
+  },
+  "options": {
+    "increments": true,
+    "timestamps": true
+  },
+  "attributes": {
+    "platform_name": {
+      "type": "string"
+    },
+    "setup_script": {
+      "type": "boolean"
+    },
+    "cleanup_script": {
+      "type": "boolean"
+    },
+    "firewall_script": {
+      "type": "boolean"
+    }
+  }
+}

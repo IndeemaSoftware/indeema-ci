@@ -12,13 +12,44 @@
     "Server_name": {
       "type": "string"
     },
-    "user": {
-      "via": "servers",
-      "model": "user"
-    },
     "apps": {
       "collection": "app",
       "via": "server"
+    },
+    "ssh_ip": {
+      "type": "string"
+    },
+    "nodejs_dependencies": {
+      "collection": "nodejs-dependencies",
+      "via": "servers"
+    },
+    "server_dependencies": {
+      "collection": "server-dependencies",
+      "via": "servers"
+    },
+    "users": {
+      "plugin": "users-permissions",
+      "collection": "user",
+      "via": "servers",
+      "dominant": true
+    },
+    "description": {
+      "type": "richtext"
+    },
+    "ports": {
+      "type": "json"
+    },
+    "platform": {
+      "model": "platform"
+    },
+    "ssh_key": {
+      "collection": "file",
+      "via": "related",
+      "plugin": "upload",
+      "required": false
+    },
+    "ssh_username": {
+      "type": "string"
     }
   }
 }

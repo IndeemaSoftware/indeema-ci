@@ -19,7 +19,7 @@
     {
       "method": "GET",
       "path": "/server/:id",
-      "handler": "server.findOne",
+      "handler": "server.findServer",
       "config": {
         "policies": []
       }
