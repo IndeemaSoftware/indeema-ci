@@ -21,6 +21,10 @@ async getPlatform(ctx) {
     const entity = ctx.params;
     const directoryPath = resourcesPath +  `platforms/${entity.name}`;
 
+    if (!entity.name) {
+      return {"status":"bad", "data":"Platform name can't be undefined"};
+    }
+
     return new Promise((rs, rj) => {
       fs.readFile(directoryPath, (err, data) => {
         if (err) rs({"status":"bad", "data":err});
@@ -33,6 +37,10 @@ async getPlatform(ctx) {
 async getPlatformCleanup(ctx) {
   const entity = ctx.params;
   const directoryPath = resourcesPath + `platforms_cleanup/${entity.name}`;
+
+  if (!entity.name) {
+    return {"status":"bad", "data":"Platform name can't be undefined"};
+  }
 
   return new Promise((rs, rj) => {
     fs.readFile(directoryPath, (err, data) => {
@@ -47,6 +55,10 @@ async getPlatformFirewall(ctx) {
   const entity = ctx.params;
   const directoryPath = resourcesPath + `platforms_firewall/${entity.name}`;
 
+  if (!entity.name) {
+    return {"status":"bad", "data":"Platform name can't be undefined"};
+  }
+
   return new Promise((rs, rj) => {
     fs.readFile(directoryPath, (err, data) => {
       if (err) rs({"status":"bad", "data":err});
@@ -58,39 +70,81 @@ async getPlatformFirewall(ctx) {
 
 async writePlatform(ctx) {
   const entity = ctx.params;
+  const body = ctx.request.body;
   const directoryPath = resourcesPath + `platforms/${entity.name}`;
 
-  return new Promise((rs, rj) => {
-    fs.writeFile(directoryPath, ctx.request.body.data, (err) => {
-      if (err) rs({"status":"ok", "data":err});
+  if (!entity.name) {
+    return {"status":"bad", "data":"Platform name can't be undefined"};
+  }
 
-      rs({"status":"ok", "data":entity.name});
+  let platform = await strapi.services.platform.findOne({"platform_name":entity.name});
+  if (!platform) {
+    body.platform._id = null
+    body.platform.platform_name = entity.name;
+    await strapi.services.platform.create(body.platform);
+  } else {
+    await strapi.services.platform.update(body.platform);
+  } 
+
+  return new Promise((rs, rj) => {
+    fs.writeFile(directoryPath, body.data, (err) => {
+      if (err) rs({"status":"bad", "data":err});
+
+      rs({"status":"ok", "data":platform});
     }); 
   }); 
 },
 
 async writePlatformCleanup(ctx) {
   const entity = ctx.params;
+  const body = ctx.request.body;
   const directoryPath = resourcesPath + `platforms_cleanup/${entity.name}`;
+
+  if (!entity.name) {
+    return {"status":"bad", "data":"Platform name can't be undefined"};
+  }
+
+  let platform = await strapi.services.platform.findOne({"platform_name":entity.name});
+  if (!platform) {
+    body.platform._id = null
+    body.platform.platform_name = entity.name;
+    await strapi.services.platform.create(body.platform);
+  } else {
+    await strapi.services.platform.update(body.platform);
+  } 
 
   return new Promise((rs, rj) => {
     fs.writeFile(directoryPath, ctx.request.body.data, (err) => {
-      if (err) rs({"status":"ok", "data":err});
+      if (err) rs({"status":"bad", "data":err});
 
-      rs({"status":"ok", "data":entity.name});
+      rs({"status":"ok", "data":platform});
     }); 
   }); 
 },
 
 async writePlatformFirewall(ctx) {
   const entity = ctx.params;
+  const body = ctx.request.body;
   const directoryPath = resourcesPath + `platforms_firewall/${entity.name}`;
+
+  if (!entity.name) {
+    return {"status":"bad", "data":"Platform name can't be undefined"};
+  }
+
+  let platform = await strapi.services.platform.findOne({"platform_name":entity.name});
+  if (!platform) {
+    await strapi.services.platform.create(body.platform);
+    body.platform._id = null
+    body.platform.platform_name = entity.name;
+  } else {
+    await strapi.services.platform.update(body.platform);
+  } 
 
   return new Promise((rs, rj) => {
     fs.writeFile(directoryPath, ctx.request.body.data, (err) => {
-      if (err) rs({"status":"ok", "data":err});
+      if (err) rs({"status":"bad", "data":err});
 
-      rs({"status":"ok", "data":entity.name});
+      rs({"status":"ok", "data":platform});
     }); 
   }); 
 },
@@ -98,6 +152,15 @@ async writePlatformFirewall(ctx) {
 async deletePlatform(ctx) {
   const entity = ctx.params;
   const directoryPath = resourcesPath + `platforms/${entity.name}`;
+
+  if (!entity.name) {
+    return {"status":"bad", "data":"Platform name can't be undefined"};
+  }
+
+  let platform = await strapi.services.platform.findOne({"platform_name":entity.name});
+  if (platform) {
+    await strapi.services.platform.delete(platform);
+  } 
 
   return new Promise((rs, rj) => {
     fs.unlink(directoryPath, (err) => {
@@ -112,6 +175,15 @@ async deletePlatformCleanup(ctx) {
   const entity = ctx.params;
   const directoryPath = resourcesPath + `platforms_cleanup/${entity.name}`;
 
+  if (!entity.name) {
+    return {"status":"bad", "data":"Platform name can't be undefined"};
+  }
+  
+  let platform = await strapi.services.platform.findOne({"platform_name":entity.name});
+  if (platform) {
+    await strapi.services.platform.delete(platform);
+  } 
+
   return new Promise((rs, rj) => {
     fs.unlink(directoryPath, (err) => {
       if (err) rs({"status":"bad", "data":err});
@@ -124,6 +196,15 @@ async deletePlatformCleanup(ctx) {
 async deletePlatformFirewall(ctx) {
   const entity = ctx.params;
   const directoryPath = resourcesPath + `platforms_firewall/${entity.name}`;
+
+  if (!entity.name) {
+    return {"status":"bad", "data":"Platform name can't be undefined"};
+  }
+  
+  let platform = await strapi.services.platform.findOne({"platform_name":entity.name});
+  if (platform) {
+    await strapi.services.platform.delete(platform);
+  } 
 
   return new Promise((rs, rj) => {
     fs.unlink(directoryPath, (err) => {
@@ -149,7 +230,7 @@ async getListOfPlatforms(ctx) {
     entities = await strapi.services.platform.find(query);
   }
 
-  return entities.map(entity => sanitizeEntity(entity, { model: strapi.models.platform }));
+  return { "status": "ok", "data": entities.map(entity => sanitizeEntity(entity, { model: strapi.models.platform }))};
 },
 
 async getListOfPlatformsCleanup(ctx) {
