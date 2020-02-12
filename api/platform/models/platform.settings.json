@@ -23,6 +23,9 @@
     },
     "variables": {
       "type": "json"
+    },
+    "doc": {
+      "type": "richtext"
     }
   }
 }

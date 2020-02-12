@@ -31,7 +31,9 @@ module.exports = {
   async findServer(ctx) {
     const user = ctx.state.user;
 
-    const entity = await strapi.services.server.findOne(ctx.params);
+    const entity = await strapi.services.server.findOne({id:ctx.params.id});
+    if(!entity.platform)
+    return ctx.notFound();
 
     //For non admin roles
     if(user.role.type !== 'administrator' && (!entity.user || entity.user._id.toString() !== user._id.toString()))

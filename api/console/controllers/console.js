@@ -2,6 +2,8 @@
 
 const { parseMultipartData, sanitizeEntity } = require('strapi-utils');
 const fs = require('fs');
+const path = require('path');
+const resourcesPath = path.resolve() + "/public/uploads/scripts/" 
 
 //Exec for shell command`s
 const exec = require('child_process').exec;
@@ -65,6 +67,66 @@ module.exports = {
     });
 
     return sanitizeEntity(output, { model: strapi.models.console });
+  },
+
+  getServerConsole: async (ctx) => {
+    const user = ctx.state.user;
+
+    const entity = await strapi.services.server.findOne({"id":ctx.params.id});
+    if(!entity.platform)
+      return ctx.notFound();
+
+    const output = await strapi.services.console.find({
+      app: entity._id.toString(),
+      _limit: 9999999999
+    });
+
+    return sanitizeEntity(output, { model: strapi.models.console });
+  },
+
+  setupServer: async (ctx) => {
+    const server = await strapi.services.server.findOne({"id":ctx.params.id});
+    if(!server.platform)
+      return ctx.notFound();
+
+    const output = await strapi.services.console.find({
+      app: server._id.toString(),
+      _limit: 9999999999
+    });
+
+    //Clean output
+    for(let item of output){
+      await strapi.services.console.delete({
+        id: item._id.toString()
+      });
+    }
+
+    var command = resourcesPath + 'platforms/${server.server_name} ';
+    const commandConnect = exec(command);
+    commandConnect.stdout.on('data', async function(data){
+      if(data !== ''){
+        const consoleItem = await strapi.services.console.create({
+          message: data,
+          type: 'message',
+          app: APP_ID
+        });
+
+        //Set status project
+        await strapi.services.app.update({
+          id: APP_ID
+        }, {
+          app_status: 'progress'
+        });
+
+        //Send message
+        strapi.eventEmitter.emit('system::notify', {
+          topic: `/console/setup/${APP_ID}/message`,
+          data: consoleItem.message
+        });
+      }
+    });
+
+    return {ok: true};
   },
 
   /**

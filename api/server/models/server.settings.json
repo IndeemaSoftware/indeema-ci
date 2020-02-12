@@ -24,8 +24,8 @@
       "via": "servers"
     },
     "server_dependencies": {
-      "collection": "server-dependencies",
-      "via": "servers"
+      "via": "servers",
+      "collection": "server-dependencies"
     },
     "users": {
       "plugin": "users-permissions",

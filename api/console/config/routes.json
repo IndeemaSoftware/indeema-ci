@@ -18,6 +18,14 @@
     },
     {
       "method": "GET",
+      "path": "/console/server/:id",
+      "handler": "console.getServerConsole",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
       "path": "/consoles",
       "handler": "console.find",
       "config": {
@@ -52,6 +60,14 @@
       "method": "POST",
       "path": "/console/setup/:id/:app_id",
       "handler": "console.setupApp",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/console/setup_server/:id",
+      "handler": "console.setupServer",
       "config": {
         "policies": []
       }

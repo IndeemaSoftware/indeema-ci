@@ -29,9 +29,15 @@
       "via": "server_dependencies"
     },
     "servers": {
-      "via": "server_dependencies",
       "collection": "server",
+      "via": "server_dependencies",
       "dominant": true
+    },
+    "pre_install_script": {
+      "type": "richtext"
+    },
+    "post_install_script": {
+      "type": "richtext"
     }
   }
 }
