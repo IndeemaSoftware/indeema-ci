@@ -20,6 +20,9 @@
     },
     "firewall_script": {
       "type": "boolean"
+    },
+    "variables": {
+      "type": "json"
     }
   }
 }

@@ -83,7 +83,8 @@ async writePlatform(ctx) {
     body.platform.platform_name = entity.name;
     await strapi.services.platform.create(body.platform);
   } else {
-    await strapi.services.platform.update(body.platform);
+    console.log(body.platform);
+    await strapi.services.platform.update({"id":body.platform_id}, body.platform);
   } 
 
   return new Promise((rs, rj) => {
@@ -110,7 +111,7 @@ async writePlatformCleanup(ctx) {
     body.platform.platform_name = entity.name;
     await strapi.services.platform.create(body.platform);
   } else {
-    await strapi.services.platform.update(body.platform);
+    await strapi.services.platform.update({"id":body.platform_id}, body.platform);
   } 
 
   return new Promise((rs, rj) => {
@@ -137,7 +138,7 @@ async writePlatformFirewall(ctx) {
     body.platform._id = null
     body.platform.platform_name = entity.name;
   } else {
-    await strapi.services.platform.update(body.platform);
+    await strapi.services.platform.update({"id":body.platform_id}, body.platform);
   } 
 
   return new Promise((rs, rj) => {
