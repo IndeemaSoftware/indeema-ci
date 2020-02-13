@@ -151,6 +151,26 @@ module.exports = {
     return {ok: true};
   },
 
+  cleanupServer: async (ctx) => {
+    const server = await strapi.services.server.findOne({"id":ctx.params.id});
+    if(!server.platform)
+      return ctx.notFound();
+
+    const output = await strapi.services.console.find({
+      app: server._id.toString(),
+      _limit: 9999999999
+    });
+
+    //Clean output
+    for(let item of output){
+      await strapi.services.console.delete({
+        id: item._id.toString()
+      });
+    }
+
+    return strapi.server_status.server.cleanupServer(server);
+  },
+
   /**
    * Start setup app
    * @param ctx

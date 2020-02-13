@@ -73,6 +73,14 @@
       }
     },
     {
+      "method": "POST",
+      "path": "/console/cleanup_server/:id",
+      "handler": "console.cleanupServer",
+      "config": {
+        "policies": []
+      }
+    },
+    {
       "method": "PUT",
       "path": "/consoles/:id",
       "handler": "console.update",
