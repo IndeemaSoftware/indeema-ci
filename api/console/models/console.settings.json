@@ -26,8 +26,12 @@
       "required": true
     },
     "app": {
-      "via": "console",
-      "model": "app"
+      "model": "app",
+      "via": "console"
+    },
+    "server": {
+      "model": "server",
+      "via": "consoles"
     }
   }
 }

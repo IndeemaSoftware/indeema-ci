@@ -9,7 +9,7 @@
     "timestamps": true
   },
   "attributes": {
-    "Server_name": {
+    "server_name": {
       "type": "string"
     },
     "apps": {
@@ -24,8 +24,8 @@
       "via": "servers"
     },
     "server_dependencies": {
-      "via": "servers",
-      "collection": "server-dependencies"
+      "collection": "server-dependencies",
+      "via": "servers"
     },
     "users": {
       "plugin": "users-permissions",
@@ -50,6 +50,23 @@
     },
     "ssh_username": {
       "type": "string"
+    },
+    "server_status": {
+      "type": "enumeration",
+      "enum": [
+        "waiting",
+        "progress",
+        "success",
+        "failed",
+        "cleanup",
+        "cleanup_success",
+        "cleanup_failed"
+      ],
+      "default": "waiting"
+    },
+    "consoles": {
+      "via": "server",
+      "collection": "console"
     }
   }
 }

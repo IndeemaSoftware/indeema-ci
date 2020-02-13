@@ -109,8 +109,8 @@
       "required": true
     },
     "console": {
-      "collection": "console",
-      "via": "app"
+      "via": "app",
+      "collection": "console"
     },
     "avaliable_ports": {
       "type": "string"

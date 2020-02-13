@@ -29,8 +29,8 @@
       "via": "server_dependencies"
     },
     "servers": {
-      "collection": "server",
       "via": "server_dependencies",
+      "collection": "server",
       "dominant": true
     },
     "pre_install_script": {
