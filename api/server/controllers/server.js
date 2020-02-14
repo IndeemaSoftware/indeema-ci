@@ -40,5 +40,19 @@ module.exports = {
       return ctx.notFound();
 
     return sanitizeEntity(entity, { model: strapi.models.server });
+  },
+
+  async cleanup(ctx) {
+    const user = ctx.state.user;
+
+    const server = await strapi.services.server.findOne({id:ctx.params.id});
+    if(!server.platform)
+    return ctx.notFound();
+
+    //For non admin roles
+    if(user.role.type !== 'administrator' && (!server.user || server.user._id.toString() !== user._id.toString()))
+      return ctx.notFound();
+
+    return strapi.services.server.cleanupServer(server);
   }
 };

@@ -30,8 +30,8 @@
       "via": "console"
     },
     "server": {
-      "model": "server",
-      "via": "consoles"
+      "via": "consoles",
+      "model": "server"
     }
   }
 }

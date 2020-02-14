@@ -5,6 +5,7 @@ const fs = require('fs');
 const _ = require('lodash');
 const path = require('path');
 const resourcesPath = path.resolve() + "/public/uploads/scripts/" 
+const exec = require('child_process').exec;
 
 /**
  * default bookshelf controller
@@ -90,6 +91,7 @@ async writePlatform(ctx) {
     fs.writeFile(directoryPath, body.data, (err) => {
       if (err) rs({"status":"bad", "data":err});
 
+      exec("chmod a+x resourcesPath");
       rs({"status":"ok", "data":platform});
     }); 
   }); 
@@ -117,6 +119,7 @@ async writePlatformCleanup(ctx) {
     fs.writeFile(directoryPath, ctx.request.body.data, (err) => {
       if (err) rs({"status":"bad", "data":err});
 
+      exec("chmod a+x resourcesPath");
       rs({"status":"ok", "data":platform});
     }); 
   }); 
@@ -144,6 +147,7 @@ async writePlatformFirewall(ctx) {
     fs.writeFile(directoryPath, ctx.request.body.data, (err) => {
       if (err) rs({"status":"bad", "data":err});
 
+      exec("chmod a+x resourcesPath");
       rs({"status":"ok", "data":platform});
     }); 
   }); 

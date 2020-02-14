@@ -20,11 +20,6 @@
     "apps": {
       "collection": "app",
       "via": "nodejs_dependencies"
-    },
-    "servers": {
-      "via": "nodejs_dependencies",
-      "collection": "server",
-      "dominant": true
     }
   }
 }

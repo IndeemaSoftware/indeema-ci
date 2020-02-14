@@ -19,10 +19,6 @@
     "ssh_ip": {
       "type": "string"
     },
-    "nodejs_dependencies": {
-      "collection": "nodejs-dependencies",
-      "via": "servers"
-    },
     "server_dependencies": {
       "collection": "server-dependencies",
       "via": "servers"
@@ -65,8 +61,8 @@
       "default": "waiting"
     },
     "consoles": {
-      "via": "server",
-      "collection": "console"
+      "collection": "console",
+      "via": "server"
     }
   }
 }

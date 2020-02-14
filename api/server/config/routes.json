@@ -47,6 +47,14 @@
       "config": {
         "policies": []
       }
+    },
+    {
+      "method": "DELETE",
+      "path": "/server/cleanup/:id",
+      "handler": "server.cleanup",
+      "config": {
+        "policies": []
+      }
     }
   ]
 }
