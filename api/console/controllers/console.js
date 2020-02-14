@@ -82,26 +82,6 @@ module.exports = {
     return sanitizeEntity(output, { model: strapi.models.console });
   },
 
-  setupServer: async (ctx) => {
-    const server = await strapi.services.server.findOne({"id":ctx.params.id});
-    if(!server.platform)
-      return ctx.notFound();
-
-    const output = await strapi.services.console.find({
-      app: server._id.toString(),
-      _limit: 9999999999
-    });
-
-    //Clean output
-    for(let item of output){
-      await strapi.services.console.delete({
-        id: item._id.toString()
-      });
-    }
-
-    return strapi.services.server.setupServer(server);
-  },
-
   /**
    * Start setup app
    * @param ctx

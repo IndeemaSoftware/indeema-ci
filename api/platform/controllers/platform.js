@@ -91,7 +91,7 @@ async writePlatform(ctx) {
     fs.writeFile(directoryPath, body.data, (err) => {
       if (err) rs({"status":"bad", "data":err});
 
-      exec("chmod a+x resourcesPath");
+      exec(`chmod a+x ${directoryPath}`);
       rs({"status":"ok", "data":platform});
     }); 
   }); 
@@ -119,7 +119,8 @@ async writePlatformCleanup(ctx) {
     fs.writeFile(directoryPath, ctx.request.body.data, (err) => {
       if (err) rs({"status":"bad", "data":err});
 
-      exec("chmod a+x resourcesPath");
+      console.log(`chmod a+x ${directoryPath}`);
+      exec(`chmod a+x ${directoryPath}`);
       rs({"status":"ok", "data":platform});
     }); 
   }); 

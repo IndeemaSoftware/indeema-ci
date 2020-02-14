@@ -87,7 +87,7 @@ module.exports = {
         return new Promise((rs, rj) => {
             console.log(command);
 
-            const commandConnect = exec(`${command}`);
+            const commandConnect = exec(command);
                                         commandConnect.stdout.on('data', async function(data) {
             console.log(data);
             if(data !== ''){

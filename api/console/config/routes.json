@@ -65,14 +65,6 @@
       }
     },
     {
-      "method": "POST",
-      "path": "/console/setup_server/:id",
-      "handler": "console.setupServer",
-      "config": {
-        "policies": []
-      }
-    },
-    {
       "method": "PUT",
       "path": "/consoles/:id",
       "handler": "console.update",

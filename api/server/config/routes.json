@@ -33,6 +33,14 @@
       }
     },
     {
+      "method": "POST",
+      "path": "/server/setup/:id",
+      "handler": "server.setup",
+      "config": {
+        "policies": []
+      }
+    },
+    {
       "method": "PUT",
       "path": "/server/:id",
       "handler": "server.update",
