@@ -39,7 +39,7 @@
       "model": "platform"
     },
     "ssh_key": {
-      "collection": "file",
+      "model": "file",
       "via": "related",
       "plugin": "upload",
       "required": false

@@ -119,20 +119,20 @@ module.exports = {
     const project = await strapi.services.project.create(projectModel);
 
     //Prepare apps model and create
-    for(let app of ctx.request.body.apps){
+    for (let app of ctx.request.body.apps) {
       const appModelFields = ['app_name', 'desc', 'app_port', 'avaliable_ports', 'environment', 's3_https', 's3_region', 's3_user', 's3_bucket_name', 'aws_access_key_id', 'aws_secret_access_key', 'ssh_host', 'ssh_username', 'ssh_pem', 'project_type', 'server_dependencies', 'nodejs_dependencies', 'custom_ssl_key', 'custom_ssl_crt', 'custom_ssl_pem', 'domain_name', 'lets_encrypt', 'os'];
       const appModel = _.pick(app, appModelFields);
       appModel.project = project._id.toString();
 
-      if(typeof appModel.server_dependencies !== typeof [])
+      if (typeof appModel.server_dependencies !== typeof [])
         appModel.server_dependencies = [];
 
-      if(typeof appModel.nodejs_dependencies !== typeof [])
+      if (typeof appModel.nodejs_dependencies !== typeof [])
         appModel.nodejs_dependencies = [];
 
       //Cleanup empty fields
-      for(let field of appModelFields){
-        if(!appModel[field] && typeof appModel[field] !== typeof true)
+      for (let field of appModelFields) {
+        if (!appModel[field] && typeof appModel[field] !== typeof true)
           delete appModel[field];
       }
 
