@@ -6,6 +6,12 @@ const resourcesPath = path.resolve() + "/public/uploads/scripts/"
 
 const SSH = "ssh -o StrictHostKeyChecking=no -i ${server.ssh_key[server.ssh_key.length - 1].url} ${server.ssh_username}@${server.ssh_ip} -tt"
 
+const SERVER_SETUP_STATUS = {ok:{status:"build_success", info:"Setup succed"},
+                            bad:{status:"build_failed", info:"Setup failed"},
+                            progress:{status:"progress", info:"Setup is in progress"}}
+const SERVER_CLEANUP_STATUS = {ok:{status:"cleanup_success", info:"Cleanup succed"},
+                            bad:{status:"cleanup_failed", info:"Cleanup failed"},
+                            progress:{status:"progress", info:"Cleanup is in progress"}}
 /**
  * Read the documentation (https://strapi.io/documentation/3.0.0-beta.x/concepts/services.html#core-services)
  * to customize this service
@@ -23,7 +29,7 @@ module.exports = {
         command += ` -u ${server.ssh_username}`;
         command += ` -k ${server.ssh_key[server.ssh_key.length - 1].url}`
 
-        return strapi.services.server.runCommand(server, command);
+        return strapi.services.server.runCommand(server, command, SERVER_CLEANUP_STATUS);
     },
 
     setupServer: async (server) => {
@@ -80,10 +86,10 @@ module.exports = {
             }
         }
 
-        return strapi.services.server.runCommand(server, command);
+        return strapi.services.server.runCommand(server, command, SERVER_SETUP_STATUS);
     },
 
-    async runCommand(server, command) {
+    async runCommand(server, command,status) {
         return new Promise((rs, rj) => {
             console.log(command);
 
@@ -101,7 +107,7 @@ module.exports = {
                 await strapi.services.server.update({
                 id: server.id
                 }, {
-                server_status: 'progress'
+                server_status: status.progress.status
                 });
         
                 //Send message
@@ -112,6 +118,7 @@ module.exports = {
             }
             });
             commandConnect.on('close', async (code) => {
+              console.log("close with code: " + code);
                 const consoleItem = await strapi.services.console.create({
                   message: `Child process exited with code ${code}`,
                   type: 'end',
@@ -125,7 +132,7 @@ module.exports = {
         
                 if(code !== 0){
                   await strapi.services.console.create({
-                    message: `Setup failed`,
+                    message: status.bad.info,
                     type: 'build_error',
                     server: server.id
                   });
@@ -134,68 +141,34 @@ module.exports = {
                   await strapi.services.server.update({
                     id: server.id
                   }, {
-                    server_status: 'failed'
+                    server_status: status.bad.status
                   });
         
                   //Send message
                   strapi.eventEmitter.emit('system::notify', {
                     topic: `/console/setup/${server.id}/build_error`,
-                    data: `Setup failed`
+                    data: status.bad.info
                   });
                 } else {
-                    commandConnect.on('close', async (code) => {
-                    const consoleItem = await strapi.services.console.create({
-                      message: `Child process exited with code ${code}`,
-                      type: 'end',
-                      server: server.id
-                    });
-                    //Send message
-                    strapi.eventEmitter.emit('system::notify', {
-                      topic: `/console/setup/${server.id}/end`,
-                      data: consoleItem.message
-                    });
-        
-                    if(code !== 0){
-                      await strapi.services.console.create({
-                        message: `Setup failed`,
-                        type: 'build_error',
-                        server: server.id
-                      });
-        
-                      //Set status server
-                      await strapi.services.server.update({
-                        id: server.id
-                      }, {
-                        server_status: 'failed'
-                      });
-        
-                      //Send message
-                      strapi.eventEmitter.emit('system::notify', {
-                        topic: `/console/setup/${server.id}/build_error`,
-                        data: `Setup failed`
-                      });
-                    } else {
-                      const consoleItem = await strapi.services.console.create({
-                        message: `Setup success!`,
-                        type: 'build_success',
-                        server: server.id
-                      });
-        
-                      //Set status server
-                      await strapi.services.server.update({
-                        id: server.id
-                      }, {
-                        server_status: 'success'
-                      });
-        
-                      //Send message
-                      strapi.eventEmitter.emit('system::notify', {
-                        topic: `/console/setup/${server.id}/build_success`,
-                        data: consoleItem.message
-                      });
-                    }
+                  const consoleItem = await strapi.services.console.create({
+                    message: status.ok.info,
+                    type: 'end',
+                    server: server.id
                   });
-                }
+    
+                  //Set status server
+                  await strapi.services.server.update({
+                    id: server.id
+                  }, {
+                    server_status: status.ok.status
+                  });
+    
+                  //Send message
+                  strapi.eventEmitter.emit('system::notify', {
+                    topic: `/console/setup/${server.id}/build_success`,
+                    data: consoleItem.message
+                  });
+              }
               });
             rs({status:"ok", data:"Good"});
         });
