@@ -2,7 +2,10 @@
 //Exec for shell command`s
 const exec = require('child_process').exec;
 const path = require('path');
+const fs = require('fs');
+
 const resourcesPath = path.resolve() + "/public/uploads/scripts/" 
+const subscriptsPath = resourcesPath + "subscripts";
 
 const SSH = "ssh -o StrictHostKeyChecking=no -i ${server.ssh_key[server.ssh_key.length - 1].url} ${server.ssh_username}@${server.ssh_ip} -tt"
 
@@ -29,11 +32,13 @@ module.exports = {
       command += ` -u ${server.ssh_username}`;
       command += ` -k ${server.ssh_key.url}`
 
-      return strapi.services.server.runCommand(server, command, SERVER_CLEANUP_STATUS);
+      return strapi.services.server.runPlatformScript(server, command, SERVER_CLEANUP_STATUS);
   },
 
   setupServer: async (server) => {
     var command = resourcesPath + `platforms/${server.platform.platform_name}`;
+
+    strapi.services.server.generateSubScripts(server);
 
     command += ` -n ${server.server_name}`;
     command += ` -d ${server.server_description}`;
@@ -42,6 +47,7 @@ module.exports = {
     command += ` -i ${server.ssh_ip}`;
     command += ` -u ${server.ssh_username}`;
     command += ` -k ${server.ssh_key.url}`;
+    command += ` -z ${subscriptsPath}`;
 
     if (server.server_dependencies && server.server_dependencies.length) {
         //Also prepare list for packages names
@@ -85,10 +91,10 @@ module.exports = {
           command +='" ';
         }
       }
-    return strapi.services.server.runCommand(server, command, SERVER_SETUP_STATUS);
+    return strapi.services.server.runPlatformScript(server, command, SERVER_SETUP_STATUS);
   },
 
-  async runCommand(server, command,status) {
+  async runPlatformScript(server, command,status) {
     return new Promise((rs, rj) => {
         const commandConnect = exec(command);
                                     commandConnect.stdout.on('data', async function(data) {
@@ -167,5 +173,62 @@ module.exports = {
           });
         rs({status:"ok", data:"Good"});
     });
-  } 
+  },
+  
+  async generateSubScripts(server) {
+    return new Promise((rs, rj) => {
+      strapi.services.server.deleteFolderRecursive(subscriptsPath);
+
+      if (!fs.existsSync(subscriptsPath)){
+        fs.mkdirSync(subscriptsPath);
+      }
+
+      if (server.server_dependencies && server.server_dependencies.length) {
+        for (let obj of server.server_dependencies) {
+          let i_script = subscriptsPath + `/${obj.name}_install`;
+          let pre_script = subscriptsPath + `/${obj.name}_pre`;
+          let post_script = subscriptsPath + `/${obj.name}_post`;
+
+          fs.writeFile(i_script, obj.install_script, (err) => {
+            if (err) rs({"status":"bad", "data":err});
+              rs();
+          }); 
+          fs.writeFile(pre_script, obj.pre_install_script, (err) => {
+            if (err) rs({"status":"bad", "data":err});
+              rs();
+          }); 
+          fs.writeFile(post_script, obj.post_install_script, (err) => {
+            if (err) rs({"status":"bad", "data":err});
+              rs();
+          }); 
+        }  
+      }
+
+      if (server.custom_dependencies && server.custom_dependencies.length) {
+        for (let obj of server.custom_dependencies) {
+          let i_script = subscriptsPath + `/${obj.name}_install`;
+          fs.writeFile(i_script, obj.install_script, (err) => {
+            if (err) rs({"status":"bad", "data":err});
+              rs();
+          }); 
+        }  
+      }
+
+      rs();
+    });
+  },
+
+  async deleteFolderRecursive(del_path) {
+    if (fs.existsSync(del_path)) {
+      fs.readdirSync(del_path).forEach((file, index) => {
+        const curPath = path.join(del_path, file);
+        if (fs.lstatSync(curPath).isDirectory()) { // recurse
+          deleteFolderRecursive(curPath);
+        } else { // delete file
+          fs.unlinkSync(curPath);
+        }
+      });
+      fs.rmdirSync(del_path);
+    }
+  }
 };
