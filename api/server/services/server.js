@@ -91,7 +91,10 @@ module.exports = {
           command +='" ';
         }
       }
-    return strapi.services.server.runPlatformScript(server, command, SERVER_SETUP_STATUS);
+
+    let status = strapi.services.server.runPlatformScript(server, command, SERVER_SETUP_STATUS);
+    strapi.services.server.deleteFolderRecursive(subscriptsPath);
+    return status;
   },
 
   async runPlatformScript(server, command,status) {
@@ -189,28 +192,37 @@ module.exports = {
           let pre_script = subscriptsPath + `/${obj.name}_pre`;
           let post_script = subscriptsPath + `/${obj.name}_post`;
 
-          fs.writeFile(i_script, obj.install_script, (err) => {
-            if (err) rs({"status":"bad", "data":err});
-              rs();
-          }); 
-          fs.writeFile(pre_script, obj.pre_install_script, (err) => {
-            if (err) rs({"status":"bad", "data":err});
-              rs();
-          }); 
-          fs.writeFile(post_script, obj.post_install_script, (err) => {
-            if (err) rs({"status":"bad", "data":err});
-              rs();
-          }); 
+          if (obj.install_script) {
+            fs.writeFile(i_script, obj.install_script, (err) => {
+              if (err) rs({"status":"bad", "data":err});
+                rs();
+            });               
+          }
+          if (obj.pre_install_script) {
+            fs.writeFile(pre_script, obj.pre_install_script, (err) => {
+              if (err) rs({"status":"bad", "data":err});
+                rs();
+            });   
+          }
+          if (obj.post_install_script) {
+            fs.writeFile(post_script, obj.post_install_script, (err) => {
+              if (err) rs({"status":"bad", "data":err});
+                rs();
+            });   
+          }
         }  
       }
 
       if (server.custom_dependencies && server.custom_dependencies.length) {
         for (let obj of server.custom_dependencies) {
           let i_script = subscriptsPath + `/${obj.name}_install`;
-          fs.writeFile(i_script, obj.install_script, (err) => {
-            if (err) rs({"status":"bad", "data":err});
-              rs();
-          }); 
+
+          if (obj.install_script) {
+            fs.writeFile(i_script, obj.install_script, (err) => {
+              if (err) rs({"status":"bad", "data":err});
+                rs();
+            });   
+          }
         }  
       }
 
