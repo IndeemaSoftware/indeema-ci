@@ -63,6 +63,10 @@
     "consoles": {
       "collection": "console",
       "via": "server"
+    },
+    "custom_dependencies": {
+      "via": "servers",
+      "collection": "custom-dependencies"
     }
   }
 }

@@ -1,0 +1,27 @@
+{
+  "info": {
+    "name": "Custom Dependencies"
+  },
+  "options": {
+    "increments": true,
+    "timestamps": true
+  },
+  "attributes": {
+    "name": {
+      "type": "string"
+    },
+    "label": {
+      "type": "string"
+    },
+    "install_script": {
+      "type": "richtext"
+    },
+    "servers": {
+      "collection": "server",
+      "via": "custom_dependencies",
+      "dominant": true
+    }
+  },
+  "connection": "default",
+  "collectionName": "custom_dependencies"
+}
