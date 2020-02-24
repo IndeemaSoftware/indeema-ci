@@ -29,24 +29,40 @@ const SERVER_CLEANUP_STATUS = {ok:{status:"cleanup_success", info:"Cleanup succe
 
 module.exports = {
   cleanupServer: async (server) => {
-      var command = resourcesPath + `platforms_cleanup/${server.platform.platform_name} `;
+    const ssh = `ssh -o StrictHostKeyChecking=no -i ${publicPath}${server.ssh_key.url} ${server.ssh_username}@${server.ssh_ip} -tt`
 
-      command += ` -n ${server.server_name}`;
-      command += ` -d ${server.server_description}`;
-      command += ` -o ${server.platform.platform_name}`;
-      command += ` -p "${server.ports}"`;
-      command += ` -i ${server.ssh_ip}`;
-      command += ` -u ${server.ssh_username}`;
-      command += ` -k ${server.ssh_key.url}`
+    let command = `chmod 400 ${publicPath}${server.ssh_key.url}; `;
+    command += `${ssh} "rm -fr ${scriptsPathOnServer}"; `;
+    command += `${ssh} "mkdir -p ${scriptsPathOnServer}"; `;
+    command += `scp -r -o StrictHostKeyChecking=no -i ${publicPath}${server.ssh_key.url} ${subscriptsPath}/* ${server.ssh_username}@${server.ssh_ip}:${scriptsPathOnServer}/; `;
 
-      return strapi.services.server.runPlatformScript(server, command, SERVER_CLEANUP_STATUS);
+    let script = scriptsPathOnServer + `/` + server.platform.platform_name + `_cleanup`;
+    command += `${ssh} "${script}"`;
+
+    command += ` -n ${server.server_name}`;
+    command += ` -d ${server.server_description}`;
+    command += ` -o ${server.platform.platform_name}`;
+    command += ` -p "${server.ports}"`;
+    command += ` -i ${server.ssh_ip}`;
+    command += ` -u ${server.ssh_username}`;
+    command += ` -k ${server.ssh_key.url}`
+
+    return strapi.services.server.runPlatformScript(server, command, SERVER_CLEANUP_STATUS);
   },
 
   setupServer: async (server) => {
-    await strapi.services.server.moveScriptsToServer(server);
+    await strapi.services.server.generateSubScripts(server);
 
-    var command = scriptsPathOnServer + `/${server.platform.platform_name}`;
     const ssh = `ssh -o StrictHostKeyChecking=no -i ${publicPath}${server.ssh_key.url} ${server.ssh_username}@${server.ssh_ip} -tt`
+
+    //create dir on remove machine
+    let command = `chmod 400 ${publicPath}${server.ssh_key.url}; `;
+    command += `${ssh} "rm -fr ${scriptsPathOnServer}"; `;
+    command += `${ssh} "mkdir -p ${scriptsPathOnServer}"; `;
+    command += `scp -r -o StrictHostKeyChecking=no -i ${publicPath}${server.ssh_key.url} ${subscriptsPath}/* ${server.ssh_username}@${server.ssh_ip}:${scriptsPathOnServer}/; `;
+
+    let script = scriptsPathOnServer + `/` + server.platform.platform_name;
+    command += `${ssh} "${script}"`;
 
     command += ` -n ${server.server_name}`;
     command += ` -d ${server.server_description}`;
@@ -100,13 +116,13 @@ module.exports = {
       //   }
       // }
 
-    command = `${ssh} "${command}"`;
     let status = strapi.services.server.runPlatformScript(server, command, SERVER_SETUP_STATUS);
     // strapi.services.server.deleteFolderRecursive(subscriptsPath);
     return status;
   },
 
   async runPlatformScript(server, command, status) {
+    console.log(command);
     return new Promise((rs, rj) => {
       const commandConnect = exec(command);
                                   commandConnect.stdout.on('data', async function(data) {
@@ -125,7 +141,7 @@ module.exports = {
           });
   
           //Send message
-          strapi.eventEmitter.emit('system::notify', {
+          await strapi.eventEmitter.emit('system::notify', {
           topic: `/console/setup/${server.id}/message`,
           data: consoleItem.message
           });
@@ -138,7 +154,7 @@ module.exports = {
             server: server.id
           });
           //Send message
-          strapi.eventEmitter.emit('system::notify', {
+          await strapi.eventEmitter.emit('system::notify', {
             topic: `/console/setup/${server.id}/end`,
             data: consoleItem.message
           });
@@ -158,7 +174,7 @@ module.exports = {
             });
   
             //Send message
-            strapi.eventEmitter.emit('system::notify', {
+            await strapi.eventEmitter.emit('system::notify', {
               topic: `/console/setup/${server.id}/build_error`,
               data: status.bad.info
             });
@@ -177,7 +193,7 @@ module.exports = {
             });
 
             //Send message
-            strapi.eventEmitter.emit('system::notify', {
+            await strapi.eventEmitter.emit('system::notify', {
               topic: `/console/setup/${server.id}/build_success`,
               data: consoleItem.message
             });
@@ -195,16 +211,12 @@ module.exports = {
       const ssh = `ssh -o StrictHostKeyChecking=no -i ${publicPath}${server.ssh_key.url} ${server.ssh_username}@${server.ssh_ip} -tt`
 
       //create dir on remove machine
-      let commands = [];
-      commands.push(`chmod 400 ${publicPath}${server.ssh_key.url}`);
-      commands.push(`${ssh} "rm -fr ${scriptsPathOnServer}"`);
-      commands.push(`${ssh} "mkdir -p ${scriptsPathOnServer}"`);
-      commands.push(`scp -r -o StrictHostKeyChecking=no -i ${publicPath}${server.ssh_key.url} ${subscriptsPath}/* ${server.ssh_username}@${server.ssh_ip}:${scriptsPathOnServer}/`);
+      let command = `chmod 400 ${publicPath}${server.ssh_key.url}; `;
+      command += `${ssh} "rm -fr ${scriptsPathOnServer}"; `;
+      command += `${ssh} "mkdir -p ${scriptsPathOnServer}"; `;
+      command += `scp -r -o StrictHostKeyChecking=no -i ${publicPath}${server.ssh_key.url} ${subscriptsPath}/* ${server.ssh_username}@${server.ssh_ip}:${scriptsPathOnServer}/; `;
 
-      for (let command of commands) {
-        // await exec(command);
-        await strapi.services.server.runPlatformScript(server, command, SERVER_COPYING_STATUS);
-      }
+      await strapi.services.server.runPlatformScript(server, command, SERVER_COPYING_STATUS);
     }
   },
   
