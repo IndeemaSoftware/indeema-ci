@@ -13,8 +13,8 @@
       "type": "string"
     },
     "apps": {
-      "collection": "app",
-      "via": "server"
+      "via": "server",
+      "collection": "app"
     },
     "ssh_ip": {
       "type": "string"

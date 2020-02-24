@@ -35,13 +35,8 @@
       "via": "apps"
     },
     "server_dependencies": {
-      "via": "apps",
       "collection": "server-dependencies",
-      "dominant": true
-    },
-    "nodejs_dependencies": {
       "via": "apps",
-      "collection": "nodejs-dependencies",
       "dominant": true
     },
     "custom_ssl_key": {
@@ -80,8 +75,8 @@
       "required": true
     },
     "project": {
-      "via": "apps",
-      "model": "project"
+      "model": "project",
+      "via": "apps"
     },
     "environment": {
       "type": "enumeration",
@@ -109,8 +104,8 @@
       "required": true
     },
     "console": {
-      "via": "app",
-      "collection": "console"
+      "collection": "console",
+      "via": "app"
     },
     "avaliable_ports": {
       "type": "string"
@@ -146,8 +141,8 @@
       "type": "string"
     },
     "server": {
-      "via": "apps",
-      "model": "server"
+      "model": "server",
+      "via": "apps"
     }
   }
 }
