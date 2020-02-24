@@ -4,14 +4,21 @@ const exec = require('child_process').exec;
 const path = require('path');
 const fs = require('fs');
 
-const resourcesPath = path.resolve() + "/public/uploads/scripts/" 
+const publicPath = path.resolve() + "/public";
+const resourcesPath = publicPath + "/uploads/scripts/" 
 const subscriptsPath = resourcesPath + "subscripts";
+const scriptsPathOnServer = `/tmp/indeema_ci`;
 
-const SSH = "ssh -o StrictHostKeyChecking=no -i ${server.ssh_key[server.ssh_key.length - 1].url} ${server.ssh_username}@${server.ssh_ip} -tt"
 
 const SERVER_SETUP_STATUS = {ok:{status:"success", info:"Setup succed"},
                             bad:{status:"failed", info:"Setup failed"},
                             progress:{status:"progress", info:"Setup is in progress"}}
+
+const SERVER_COPYING_STATUS = {ok:{status:"success", info:"Resource copied to server"},
+                            bad:{status:"failed", info:"Resource copying failed"},
+                            progress:{status:"progress", info:"Copying resources to server"}}
+
+
 const SERVER_CLEANUP_STATUS = {ok:{status:"cleanup_success", info:"Cleanup succed"},
                             bad:{status:"cleanup_failed", info:"Cleanup failed"},
                             progress:{status:"progress", info:"Cleanup is in progress"}}
@@ -36,9 +43,10 @@ module.exports = {
   },
 
   setupServer: async (server) => {
-    var command = resourcesPath + `platforms/${server.platform.platform_name}`;
+    await strapi.services.server.moveScriptsToServer(server);
 
-    strapi.services.server.generateSubScripts(server);
+    var command = scriptsPathOnServer + `/${server.platform.platform_name}`;
+    const ssh = `ssh -o StrictHostKeyChecking=no -i ${publicPath}${server.ssh_key.url} ${server.ssh_username}@${server.ssh_ip} -tt`
 
     command += ` -n ${server.server_name}`;
     command += ` -d ${server.server_description}`;
@@ -49,133 +57,155 @@ module.exports = {
     command += ` -k ${server.ssh_key.url}`;
     command += ` -z ${subscriptsPath}`;
 
-    if (server.server_dependencies && server.server_dependencies.length) {
-        //Also prepare list for packages names
-        const packagesNames = [];
-        const postNames = [];
-        const preNames = [];
-  
+    // if (server.server_dependencies && server.server_dependencies.length) {
+    //     //Also prepare list for packages names
+    //     const packagesNames = [];
+    //     const postNames = [];
+    //     const preNames = [];
+  //
         //Prepare repository, packages pre and post install scripts
-        command += ' -r "';
-        for (let item of server.server_dependencies) {
-          if (item.repo && item.repo !== '')
-            command += item.repo + '; ';
+      //   command += ' -r "';
+      //   for (let item of server.server_dependencies) {
+      //     if (item.repo && item.repo !== '')
+      //       command += item.repo + '; ';
   
-          packagesNames.push(item.package);
-          preNames.push(item.pre_install_script);
-          postNames.push(item.post_install_script);
-        }
-        command += '" ';
+      //     packagesNames.push(item.package);
+      //     preNames.push(item.pre_install_script);
+      //     postNames.push(item.post_install_script);
+      //   }
+      //   command += '" ';
   
-        if (packagesNames.length) {
-          command += '-s "';
-          for (let name of packagesNames) {
-            command += name + ' ';
-          }
-          command +='" ';
-        }
+      //   if (packagesNames.length) {
+      //     command += '-s "';
+      //     for (let name of packagesNames) {
+      //       command += name + ' ';
+      //     }
+      //     command +='" ';
+      //   }
 
-        if (preNames.length) {
-            command += '-e "';
-            for(let name of preNames){
-              command += name + ' ';
-            }
-            command +='" ';
-          }
+      //   if (preNames.length) {
+      //       command += '-e "';
+      //       for(let name of preNames){
+      //         command += name + ' ';
+      //       }
+      //       command +='" ';
+      //     }
 
-        if(postNames.length){
-          command += '-t "';
-          for(let name of postNames){
-            command += name + ' ';
-          }
-          command +='" ';
-        }
-      }
+      //   if(postNames.length){
+      //     command += '-t "';
+      //     for(let name of postNames){
+      //       command += name + ' ';
+      //     }
+      //     command +='" ';
+      //   }
+      // }
 
+    command = `${ssh} "${command}"`;
     let status = strapi.services.server.runPlatformScript(server, command, SERVER_SETUP_STATUS);
-    strapi.services.server.deleteFolderRecursive(subscriptsPath);
+    // strapi.services.server.deleteFolderRecursive(subscriptsPath);
     return status;
   },
 
-  async runPlatformScript(server, command,status) {
+  async runPlatformScript(server, command, status) {
     return new Promise((rs, rj) => {
-        const commandConnect = exec(command);
-                                    commandConnect.stdout.on('data', async function(data) {
-        if(data !== ''){
-            const consoleItem = await strapi.services.console.create({
-            message: data,
-            type: 'message',
+      const commandConnect = exec(command);
+                                  commandConnect.stdout.on('data', async function(data) {
+      if(data !== ''){
+          const consoleItem = await strapi.services.console.create({
+          message: data,
+          type: 'message',
+          server: server.id
+          });
+  
+          //Set status server
+          await strapi.services.server.update({
+          id: server.id
+          }, {
+          server_status: status.progress.status
+          });
+  
+          //Send message
+          strapi.eventEmitter.emit('system::notify', {
+          topic: `/console/setup/${server.id}/message`,
+          data: consoleItem.message
+          });
+      }
+      });
+      commandConnect.on('close', async (code) => {
+          const consoleItem = await strapi.services.console.create({
+            message: `Child process exited with code ${code}`,
+            type: 'end',
             server: server.id
+          });
+          //Send message
+          strapi.eventEmitter.emit('system::notify', {
+            topic: `/console/setup/${server.id}/end`,
+            data: consoleItem.message
+          });
+  
+          if(code !== 0){
+            await strapi.services.console.create({
+              message: status.bad.info,
+              type: 'build_error',
+              server: server.id
             });
-    
+  
             //Set status server
             await strapi.services.server.update({
-            id: server.id
+              id: server.id
             }, {
-            server_status: status.progress.status
+              server_status: status.bad.status
             });
-    
+  
             //Send message
             strapi.eventEmitter.emit('system::notify', {
-            topic: `/console/setup/${server.id}/message`,
-            data: consoleItem.message
+              topic: `/console/setup/${server.id}/build_error`,
+              data: status.bad.info
             });
-        }
-        });
-        commandConnect.on('close', async (code) => {
+          } else {
             const consoleItem = await strapi.services.console.create({
-              message: `Child process exited with code ${code}`,
+              message: status.ok.info,
               type: 'end',
               server: server.id
             });
+
+            //Set status server
+            await strapi.services.server.update({
+              id: server.id
+            }, {
+              server_status: status.ok.status
+            });
+
             //Send message
             strapi.eventEmitter.emit('system::notify', {
-              topic: `/console/setup/${server.id}/end`,
+              topic: `/console/setup/${server.id}/build_success`,
               data: consoleItem.message
             });
-    
-            if(code !== 0){
-              await strapi.services.console.create({
-                message: status.bad.info,
-                type: 'build_error',
-                server: server.id
-              });
-    
-              //Set status server
-              await strapi.services.server.update({
-                id: server.id
-              }, {
-                server_status: status.bad.status
-              });
-    
-              //Send message
-              strapi.eventEmitter.emit('system::notify', {
-                topic: `/console/setup/${server.id}/build_error`,
-                data: status.bad.info
-              });
-            } else {
-              const consoleItem = await strapi.services.console.create({
-                message: status.ok.info,
-                type: 'end',
-                server: server.id
-              });
-
-              //Set status server
-              await strapi.services.server.update({
-                id: server.id
-              }, {
-                server_status: status.ok.status
-              });
-
-              //Send message
-              strapi.eventEmitter.emit('system::notify', {
-                topic: `/console/setup/${server.id}/build_success`,
-                data: consoleItem.message
-              });
-          }
-          });
-        rs({status:"ok", data:"Good"});
+        }
+        });
+      rs({status:"ok", data:"Good"});
     });
+  },
+
+  async moveScriptsToServer(server) {
+    //prepare all scripts for copying
+    await strapi.services.server.generateSubScripts(server);
+
+    if (server && server.ssh_key && server.ssh_key.url && server.ssh_username && server.ssh_ip) {
+      const ssh = `ssh -o StrictHostKeyChecking=no -i ${publicPath}${server.ssh_key.url} ${server.ssh_username}@${server.ssh_ip} -tt`
+
+      //create dir on remove machine
+      let commands = [];
+      commands.push(`chmod 400 ${publicPath}${server.ssh_key.url}`);
+      commands.push(`${ssh} "rm -fr ${scriptsPathOnServer}"`);
+      commands.push(`${ssh} "mkdir -p ${scriptsPathOnServer}"`);
+      commands.push(`scp -r -o StrictHostKeyChecking=no -i ${publicPath}${server.ssh_key.url} ${subscriptsPath}/* ${server.ssh_username}@${server.ssh_ip}:${scriptsPathOnServer}/`);
+
+      for (let command of commands) {
+        // await exec(command);
+        await strapi.services.server.runPlatformScript(server, command, SERVER_COPYING_STATUS);
+      }
+    }
   },
   
   async generateSubScripts(server) {
@@ -186,33 +216,53 @@ module.exports = {
         fs.mkdirSync(subscriptsPath);
       }
 
+      //copying server setup and cleanup files
+      if (server.platform.platform_name) {
+        fs.copyFile(`${resourcesPath}platforms/${server.platform.platform_name}`, `${subscriptsPath}/${server.platform.platform_name}`, (err) => {
+          if (err) throw err;
+        });   
+      }
+
+      //copying server setup and cleanup files
+      if (server.platform.platform_name) {
+        fs.copyFile(`${resourcesPath}platforms_cleanup/${server.platform.platform_name}`, `${subscriptsPath}/${server.platform.platform_name}_cleanup`, (err) => {
+          if (err) throw err;
+        });   
+      }
+
+
       if (server.server_dependencies && server.server_dependencies.length) {
         for (let obj of server.server_dependencies) {
           let i_script = subscriptsPath + `/${obj.name}_install`;
           let pre_script = subscriptsPath + `/${obj.name}_pre`;
           let post_script = subscriptsPath + `/${obj.name}_post`;
 
+          //generating server dependency script files
           if (obj.install_script) {
             fs.writeFile(i_script, obj.install_script, (err) => {
               if (err) rs({"status":"bad", "data":err});
+              exec(`chmod a+x ${i_script}`);
                 rs();
             });               
           }
           if (obj.pre_install_script) {
             fs.writeFile(pre_script, obj.pre_install_script, (err) => {
               if (err) rs({"status":"bad", "data":err});
+              exec(`chmod a+x ${pre_script}`);
                 rs();
             });   
           }
           if (obj.post_install_script) {
             fs.writeFile(post_script, obj.post_install_script, (err) => {
               if (err) rs({"status":"bad", "data":err});
+              exec(`chmod a+x ${post_script}`);
                 rs();
             });   
           }
         }  
       }
 
+      //generating custom dependency script files
       if (server.custom_dependencies && server.custom_dependencies.length) {
         for (let obj of server.custom_dependencies) {
           let i_script = subscriptsPath + `/${obj.name}_install`;
@@ -220,6 +270,7 @@ module.exports = {
           if (obj.install_script) {
             fs.writeFile(i_script, obj.install_script, (err) => {
               if (err) rs({"status":"bad", "data":err});
+              exec(`chmod a+x ${i_script}`);
                 rs();
             });   
           }
