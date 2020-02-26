@@ -224,514 +224,297 @@ module.exports = {
         ciCommand += '-z 3 ';
     }
 
-    if(entity.os === 'aws_s3' && entity.s3_bucket_name)
-      ciCommand += '-s "' + entity.s3_bucket_name + '" ';
-
-    //Exec command
-    if(entity.os !== 'aws_s3'){
-
-      const commandConnect = exec(`~/scripts/connect_runner ${filePath} ~/.ssh/gitlab-runner-shared-id-rsa.pub ${entity.ssh_username}@${entity.ssh_host}`);
-      commandConnect.stdout.on('data', async function(data){
-        if(data !== ''){
-          const consoleItem = await strapi.services.console.create({
-            message: data,
-            type: 'message',
-            app: APP_ID
-          });
-
-          //Set status project
-          await strapi.services.app.update({
-            id: APP_ID
-          }, {
-            app_status: 'progress'
-          });
-
-          //Send message
-          strapi.eventEmitter.emit('system::notify', {
-            topic: `/console/setup/${APP_ID}/message`,
-            data: consoleItem.message
-          });
-        }
-      });
-      commandConnect.stderr.on('data', async function(data){
-        if(data !== ''){
-          const consoleItem = await strapi.services.console.create({
-            message: data,
-            type: 'error',
-            app: APP_ID
-          });
-
-          //Set status project
-          await strapi.services.app.update({
-            id: APP_ID
-          }, {
-            app_status: 'failed'
-          });
-
-          //Send message
-          strapi.eventEmitter.emit('system::notify', {
-            topic: `/console/setup/${APP_ID}/error`,
-            data: consoleItem.message
-          });
-        }
-      });
-      commandConnect.on('close', async function(code){
+    const commandConnect = exec(`~/scripts/connect_runner ${filePath} ~/.ssh/gitlab-runner-shared-id-rsa.pub ${entity.ssh_username}@${entity.ssh_host}`);
+    commandConnect.stdout.on('data', async function(data){
+      if(data !== ''){
         const consoleItem = await strapi.services.console.create({
-          message: `Child process exited with code ${code}`,
-          type: 'end',
+          message: data,
+          type: 'message',
           app: APP_ID
         });
-        //Send message
-        strapi.eventEmitter.emit('system::notify', {
-          topic: `/console/setup/${APP_ID}/end`,
-          data: consoleItem.message
+
+        //Set status project
+        await strapi.services.app.update({
+          id: APP_ID
+        }, {
+          app_status: 'progress'
         });
 
-        if(code !== 0) {
-          const consoleItem = await strapi.services.console.create({
-            message: `Setup failed`,
-            type: 'build_error',
-            app: APP_ID
-          });
+        //Send message
+        strapi.eventEmitter.emit('system::notify', {
+          topic: `/console/setup/${APP_ID}/message`,
+          data: consoleItem.message
+        });
+      }
+    });
+    commandConnect.stderr.on('data', async function(data){
+      if(data !== ''){
+        const consoleItem = await strapi.services.console.create({
+          message: data,
+          type: 'error',
+          app: APP_ID
+        });
 
-          //Set status project
-          await strapi.services.app.update({
-            id: APP_ID
-          }, {
-            app_status: 'failed'
-          });
+        //Set status project
+        await strapi.services.app.update({
+          id: APP_ID
+        }, {
+          app_status: 'failed'
+        });
 
-          //Send message
-          strapi.eventEmitter.emit('system::notify', {
-            topic: `/console/setup/${APP_ID}/build_error`,
-            data: consoleItem.message
-          });
-        }else{
-          const consoleItem = await strapi.services.console.create({
-            message: `Server was connected to runner successfully!`,
-            type: 'build_success',
-            app: APP_ID
-          });
-          //Send message
-          strapi.eventEmitter.emit('system::notify', {
-            topic: `/console/setup/${APP_ID}/build_success`,
-            data: consoleItem.message
-          });
-
-          //Start main program
-          const commandExec = exec(command);
-          await strapi.services.console.create({
-            message: `Start server setup script: ${command}`,
-            type: 'message',
-            app: APP_ID
-          });
-
-          //Send message
-          strapi.eventEmitter.emit('system::notify', {
-            topic: `/console/setup/${APP_ID}/message`,
-            data: `Start server setup script: ${command}`
-          });
-          commandExec.stdout.on('data', async function(data){
-            if(data !== ''){
-              const consoleItem = await strapi.services.console.create({
-                message: data,
-                type: 'message',
-                app: APP_ID
-              });
-
-              //Set status project
-              await strapi.services.app.update({
-                id: APP_ID
-              }, {
-                app_status: 'progress'
-              });
-
-              //Send message
-              strapi.eventEmitter.emit('system::notify', {
-                topic: `/console/setup/${APP_ID}/message`,
-                data: consoleItem.message
-              });
-            }
-          });
-          commandExec.stderr.on('data', async function(data){
-            if(data !== ''){
-              const consoleItem = await strapi.services.console.create({
-                message: data,
-                type: 'error',
-                app: APP_ID
-              });
-
-              //Set status project
-              await strapi.services.app.update({
-                id: APP_ID
-              }, {
-                app_status: 'failed'
-              });
-
-              //Send message
-              strapi.eventEmitter.emit('system::notify', {
-                topic: `/console/setup/${APP_ID}/error`,
-                data: consoleItem.message
-              });
-            }
-          });
-          commandExec.on('close', async (code) => {
-            const consoleItem = await strapi.services.console.create({
-              message: `Child process exited with code ${code}`,
-              type: 'end',
-              app: APP_ID
-            });
-            //Send message
-            strapi.eventEmitter.emit('system::notify', {
-              topic: `/console/setup/${APP_ID}/end`,
-              data: consoleItem.message
-            });
-
-            if(code !== 0){
-              await strapi.services.console.create({
-                message: `Setup failed`,
-                type: 'build_error',
-                app: APP_ID
-              });
-
-              //Set status project
-              await strapi.services.app.update({
-                id: APP_ID
-              }, {
-                app_status: 'failed'
-              });
-
-              //Send message
-              strapi.eventEmitter.emit('system::notify', {
-                topic: `/console/setup/${APP_ID}/build_error`,
-                data: `Setup failed`
-              });
-            }else{
-
-              //Generate CI template file
-              const commandExec = exec(ciCommand);
-              const consoleItem = await strapi.services.console.create({
-                message: `Generate CI Template Command: ${ciCommand}`,
-                type: 'message',
-                app: APP_ID
-              });
-
-              //Send message
-              strapi.eventEmitter.emit('system::notify', {
-                topic: `/console/setup/${APP_ID}/message`,
-                data: `Generate CI Template Command: ${ciCommand}`
-              });
-              commandExec.stdout.on('data', async function(data){
-                if(data !== ''){
-                  const consoleItem = await strapi.services.console.create({
-                    message: data,
-                    type: 'message',
-                    app: APP_ID
-                  });
-
-                  //Set status project
-                  await strapi.services.app.update({
-                    id: APP_ID
-                  }, {
-                    app_status: 'progress'
-                  });
-
-                  //Send message
-                  strapi.eventEmitter.emit('system::notify', {
-                    topic: `/console/setup/${APP_ID}/message`,
-                    data: consoleItem.message
-                  });
-                }
-              });
-              commandExec.stderr.on('data', async function(data){
-                if(data !== ''){
-                  const consoleItem = await strapi.services.console.create({
-                    message: data,
-                    type: 'error',
-                    app: APP_ID
-                  });
-
-                  //Set status project
-                  await strapi.services.app.update({
-                    id: APP_ID
-                  }, {
-                    app_status: 'failed'
-                  });
-
-                  //Send message
-                  strapi.eventEmitter.emit('system::notify', {
-                    topic: `/console/setup/${APP_ID}/error`,
-                    data: consoleItem.message
-                  });
-                }
-              });
-              commandExec.on('close', async (code) => {
-                const consoleItem = await strapi.services.console.create({
-                  message: `Child process exited with code ${code}`,
-                  type: 'end',
-                  app: APP_ID
-                });
-                //Send message
-                strapi.eventEmitter.emit('system::notify', {
-                  topic: `/console/setup/${APP_ID}/end`,
-                  data: consoleItem.message
-                });
-
-                if(code !== 0){
-                  await strapi.services.console.create({
-                    message: `Setup failed`,
-                    type: 'build_error',
-                    app: APP_ID
-                  });
-
-                  //Set status project
-                  await strapi.services.app.update({
-                    id: APP_ID
-                  }, {
-                    app_status: 'failed'
-                  });
-
-                  //Send message
-                  strapi.eventEmitter.emit('system::notify', {
-                    topic: `/console/setup/${APP_ID}/build_error`,
-                    data: `Setup failed`
-                  });
-                }else{
-                  const consoleItem = await strapi.services.console.create({
-                    message: `Setup success!`,
-                    type: 'build_success',
-                    app: APP_ID
-                  });
-
-                  //Set status project
-                  await strapi.services.app.update({
-                    id: APP_ID
-                  }, {
-                    app_status: 'success'
-                  });
-
-                  //Send message
-                  strapi.eventEmitter.emit('system::notify', {
-                    topic: `/console/setup/${APP_ID}/build_success`,
-                    data: consoleItem.message
-                  });
-                }
-              });
-            }
-          });
-        }
-      });
-    }else{
-      let s3Command = `~/scripts/setup_s3 -s ${entity.s3_bucket_name} -k ${entity.aws_secret_access_key} -i ${entity.aws_access_key_id} `;
-      if(entity.domain_name)
-        s3Command += `-b ${entity.domain_name} `;
-
-      s3Command += (entity.s3_https)? '-p https ' : '-p http ';
-
-      if(entity.s3_region)
-        s3Command += `-r ${entity.s3_region} `;
-
-      //Generate CI template file
-      const commandExec = exec(s3Command);
+        //Send message
+        strapi.eventEmitter.emit('system::notify', {
+          topic: `/console/setup/${APP_ID}/error`,
+          data: consoleItem.message
+        });
+      }
+    });
+    commandConnect.on('close', async function(code){
       const consoleItem = await strapi.services.console.create({
-        message: `AWS S3 Configuration: ${ciCommand}`,
-        type: 'message',
+        message: `Child process exited with code ${code}`,
+        type: 'end',
         app: APP_ID
       });
-
       //Send message
       strapi.eventEmitter.emit('system::notify', {
-        topic: `/console/setup/${APP_ID}/message`,
-        data: `Generate CI Template Command: ${ciCommand}`
+        topic: `/console/setup/${APP_ID}/end`,
+        data: consoleItem.message
       });
-      commandExec.stdout.on('data', async function(data){
-        if(data !== ''){
-          const consoleItem = await strapi.services.console.create({
-            message: data,
-            type: 'message',
-            app: APP_ID
-          });
 
-          //Set status project
-          await strapi.services.app.update({
-            id: APP_ID
-          }, {
-            app_status: 'progress'
-          });
-
-          //Send message
-          strapi.eventEmitter.emit('system::notify', {
-            topic: `/console/setup/${APP_ID}/message`,
-            data: consoleItem.message
-          });
-        }
-      });
-      commandExec.stderr.on('data', async function(data){
-        if(data !== ''){
-          const consoleItem = await strapi.services.console.create({
-            message: data,
-            type: 'error',
-            app: APP_ID
-          });
-
-          //Set status project
-          await strapi.services.app.update({
-            id: APP_ID
-          }, {
-            app_status: 'failed'
-          });
-
-          //Send message
-          strapi.eventEmitter.emit('system::notify', {
-            topic: `/console/setup/${APP_ID}/error`,
-            data: consoleItem.message
-          });
-        }
-      });
-      commandExec.on('close', async (code) => {
+      if(code !== 0) {
         const consoleItem = await strapi.services.console.create({
-          message: `Child process exited with code ${code}`,
-          type: 'end',
+          message: `Setup failed`,
+          type: 'build_error',
+          app: APP_ID
+        });
+
+        //Set status project
+        await strapi.services.app.update({
+          id: APP_ID
+        }, {
+          app_status: 'failed'
+        });
+
+        //Send message
+        strapi.eventEmitter.emit('system::notify', {
+          topic: `/console/setup/${APP_ID}/build_error`,
+          data: consoleItem.message
+        });
+      }else{
+        const consoleItem = await strapi.services.console.create({
+          message: `Server was connected to runner successfully!`,
+          type: 'build_success',
           app: APP_ID
         });
         //Send message
         strapi.eventEmitter.emit('system::notify', {
-          topic: `/console/setup/${APP_ID}/end`,
+          topic: `/console/setup/${APP_ID}/build_success`,
           data: consoleItem.message
         });
 
-        if(code !== 0){
-          await strapi.services.console.create({
-            message: `Setup failed`,
-            type: 'build_error',
-            app: APP_ID
-          });
+        //Start main program
+        const commandExec = exec(command);
+        await strapi.services.console.create({
+          message: `Start server setup script: ${command}`,
+          type: 'message',
+          app: APP_ID
+        });
 
-          //Set status project
-          await strapi.services.app.update({
-            id: APP_ID
-          }, {
-            app_status: 'failed'
-          });
-
-          //Send message
-          strapi.eventEmitter.emit('system::notify', {
-            topic: `/console/setup/${APP_ID}/build_error`,
-            data: `Setup failed`
-          });
-        }else{
-          //Generate CI template file
-          const commandExec = exec(ciCommand);
-          const consoleItem = await strapi.services.console.create({
-            message: `Generate CI Template Command: ${ciCommand}`,
-            type: 'message',
-            app: APP_ID
-          });
-
-          //Send message
-          strapi.eventEmitter.emit('system::notify', {
-            topic: `/console/setup/${APP_ID}/message`,
-            data: `Generate CI Template Command: ${ciCommand}`
-          });
-          commandExec.stdout.on('data', async function(data){
-            if(data !== ''){
-              const consoleItem = await strapi.services.console.create({
-                message: data,
-                type: 'message',
-                app: APP_ID
-              });
-
-              //Set status project
-              await strapi.services.app.update({
-                id: APP_ID
-              }, {
-                app_status: 'progress'
-              });
-
-              //Send message
-              strapi.eventEmitter.emit('system::notify', {
-                topic: `/console/setup/${APP_ID}/message`,
-                data: consoleItem.message
-              });
-            }
-          });
-          commandExec.stderr.on('data', async function(data){
-            if(data !== ''){
-              const consoleItem = await strapi.services.console.create({
-                message: data,
-                type: 'error',
-                app: APP_ID
-              });
-
-              //Set status project
-              await strapi.services.app.update({
-                id: APP_ID
-              }, {
-                app_status: 'failed'
-              });
-
-              //Send message
-              strapi.eventEmitter.emit('system::notify', {
-                topic: `/console/setup/${APP_ID}/error`,
-                data: consoleItem.message
-              });
-            }
-          });
-          commandExec.on('close', async (code) => {
+        //Send message
+        strapi.eventEmitter.emit('system::notify', {
+          topic: `/console/setup/${APP_ID}/message`,
+          data: `Start server setup script: ${command}`
+        });
+        commandExec.stdout.on('data', async function(data){
+          if(data !== ''){
             const consoleItem = await strapi.services.console.create({
-              message: `Child process exited with code ${code}`,
-              type: 'end',
+              message: data,
+              type: 'message',
               app: APP_ID
             });
-            //Send message
-            strapi.eventEmitter.emit('system::notify', {
-              topic: `/console/setup/${APP_ID}/end`,
-              data: consoleItem.message
+
+            //Set status project
+            await strapi.services.app.update({
+              id: APP_ID
+            }, {
+              app_status: 'progress'
             });
 
-            if(code !== 0){
-              await strapi.services.console.create({
-                message: `Setup failed`,
-                type: 'build_error',
-                app: APP_ID
-              });
+            //Send message
+            strapi.eventEmitter.emit('system::notify', {
+              topic: `/console/setup/${APP_ID}/message`,
+              data: consoleItem.message
+            });
+          }
+        });
+        commandExec.stderr.on('data', async function(data){
+          if(data !== ''){
+            const consoleItem = await strapi.services.console.create({
+              message: data,
+              type: 'error',
+              app: APP_ID
+            });
 
-              //Set status project
-              await strapi.services.app.update({
-                id: APP_ID
-              }, {
-                app_status: 'failed'
-              });
+            //Set status project
+            await strapi.services.app.update({
+              id: APP_ID
+            }, {
+              app_status: 'failed'
+            });
 
-              //Send message
-              strapi.eventEmitter.emit('system::notify', {
-                topic: `/console/setup/${APP_ID}/build_error`,
-                data: `Setup failed`
-              });
-            }else{
+            //Send message
+            strapi.eventEmitter.emit('system::notify', {
+              topic: `/console/setup/${APP_ID}/error`,
+              data: consoleItem.message
+            });
+          }
+        });
+        commandExec.on('close', async (code) => {
+          const consoleItem = await strapi.services.console.create({
+            message: `Child process exited with code ${code}`,
+            type: 'end',
+            app: APP_ID
+          });
+          //Send message
+          strapi.eventEmitter.emit('system::notify', {
+            topic: `/console/setup/${APP_ID}/end`,
+            data: consoleItem.message
+          });
+
+          if(code !== 0){
+            await strapi.services.console.create({
+              message: `Setup failed`,
+              type: 'build_error',
+              app: APP_ID
+            });
+
+            //Set status project
+            await strapi.services.app.update({
+              id: APP_ID
+            }, {
+              app_status: 'failed'
+            });
+
+            //Send message
+            strapi.eventEmitter.emit('system::notify', {
+              topic: `/console/setup/${APP_ID}/build_error`,
+              data: `Setup failed`
+            });
+          }else{
+
+            //Generate CI template file
+            const commandExec = exec(ciCommand);
+            const consoleItem = await strapi.services.console.create({
+              message: `Generate CI Template Command: ${ciCommand}`,
+              type: 'message',
+              app: APP_ID
+            });
+
+            //Send message
+            strapi.eventEmitter.emit('system::notify', {
+              topic: `/console/setup/${APP_ID}/message`,
+              data: `Generate CI Template Command: ${ciCommand}`
+            });
+            commandExec.stdout.on('data', async function(data){
+              if(data !== ''){
+                const consoleItem = await strapi.services.console.create({
+                  message: data,
+                  type: 'message',
+                  app: APP_ID
+                });
+
+                //Set status project
+                await strapi.services.app.update({
+                  id: APP_ID
+                }, {
+                  app_status: 'progress'
+                });
+
+                //Send message
+                strapi.eventEmitter.emit('system::notify', {
+                  topic: `/console/setup/${APP_ID}/message`,
+                  data: consoleItem.message
+                });
+              }
+            });
+            commandExec.stderr.on('data', async function(data){
+              if(data !== ''){
+                const consoleItem = await strapi.services.console.create({
+                  message: data,
+                  type: 'error',
+                  app: APP_ID
+                });
+
+                //Set status project
+                await strapi.services.app.update({
+                  id: APP_ID
+                }, {
+                  app_status: 'failed'
+                });
+
+                //Send message
+                strapi.eventEmitter.emit('system::notify', {
+                  topic: `/console/setup/${APP_ID}/error`,
+                  data: consoleItem.message
+                });
+              }
+            });
+            commandExec.on('close', async (code) => {
               const consoleItem = await strapi.services.console.create({
-                message: `Setup success!`,
-                type: 'build_success',
+                message: `Child process exited with code ${code}`,
+                type: 'end',
                 app: APP_ID
               });
-
-              //Set status project
-              await strapi.services.app.update({
-                id: APP_ID
-              }, {
-                app_status: 'success'
-              });
-
               //Send message
               strapi.eventEmitter.emit('system::notify', {
-                topic: `/console/setup/${APP_ID}/build_success`,
+                topic: `/console/setup/${APP_ID}/end`,
                 data: consoleItem.message
               });
-            }
-          });
-        }
-      });
-    }
+
+              if(code !== 0){
+                await strapi.services.console.create({
+                  message: `Setup failed`,
+                  type: 'build_error',
+                  app: APP_ID
+                });
+
+                //Set status project
+                await strapi.services.app.update({
+                  id: APP_ID
+                }, {
+                  app_status: 'failed'
+                });
+
+                //Send message
+                strapi.eventEmitter.emit('system::notify', {
+                  topic: `/console/setup/${APP_ID}/build_error`,
+                  data: `Setup failed`
+                });
+              }else{
+                const consoleItem = await strapi.services.console.create({
+                  message: `Setup success!`,
+                  type: 'build_success',
+                  app: APP_ID
+                });
+
+                //Set status project
+                await strapi.services.app.update({
+                  id: APP_ID
+                }, {
+                  app_status: 'success'
+                });
+
+                //Send message
+                strapi.eventEmitter.emit('system::notify', {
+                  topic: `/console/setup/${APP_ID}/build_success`,
+                  data: consoleItem.message
+                });
+              }
+            });
+          }
+        });
+      }
+    });
 
     return {status: "ok"};
   }

@@ -10,131 +10,7 @@ const exec = require('child_process').exec;
  * to customize this service
  */
 
-const awsDefaultRegions = [
-  {
-    "continentCode": "NA",
-    "description": "This region is recommended to serve users in the eastern United States",
-    "displayName": "Virginia",
-    "name": "us-east-1",
-    "availabilityZones": []
-  },
-  {
-    "continentCode": "NA",
-    "description": "This region is recommended to serve users in the eastern United States",
-    "displayName": "Ohio",
-    "name": "us-east-2",
-    "availabilityZones": []
-  },
-  {
-    "continentCode": "NA",
-    "description": "This region is recommended to serve users in the northwestern United States, Alaska, and western Canada",
-    "displayName": "Oregon",
-    "name": "us-west-2",
-    "availabilityZones": []
-  },
-  {
-    "continentCode": "EU",
-    "description": "This region is recommended to serve users in Ireland, the United Kingdom, and Iceland",
-    "displayName": "Ireland",
-    "name": "eu-west-1",
-    "availabilityZones": []
-  },
-  {
-    "continentCode": "EU",
-    "description": "This region is recommended to serve users in Ireland, the United Kingdom, and Iceland",
-    "displayName": "London",
-    "name": "eu-west-2",
-    "availabilityZones": []
-  },
-  {
-    "continentCode": "EU",
-    "description": "This region is recommended to serve users in France and central Europe",
-    "displayName": "Paris",
-    "name": "eu-west-3",
-    "availabilityZones": []
-  },
-  {
-    "continentCode": "EU",
-    "description": "This region is recommended to serve users in Europe, the Middle East, and Africa",
-    "displayName": "Frankfurt",
-    "name": "eu-central-1",
-    "availabilityZones": []
-  },
-  {
-    "continentCode": "AP",
-    "description": "This region is recommended to serve users in India and Southeast Asia",
-    "displayName": "Singapore",
-    "name": "ap-southeast-1",
-    "availabilityZones": []
-  },
-  {
-    "continentCode": "AP",
-    "description": "This region is recommended to serve users in Austalia, New Zealand, and the South Pacific",
-    "displayName": "Sydney",
-    "name": "ap-southeast-2",
-    "availabilityZones": []
-  },
-  {
-    "continentCode": "AP",
-    "description": "This region is recommended to serve users in Japan",
-    "displayName": "Tokyo",
-    "name": "ap-northeast-1",
-    "availabilityZones": []
-  },
-  {
-    "continentCode": "AP",
-    "description": "This region is recommended to serve users in South Korea",
-    "displayName": "Seoul",
-    "name": "ap-northeast-2",
-    "availabilityZones": []
-  },
-  {
-    "continentCode": "AP",
-    "description": "This region is recommended to serve users in India and southern Asia",
-    "displayName": "Mumbai",
-    "name": "ap-south-1",
-    "availabilityZones": []
-  },
-  {
-    "continentCode": "NA",
-    "description": "This region is recommended to serve users in eastern and central Canada",
-    "displayName": "Montreal",
-    "name": "ca-central-1",
-    "availabilityZones": []
-  }
-];
-
 module.exports = {
-
-  /**
-   * Return AWS regions list
-   * @returns {Promise<void>}
-   */
-  awsRegionsList: async () =>{
-    return new Promise((rs, rj) => {
-      const commandExec = exec('aws lightsail get-regions');
-      commandExec.stdout.on('data', async function(data){
-        try{
-          data = JSON.parse(data);
-        }catch(e){
-          rs(awsDefaultRegions);
-        }
-
-        if(!data.regions) {
-          rs(awsDefaultRegions);
-          return;
-        }
-
-        rs(data.regions);
-      });
-      commandExec.stderr.on('data', async function(data){
-        rs(awsDefaultRegions);
-      });
-      commandExec.on('close', async (code) => {
-        //Not needed this
-      });
-    });
-  },
 
   /**
    * Make cleanup app of project
@@ -159,37 +35,27 @@ module.exports = {
 
     var command = '';
 
-    if(app.os === 'aws_s3'){
-      command = `~/scripts/cleanup_s3 -s ${app.s3_bucket_name} -k ${app.aws_secret_access_key} -i ${app.aws_access_key_id}`;
-      if(app.s3_region)
-        command += ` -r ${app.s3_region}`;
+    //Setup command
+    command = '~/scripts/cleanup_server ';
 
-    }else{
+    //Get path of file
+    const path = require('path');
+    const filePath = path.resolve() + '/public' + app.ssh_pem.url;
 
-      //Setup command
-      command = '~/scripts/cleanup_server ';
+    //Setup pem chmod
+    fs.chmodSync(filePath, 400);
 
-      //Get path of file
-      const path = require('path');
-      const filePath = path.resolve() + '/public' + app.ssh_pem.url;
+    //Add project details
+    command += '-n "' + project.project_name + '" ';
+    command += '-a "' + app.app_name + '" ';
+    command += '-u ' + app.ssh_username + ' ';
+    command += '-d ' + app.ssh_host + ' ';
+    command += '-s ' + filePath + ' ';
 
-      //Setup pem chmod
-      fs.chmodSync(filePath, 400);
-
-      //Add project details
-      command += '-n "' + project.project_name + '" ';
-      command += '-a "' + app.app_name + '" ';
-      command += '-u ' + app.ssh_username + ' ';
-      command += '-d ' + app.ssh_host + ' ';
-      command += '-s ' + filePath + ' ';
-
-      if(app.domain_name)
-        command += '-b ' + app.domain_name + ' ';
-      else
-        command += '-b ' + app.ssh_host + ' ';
-
-
-    }
+    if(app.domain_name)
+      command += '-b ' + app.domain_name + ' ';
+    else
+      command += '-b ' + app.ssh_host + ' ';
 
     //Start cleanup program
     return new Promise((rs, rj) => {

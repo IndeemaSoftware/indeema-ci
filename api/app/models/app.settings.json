@@ -60,20 +60,6 @@
     "domain_name": {
       "type": "string"
     },
-    "lets_encrypt": {
-      "type": "boolean",
-      "default": false,
-      "required": true
-    },
-    "os": {
-      "type": "enumeration",
-      "enum": [
-        "ubuntu",
-        "aws_s3"
-      ],
-      "default": "ubuntu",
-      "required": true
-    },
     "project": {
       "model": "project",
       "via": "apps"
@@ -110,15 +96,6 @@
     "avaliable_ports": {
       "type": "string"
     },
-    "s3_bucket_name": {
-      "type": "string"
-    },
-    "aws_access_key_id": {
-      "type": "string"
-    },
-    "aws_secret_access_key": {
-      "type": "string"
-    },
     "ci_template": {
       "type": "enumeration",
       "enum": [
@@ -127,22 +104,15 @@
       "default": "gitlab_ci",
       "required": true
     },
-    "s3_user": {
-      "type": "string"
-    },
     "desc": {
       "type": "text"
-    },
-    "s3_https": {
-      "type": "boolean",
-      "default": false
-    },
-    "s3_region": {
-      "type": "string"
     },
     "server": {
       "model": "server",
       "via": "apps"
+    },
+    "automatic_cert": {
+      "type": "boolean"
     }
   }
 }
