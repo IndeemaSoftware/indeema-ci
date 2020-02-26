@@ -93,9 +93,6 @@
       "collection": "console",
       "via": "app"
     },
-    "avaliable_ports": {
-      "type": "string"
-    },
     "ci_template": {
       "type": "enumeration",
       "enum": [
