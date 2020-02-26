@@ -49,7 +49,7 @@ module.exports = {
       entities = await strapi.services.project.find(query);
     }
 
-    for(var e = 0; e < entities.length; e++){
+    for (var e = 0; e < entities.length; e++) {
       if(entities[e].apps && entities[e].apps.length){
         for(var i = 0; i < entities[e].apps.length; i++){
           const app = await strapi.services.app.findOne({
@@ -111,15 +111,9 @@ module.exports = {
 
     //Prepare apps model and create
     for (let app of ctx.request.body.apps) {
-      const appModelFields = ['app_name', 'desc', 'avaliable_ports', 'environment', 'custom_ssl_key', 'custom_ssl_crt', 'custom_ssl_pem', 'domain_name', 'lets_encrypt', 'os', 'ci_template', 'ci_script', 'server'];
+      const appModelFields = ['app_name', 'app_port', 'desc', 'avaliable_ports', 'environment', 'custom_ssl_key', 'custom_ssl_crt', 'custom_ssl_pem', 'domain_name', 'custom_cert', 'ci_template', 'ci_script', 'server'];
       const appModel = _.pick(app, appModelFields);
       appModel.project = project._id.toString();
-
-      if (typeof appModel.server_dependencies !== typeof [])
-        appModel.server_dependencies = [];
-
-      if (typeof appModel.nodejs_dependencies !== typeof [])
-        appModel.nodejs_dependencies = [];
 
       //Cleanup empty fields
       for (let field of appModelFields) {
@@ -180,15 +174,9 @@ module.exports = {
 
     //Update all apps from body
     for(let app of ctx.request.body.apps){
-      const appModelFields = ['app_name', 'desc', 'app_port', 'avaliable_ports', 'environment', 'custom_ssl_key', 'custom_ssl_crt', 'custom_ssl_pem', 'domain_name', 'lets_encrypt', 'os'];
+      const appModelFields = ['app_name', 'app_port', 'desc', 'avaliable_ports', 'environment', 'custom_ssl_key', 'custom_ssl_crt', 'custom_ssl_pem', 'domain_name', 'custom_cert', 'ci_template', 'ci_script', 'server'];
       const appModel = _.pick(app, appModelFields);
       appModel.project = project._id.toString();
-
-      if(typeof appModel.server_dependencies !== typeof [])
-        appModel.server_dependencies = [];
-
-      if(typeof appModel.nodejs_dependencies !== typeof [])
-        appModel.nodejs_dependencies = [];
 
       //Cleanup empty fields
       for(let field of appModelFields){

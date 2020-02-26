@@ -30,11 +30,6 @@
       "plugin": "upload",
       "required": false
     },
-    "server_dependencies": {
-      "collection": "server-dependencies",
-      "via": "apps",
-      "dominant": true
-    },
     "custom_ssl_key": {
       "model": "file",
       "via": "related",

@@ -24,10 +24,6 @@
       "type": "string",
       "required": true
     },
-    "apps": {
-      "via": "server_dependencies",
-      "collection": "app"
-    },
     "servers": {
       "via": "server_dependencies",
       "collection": "server",
