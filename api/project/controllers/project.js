@@ -105,13 +105,13 @@ module.exports = {
       return ctx.badRequest(null, 'Apps is required');
 
     //Prepare project model and create
-    const projectModel = _.pick(ctx.request.body, ['project_name', 'desc', 'user']);
+    const projectModel = _.pick(ctx.request.body, ['users','project_name', 'desc', 'user']);
     projectModel.apps = [];
     const project = await strapi.services.project.create(projectModel);
 
     //Prepare apps model and create
     for (let app of ctx.request.body.apps) {
-      const appModelFields = ['app_name', 'desc', 'avaliable_ports', 'environment', 'custom_ssl_key', 'custom_ssl_crt', 'custom_ssl_pem', 'domain_name', 'lets_encrypt', 'os'];
+      const appModelFields = ['app_name', 'desc', 'avaliable_ports', 'environment', 'custom_ssl_key', 'custom_ssl_crt', 'custom_ssl_pem', 'domain_name', 'lets_encrypt', 'os', 'ci_template', 'ci_script', 'server'];
       const appModel = _.pick(app, appModelFields);
       appModel.project = project._id.toString();
 

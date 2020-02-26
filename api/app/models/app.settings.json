@@ -30,10 +30,6 @@
       "plugin": "upload",
       "required": false
     },
-    "project_type": {
-      "model": "project-type",
-      "via": "apps"
-    },
     "server_dependencies": {
       "collection": "server-dependencies",
       "via": "apps",
@@ -93,14 +89,6 @@
       "collection": "console",
       "via": "app"
     },
-    "ci_template": {
-      "type": "enumeration",
-      "enum": [
-        "gitlab_ci"
-      ],
-      "default": "gitlab_ci",
-      "required": true
-    },
     "desc": {
       "type": "text"
     },
@@ -110,6 +98,12 @@
     },
     "automatic_cert": {
       "type": "boolean"
+    },
+    "ci_template": {
+      "type": "string"
+    },
+    "ci_script": {
+      "type": "string"
     }
   }
 }

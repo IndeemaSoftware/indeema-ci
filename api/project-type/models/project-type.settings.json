@@ -18,10 +18,6 @@
       "type": "string",
       "required": true
     },
-    "apps": {
-      "via": "project_type",
-      "collection": "app"
-    },
     "s3_support": {
       "type": "boolean",
       "default": false,
