@@ -1,0 +1,29 @@
+{
+  "connection": "default",
+  "collectionName": "services",
+  "info": {
+    "name": "Service"
+  },
+  "options": {
+    "increments": true,
+    "timestamps": true
+  },
+  "attributes": {
+    "service_name": {
+      "type": "string"
+    },
+    "variables": {
+      "type": "json"
+    },
+    "doc": {
+      "type": "json",
+      "default":{"app_name":"","app_port":0}
+    },
+    "setup_script": {
+      "type": "richtext"
+    },
+    "cleanup_script": {
+      "type": "richtext"
+    }
+  }
+}
