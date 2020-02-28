@@ -16,20 +16,6 @@
     "app_port": {
       "type": "integer"
     },
-    "ssh_host": {
-      "type": "string",
-      "required": false
-    },
-    "ssh_username": {
-      "type": "string",
-      "required": false
-    },
-    "ssh_pem": {
-      "model": "file",
-      "via": "related",
-      "plugin": "upload",
-      "required": false
-    },
     "custom_ssl_key": {
       "model": "file",
       "via": "related",

@@ -17,7 +17,21 @@
     },
     "doc": {
       "type": "json",
-      "default":{"app_name":"","app_port":0}
+      "default":{
+        "project_name":"",
+        "app_name":"",
+        "app_port":"",
+        "custom_ssl_key":"",
+        "custom_ssl_crt":"",
+        "domain_name":"",
+        "project":"",
+        "environment":"",
+        "desc":"",
+        "server":"",
+        "automatic_cert":"",
+        "ci_template":"",
+        "ci_script":""
+      }
     },
     "setup_script": {
       "type": "richtext"
