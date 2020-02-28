@@ -49,6 +49,14 @@
       }
     },
     {
+      "method": "POST",
+      "path": "/apps/setup/:id",
+      "handler": "app.setup",
+      "config": {
+        "policies": []
+      }
+    },
+    {
       "method": "PUT",
       "path": "/apps/:id",
       "handler": "app.update",

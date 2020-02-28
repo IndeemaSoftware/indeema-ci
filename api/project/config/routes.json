@@ -50,14 +50,6 @@
     },
     {
       "method": "DELETE",
-      "path": "/projects/cleanup/:id/:app_id",
-      "handler": "project.cleanupApp",
-      "config": {
-        "policies": []
-      }
-    },
-    {
-      "method": "DELETE",
       "path": "/projects/remove/:id",
       "handler": "project.deleteProject",
       "config": {

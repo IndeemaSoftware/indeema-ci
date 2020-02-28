@@ -1,6 +1,5 @@
 'use strict';
 //Exec for shell command`s
-const exec = require('child_process').exec;
 const path = require('path');
 const fs = require('fs');
 
@@ -47,13 +46,15 @@ module.exports = {
     command += ` -u ${server.ssh_username}`;
     command += ` -k ${server.ssh_key.url}`
 
-    return strapi.services.server.runPlatformScript(server, command, SERVER_CLEANUP_STATUS);
+    return strapi.services.console.runServerScript(server, command, SERVER_CLEANUP_STATUS);
   },
 
   setupServer: async (server) => {
     await strapi.services.server.generateSubScripts(server);
 
-    const ssh = `ssh -o StrictHostKeyChecking=no -i ${publicPath}${server.ssh_key.url} ${server.ssh_username}@${server.ssh_ip} -tt`
+    if (server && server.ssh_key && server.ssh_key.url && server.ssh_username && server.ssh_ip) {
+      const ssh = `ssh -o StrictHostKeyChecking=no -i ${publicPath}${server.ssh_key.url} ${server.ssh_username}@${server.ssh_ip} -tt`
+    }
 
     //create dir on remove machine
     let command = `chmod 400 ${publicPath}${server.ssh_key.url}; `;
@@ -116,91 +117,9 @@ module.exports = {
       //   }
       // }
 
-    let status = strapi.services.server.runPlatformScript(server, command, SERVER_SETUP_STATUS);
-    // strapi.services.server.deleteFolderRecursive(subscriptsPath);
+    let status = strapi.services.console.runServerScript(server, command, SERVER_SETUP_STATUS);
+    strapi.services.server.deleteFolderRecursive(subscriptsPath);
     return status;
-  },
-
-  async runPlatformScript(server, command, status) {
-    console.log(command);
-    return new Promise((rs, rj) => {
-      const commandConnect = exec(command);
-                                  commandConnect.stdout.on('data', async function(data) {
-      if(data !== ''){
-          const consoleItem = await strapi.services.console.create({
-          message: data,
-          type: 'message',
-          server: server.id
-          });
-  
-          //Set status server
-          await strapi.services.server.update({
-          id: server.id
-          }, {
-          server_status: status.progress.status
-          });
-  
-          //Send message
-          await strapi.eventEmitter.emit('system::notify', {
-          topic: `/console/setup/${server.id}/message`,
-          data: consoleItem.message
-          });
-      }
-      });
-      commandConnect.on('close', async (code) => {
-          const consoleItem = await strapi.services.console.create({
-            message: `Child process exited with code ${code}`,
-            type: 'end',
-            server: server.id
-          });
-          //Send message
-          await strapi.eventEmitter.emit('system::notify', {
-            topic: `/console/setup/${server.id}/end`,
-            data: consoleItem.message
-          });
-  
-          if(code !== 0){
-            await strapi.services.console.create({
-              message: status.bad.info,
-              type: 'build_error',
-              server: server.id
-            });
-  
-            //Set status server
-            await strapi.services.server.update({
-              id: server.id
-            }, {
-              server_status: status.bad.status
-            });
-  
-            //Send message
-            await strapi.eventEmitter.emit('system::notify', {
-              topic: `/console/setup/${server.id}/build_error`,
-              data: status.bad.info
-            });
-          } else {
-            const consoleItem = await strapi.services.console.create({
-              message: status.ok.info,
-              type: 'end',
-              server: server.id
-            });
-
-            //Set status server
-            await strapi.services.server.update({
-              id: server.id
-            }, {
-              server_status: status.ok.status
-            });
-
-            //Send message
-            await strapi.eventEmitter.emit('system::notify', {
-              topic: `/console/setup/${server.id}/build_success`,
-              data: consoleItem.message
-            });
-        }
-        });
-      rs({status:"ok", data:"Good"});
-    });
   },
 
   async moveScriptsToServer(server) {
@@ -216,7 +135,7 @@ module.exports = {
       command += `${ssh} "mkdir -p ${scriptsPathOnServer}"; `;
       command += `scp -r -o StrictHostKeyChecking=no -i ${publicPath}${server.ssh_key.url} ${subscriptsPath}/* ${server.ssh_username}@${server.ssh_ip}:${scriptsPathOnServer}/; `;
 
-      await strapi.services.server.runPlatformScript(server, command, SERVER_COPYING_STATUS);
+      await strapi.services.console.runServerScript(server, command, SERVER_COPYING_STATUS);
     }
   },
   

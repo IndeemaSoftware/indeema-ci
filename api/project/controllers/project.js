@@ -111,7 +111,7 @@ module.exports = {
 
     //Prepare apps model and create
     for (let app of ctx.request.body.apps) {
-      const appModelFields = ['app_name', 'app_port', 'desc', 'avaliable_ports', 'environment', 'custom_ssl_key', 'custom_ssl_crt', 'custom_ssl_pem', 'domain_name', 'custom_cert', 'ci_template', 'ci_script', 'server'];
+      const appModelFields = ['app_name', 'app_port', 'desc', 'avaliable_ports', 'environment', 'custom_ssl_key', 'custom_ssl_crt', 'custom_ssl_pem', 'domain_name', 'custom_cert', 'ci_template', 'ci_script', 'server', 'service'];
       const appModel = _.pick(app, appModelFields);
       appModel.project = project._id.toString();
 
@@ -174,7 +174,7 @@ module.exports = {
 
     //Update all apps from body
     for(let app of ctx.request.body.apps){
-      const appModelFields = ['app_name', 'app_port', 'desc', 'avaliable_ports', 'environment', 'custom_ssl_key', 'custom_ssl_crt', 'custom_ssl_pem', 'domain_name', 'custom_cert', 'ci_template', 'ci_script', 'server'];
+      const appModelFields = ['app_name', 'app_port', 'desc', 'avaliable_ports', 'environment', 'custom_ssl_key', 'custom_ssl_crt', 'custom_ssl_pem', 'domain_name', 'custom_cert', 'ci_template', 'ci_script', 'server', 'service'];
       const appModel = _.pick(app, appModelFields);
       appModel.project = project._id.toString();
 
@@ -198,41 +198,6 @@ module.exports = {
 
     return sanitizeEntity(entity, { model: strapi.models.project });
   },
-
-  /**
-   * Cleanup app
-   * @param ctx
-   * @returns {Promise<void>}
-   */
-  async cleanupApp(ctx){
-    const user = ctx.state.user;
-
-    const entity = await strapi.services.app.findOne({
-      id: ctx.params.app_id
-    });
-
-    if(!entity.project || (entity.project._id.toString() !== ctx.params.id))
-      return ctx.notFound();
-
-    const project = await strapi.services.project.findOne({
-      _id: entity.project._id.toString()
-    });
-
-    //For non admin roles
-    if(user.role.type !== 'administrator' && (!project.user || project.user._id.toString() !== user._id.toString()))
-      return ctx.notFound();
-
-    //Start cleanup
-    await strapi.services.app.update({
-      id: entity._id.toString()
-    }, {
-      app_status: 'cleanup'
-    });
-    strapi.services.project.cleanupApp(project, entity);
-
-    ctx.send({ok: true});
-  },
-
   /**
    * Destroy app record of project.
    *

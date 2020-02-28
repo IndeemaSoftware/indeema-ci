@@ -85,6 +85,10 @@
     },
     "ci_script": {
       "type": "string"
+    },
+    "service": {
+      "model": "service",
+      "via": "apps"
     }
   }
 }

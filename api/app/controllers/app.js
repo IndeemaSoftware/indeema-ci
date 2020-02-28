@@ -58,4 +58,24 @@ module.exports = {
 
     return sanitizeEntity(entity, { model: strapi.models.app });
   },
+
+  setup: async (ctx) => {
+    const app = await strapi.services.app.findOne({"id":ctx.params.id});
+    if(!app || !app.service)
+      return ctx.notFound();
+
+    const output = await strapi.services.console.find({
+      app: app._id.toString(),
+      _limit: 9999999999
+    });
+
+    //Clean output
+    for(let item of output){
+      await strapi.services.console.delete({
+        id: item._id.toString()
+      });
+    }
+
+    return strapi.services.app.setupApp(app);
+  },
 };
