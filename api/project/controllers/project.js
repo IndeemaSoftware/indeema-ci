@@ -105,7 +105,7 @@ module.exports = {
       return ctx.badRequest(null, 'Apps is required');
 
     //Prepare project model and create
-    const projectModel = _.pick(ctx.request.body, ['users','project_name', 'desc', 'user']);
+    const projectModel = _.pick(ctx.request.body, ['users','project_name', 'desc', 'environments', 'user']);
     projectModel.apps = [];
     const project = await strapi.services.project.create(projectModel);
 
@@ -147,7 +147,7 @@ module.exports = {
 
     //First let`s update project model
     ctx.request.body.user = user._id;
-    const projectModel = _.pick(ctx.request.body, ['project_name', 'desc', 'user']);
+    const projectModel = _.pick(ctx.request.body, ['users', 'project_name', 'desc', 'environments', 'user']);
     entity = await strapi.services.project.update(ctx.params, projectModel);
 
     //Find all apps and remove not needed apps
@@ -225,26 +225,6 @@ module.exports = {
       id: entity._id.toString()
     });
     return sanitizeEntity(deletedApp, { model: strapi.models.app });
-
-    //Auto cleanup is deprecated
-    // }else{
-    //   //Start cleanup
-    //   await strapi.services.app.update({
-    //     id: entity._id.toString()
-    //   }, {
-    //     app_status: 'cleanup'
-    //   });
-    //   const isCleanup = await strapi.services.project.cleanupApp(project, entity);
-    //
-    //   if(isCleanup){
-    //     const deletedApp = await strapi.services.app.delete({
-    //       id: entity._id.toString()
-    //     });
-    //     return sanitizeEntity(deletedApp, { model: strapi.models.app });
-    //   }else{
-    //     return ctx.send({ok: false});
-    //   }
-    // }
   },
 
   /**

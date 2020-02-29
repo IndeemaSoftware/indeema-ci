@@ -41,17 +41,6 @@
       "model": "project",
       "via": "apps"
     },
-    "environment": {
-      "type": "enumeration",
-      "enum": [
-        "development",
-        "staging",
-        "beta",
-        "production"
-      ],
-      "default": "development",
-      "required": true
-    },
     "app_status": {
       "type": "enumeration",
       "enum": [
@@ -89,6 +78,9 @@
     "service": {
       "model": "service",
       "via": "apps"
+    },
+    "environment": {
+      "type": "string"
     }
   }
 }

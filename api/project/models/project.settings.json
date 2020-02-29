@@ -26,6 +26,9 @@
       "collection": "user",
       "via": "projects",
       "dominant": true
+    },
+    "environments": {
+      "type": "json"
     }
   }
 }

@@ -87,9 +87,20 @@ module.exports = {
           let setup_script = subscriptsPath + `/${app.service.service_name}_setup`;
           let cleanup_script = subscriptsPath + `/${app.service.service_name}_cleanup`;
 
+          let script = "#!/bin/bash\n";
+          for (let key in app) {
+              if (key !== "createdAt" && key !== "updatedAt") {
+                  if (app[key] !== null && typeof app[key] !== 'object') {
+                    script += key.toUpperCase() + `=` + `"${app[key]}"` + "\n";
+                  }
+              }
+          }
+          script += `project_name=`.toUpperCase() + `"${app.project.project_name}"` + "\n";
+
           //generating server dependency script files
-          if (app.service.cleanup_script) {
-            fs.writeFile(setup_script, app.service.setup_script, (err) => {
+          if (app.service.setup_script) {
+            script += app.service.setup_script;
+            fs.writeFile(setup_script, script, (err) => {
               if (err) rs({"status":"bad", "data":err});
                 exec(`chmod a+x ${setup_script}`);
                 rs();
@@ -97,6 +108,7 @@ module.exports = {
           }
           
           if (app.service.cleanup_script) {
+            script += app.service.cleanup_script;
             fs.writeFile(cleanup_script, app.service.cleanup_script, (err) => {
               if (err) rs({"status":"bad", "data":err});
                 exec(`chmod a+x ${cleanup_script}`);
