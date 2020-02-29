@@ -31,7 +31,8 @@
         "server": "",
         "automatic_cert": "",
         "ci_template": "",
-        "ci_script": ""
+        "ci_script": "",
+        "environments":""
       }
     },
     "setup_script": {
