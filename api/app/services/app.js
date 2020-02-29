@@ -89,13 +89,20 @@ module.exports = {
 
           let script = "#!/bin/bash\n";
           for (let key in app) {
-              if (key !== "createdAt" && key !== "updatedAt") {
+              if (key !== "createdAt" && key !== "updatedAt" && key !== "id") {
                   if (app[key] !== null && typeof app[key] !== 'object') {
                     script += key.toUpperCase() + `=` + `"${app[key]}"` + "\n";
                   }
               }
           }
           script += `project_name=`.toUpperCase() + `"${app.project.project_name}"` + "\n";
+          if (app.project.environments &&  Object.keys(app.project.environments).length) {
+            script += "ENVIRONMENTS=(";
+            for (let env of app.project.environments) {
+              script += env + " ";
+            }  
+            script += ")\n";
+          }
 
           //generating server dependency script files
           if (app.service.setup_script) {
