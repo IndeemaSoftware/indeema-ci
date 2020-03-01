@@ -1,4 +1,6 @@
 {
+  "connection": "default",
+  "collectionName": "maintenances",
   "info": {
     "name": "Maintenance"
   },
@@ -12,8 +14,10 @@
     },
     "html_code": {
       "type": "richtext"
+    },
+    "apps": {
+      "via": "maintenance",
+      "collection": "app"
     }
-  },
-  "connection": "default",
-  "collectionName": "maintenances"
+  }
 }

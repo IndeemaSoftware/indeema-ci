@@ -32,7 +32,7 @@
         "automatic_cert": "",
         "ci_template": "",
         "ci_script": "",
-        "environments":""
+        "environments": ""
       }
     },
     "setup_script": {

@@ -111,7 +111,7 @@ module.exports = {
 
     //Prepare apps model and create
     for (let app of ctx.request.body.apps) {
-      const appModelFields = ['app_name', 'app_port', 'desc', 'avaliable_ports', 'environment', 'custom_ssl_key', 'custom_ssl_crt', 'custom_ssl_pem', 'domain_name', 'custom_cert', 'ci_template', 'ci_script', 'server', 'service'];
+      const appModelFields = ['app_name', 'app_port', 'desc', 'avaliable_ports', 'environment', 'custom_ssl_key', 'custom_ssl_crt', 'custom_ssl_pem', 'domain_name', 'custom_cert', 'ci_template', 'ci_script', 'server', 'service', 'maintenance'];
       const appModel = _.pick(app, appModelFields);
       appModel.project = project._id.toString();
 
@@ -174,7 +174,7 @@ module.exports = {
 
     //Update all apps from body
     for(let app of ctx.request.body.apps){
-      const appModelFields = ['app_name', 'app_port', 'desc', 'avaliable_ports', 'environment', 'custom_ssl_key', 'custom_ssl_crt', 'custom_ssl_pem', 'domain_name', 'custom_cert', 'ci_template', 'ci_script', 'server', 'service'];
+      const appModelFields = ['app_name', 'app_port', 'desc', 'avaliable_ports', 'environment', 'custom_ssl_key', 'custom_ssl_crt', 'custom_ssl_pem', 'domain_name', 'custom_cert', 'ci_template', 'ci_script', 'server', 'service', 'maintenance'];
       const appModel = _.pick(app, appModelFields);
       appModel.project = project._id.toString();
 
