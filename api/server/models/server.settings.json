@@ -13,8 +13,8 @@
       "type": "string"
     },
     "apps": {
-      "via": "server",
-      "collection": "app"
+      "collection": "app",
+      "via": "server"
     },
     "ssh_ip": {
       "type": "string"
@@ -34,9 +34,6 @@
     },
     "ports": {
       "type": "json"
-    },
-    "platform": {
-      "model": "platform"
     },
     "ssh_key": {
       "model": "file",
@@ -65,8 +62,12 @@
       "via": "server"
     },
     "custom_dependencies": {
+      "collection": "custom-dependencies",
+      "via": "servers"
+    },
+    "platform": {
       "via": "servers",
-      "collection": "custom-dependencies"
+      "model": "platform"
     }
   }
 }

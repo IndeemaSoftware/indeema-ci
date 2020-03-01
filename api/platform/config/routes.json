@@ -2,92 +2,51 @@
   "routes": [
     {
       "method": "GET",
-      "path": "/platform/download/:name",
-      "handler": "platform.getPlatform",
+      "path": "/platforms",
+      "handler": "platform.find",
       "config": {
         "policies": []
       }
     },
     {
       "method": "GET",
-      "path": "/platform/cleanup/download/:name",
-      "handler": "platform.getPlatformCleanup",
+      "path": "/platforms/count",
+      "handler": "platform.count",
       "config": {
         "policies": []
       }
     },
     {
       "method": "GET",
-      "path": "/platform/firewall/download/:name",
-      "handler": "platform.getPlatformFirewall",
+      "path": "/platforms/:id",
+      "handler": "platform.findOne",
       "config": {
         "policies": []
       }
     },
     {
       "method": "POST",
-      "path": "/platform/:name",
-      "handler": "platform.writePlatform",
+      "path": "/platforms",
+      "handler": "platform.create",
       "config": {
         "policies": []
       }
     },
     {
-      "method": "POST",
-      "path": "/platform/cleanup/:name",
-      "handler": "platform.writePlatformCleanup",
-      "config": {
-        "policies": []
-      }
-    },
-    {
-      "method": "POST",
-      "path": "/platform/firewall/:name",
-      "handler": "platform.writePlatformFirewall",
+      "method": "PUT",
+      "path": "/platforms/:id",
+      "handler": "platform.update",
       "config": {
         "policies": []
       }
     },
     {
       "method": "DELETE",
-      "path": "/platform/:name",
-      "handler": "platform.deletePlatform",
-      "config": {
-        "policies": []
-      }
-    },
-    {
-      "method": "DELETE",
-      "path": "/platform/cleanup/:name",
-      "handler": "platform.deletePlatformCleanup",
-      "config": {
-        "policies": []
-      }
-    },
-    {
-      "method": "DELETE",
-      "path": "/platform/firewall/:name",
-      "handler": "platform.deletePlatformFirewall",
-      "config": {
-        "policies": []
-      }
-    },
-    {
-      "method": "GET",
-      "path": "/platform/listAll",
-      "handler": "platform.getListOfPlatforms",
-      "config": {
-        "policies": []
-      }
-    },
-    {
-      "method": "GET",
-      "path": "/platform/cleanup/listAll",
-      "handler": "platform.getListOfPlatformsCleanup",
+      "path": "/platforms/:id",
+      "handler": "platform.delete",
       "config": {
         "policies": []
       }
     }
   ]
 }
-  

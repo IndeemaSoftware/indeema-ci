@@ -63,8 +63,8 @@
       "type": "text"
     },
     "server": {
-      "model": "server",
-      "via": "apps"
+      "via": "apps",
+      "model": "server"
     },
     "automatic_cert": {
       "type": "boolean"

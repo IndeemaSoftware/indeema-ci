@@ -1,4 +1,6 @@
 {
+  "connection": "default",
+  "collectionName": "custom_dependencies",
   "info": {
     "name": "Custom Dependencies"
   },
@@ -17,11 +19,9 @@
       "type": "richtext"
     },
     "servers": {
-      "collection": "server",
       "via": "custom_dependencies",
+      "collection": "server",
       "dominant": true
     }
-  },
-  "connection": "default",
-  "collectionName": "custom_dependencies"
+  }
 }

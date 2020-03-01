@@ -8,11 +8,13 @@ const path = require('path');
 const fs = require('fs');
 const exec = require('child_process').exec;
 
-
 const publicPath = path.resolve() + "/public";
 const resourcesPath = publicPath + "/uploads/scripts/" 
 const subscriptsPath = resourcesPath + "subscripts";
 const scriptsPathOnServer = `/tmp/indeema_ci`;
+
+const SETUP = "setup";
+const CLEANUP = "cleanup";
 
 const APP_SETUP_STATUS = {ok:{status:"success", info:"Setup succed"},
                             bad:{status:"failed", info:"Setup failed"},
@@ -30,7 +32,6 @@ const APP_CLEANUP_STATUS = {ok:{status:"cleanup_success", info:"Cleanup succed"}
 module.exports = {
     setupApp: async (app) => {
         return strapi.services.app.runScript(app, "setup");
-
     },
 
     cleanupApp: async (app) => {
@@ -72,7 +73,7 @@ module.exports = {
           command += `${ssh} "mkdir -p ${scriptsPathOnServer}"; `;
           command += `scp -r -o StrictHostKeyChecking=no -i ${publicPath}${server.ssh_key.url} ${subscriptsPath}/* ${server.ssh_username}@${server.ssh_ip}:${scriptsPathOnServer}/; `;
     
-          await strapi.services.console.runServerScript(server, command, SERVER_COPYING_STATUS);
+          await strapi.services.console.runServerScript(server, command, (name === SETUP)?SERVER_SETUP_STATUS:SERVER_CLEANUP_STATUS);
         }
     },
 
@@ -101,7 +102,6 @@ module.exports = {
 
           if (Object.keys(app.service.variables).length > 0) {
             for (let key of app.service.variables) {
-              console.log(key);
               script += key.name.toUpperCase() + `=` + `"${key.value}"` + "\n";
             }
           }
