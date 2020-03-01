@@ -2,36 +2,51 @@
   "routes": [
     {
       "method": "GET",
-      "path": "/maintenance/download/:name",
-      "handler": "maintenance.getMaintenance",
-      "config": {
-        "policies": []
-      }
-    },
-    {
-      "method": "POST",
-      "path": "/maintenance/:name",
-      "handler": "maintenance.writeMaintenance",
-      "config": {
-        "policies": []
-      }
-    },
-    {
-      "method": "DELETE",
-      "path": "/maintenance/:name",
-      "handler": "maintenance.deleteMaintenance",
+      "path": "/maintenances",
+      "handler": "maintenance.find",
       "config": {
         "policies": []
       }
     },
     {
       "method": "GET",
-      "path": "/maintenance/listAll",
-      "handler": "maintenance.getListOfMaintenance",
+      "path": "/maintenances/count",
+      "handler": "maintenance.count",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/maintenances/:id",
+      "handler": "maintenance.findOne",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/maintenances",
+      "handler": "maintenance.create",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "PUT",
+      "path": "/maintenances/:id",
+      "handler": "maintenance.update",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "DELETE",
+      "path": "/maintenances/:id",
+      "handler": "maintenance.delete",
       "config": {
         "policies": []
       }
     }
   ]
 }
-  

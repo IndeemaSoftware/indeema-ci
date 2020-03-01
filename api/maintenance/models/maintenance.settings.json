@@ -1,0 +1,19 @@
+{
+  "info": {
+    "name": "Maintenance"
+  },
+  "options": {
+    "increments": true,
+    "timestamps": true
+  },
+  "attributes": {
+    "name": {
+      "type": "string"
+    },
+    "html_code": {
+      "type": "richtext"
+    }
+  },
+  "connection": "default",
+  "collectionName": "maintenances"
+}
