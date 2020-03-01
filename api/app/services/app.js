@@ -98,7 +98,14 @@ module.exports = {
                 rs();
             });               
           }
-        
+
+          if (Object.keys(app.service.variables).length > 0) {
+            for (let key of app.service.variables) {
+              console.log(key);
+              script += key.name.toUpperCase() + `=` + `"${key.value}"` + "\n";
+            }
+          }
+
           for (let key in app) {
               if (key !== "createdAt" && key !== "updatedAt" && key !== "id") {
                   if (app[key] !== null && typeof app[key] !== 'object') {
