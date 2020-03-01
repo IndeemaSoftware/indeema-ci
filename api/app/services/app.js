@@ -83,11 +83,22 @@ module.exports = {
           if (!fs.existsSync(subscriptsPath)){
             fs.mkdirSync(subscriptsPath);
           }
-        
+
           let setup_script = subscriptsPath + `/${app.service.service_name}_setup`;
           let cleanup_script = subscriptsPath + `/${app.service.service_name}_cleanup`;
+          let maintenance_file_path = subscriptsPath + `/maintenance.html`;
 
           let script = "#!/bin/bash\n";
+
+          if (app.maintenance) {
+            script += `MAINTENANCE=${scriptsPathOnServer}/maintenance.html` + "\n";
+            fs.writeFile(maintenance_file_path, app.maintenance.html_code, (err) => {
+              if (err) rs({"status":"bad", "data":err});
+                exec(`chmod a+x ${maintenance_file_path}`);
+                rs();
+            });               
+          }
+        
           for (let key in app) {
               if (key !== "createdAt" && key !== "updatedAt" && key !== "id") {
                   if (app[key] !== null && typeof app[key] !== 'object') {
