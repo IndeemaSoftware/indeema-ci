@@ -11,7 +11,7 @@ module.exports = {
         return new Promise((rs, rj) => {
           const commandConnect = exec(command);
                                       commandConnect.stdout.on('data', async function(data) {
-          if(data !== ''){
+          if (data !== '') {
               const consoleItem = await strapi.services.console.create({
               message: data,
               type: 'message',
@@ -26,7 +26,7 @@ module.exports = {
               });
       
               //Send message
-              await strapi.eventEmitter.emit('system::notify', {
+              strapi.eventEmitter.emit('system::notify', {
               topic: `/console/setup/${server.id}/message`,
               data: consoleItem.message
               });
@@ -45,7 +45,7 @@ module.exports = {
               });
       
               if(code !== 0){
-                await strapi.services.console.create({
+                strapi.services.console.create({
                   message: status.bad.info,
                   type: 'build_error',
                   server: server.id
@@ -59,7 +59,7 @@ module.exports = {
                 });
       
                 //Send message
-                await strapi.eventEmitter.emit('system::notify', {
+                strapi.eventEmitter.emit('system::notify', {
                   topic: `/console/setup/${server.id}/build_error`,
                   data: status.bad.info
                 });
@@ -78,7 +78,7 @@ module.exports = {
                 });
     
                 //Send message
-                await strapi.eventEmitter.emit('system::notify', {
+                strapi.eventEmitter.emit('system::notify', {
                   topic: `/console/setup/${server.id}/build_success`,
                   data: consoleItem.message
                 });
@@ -100,14 +100,14 @@ module.exports = {
               });
       
               //Set status app
-              await strapi.services.app.update({
+              strapi.services.app.update({
                 id: app.id
               }, {
                 app_status: status.progress.status
               });
       
               //Send message
-              await strapi.eventEmitter.emit('system::notify', {
+              strapi.eventEmitter.emit('system::notify', {
               topic: `/console/setup/${app.id}/message`,
               data: consoleItem.message
               });
@@ -121,27 +121,27 @@ module.exports = {
                 app: app.id
               });
               //Send message
-              await strapi.eventEmitter.emit('system::notify', {
+              strapi.eventEmitter.emit('system::notify', {
                 topic: `/console/setup/${app.id}/end`,
                 data: consoleItem.message
               });
       
               if(code !== 0){
-                await strapi.services.console.create({
+                 strapi.services.console.create({
                   message: status.bad.info,
                   type: 'build_error',
                   app: app.id
                 });
       
                 //Set status app
-                await strapi.services.app.update({
+                strapi.services.app.update({
                     id: app.id
                 }, {
                     app_status: status.bad.status
                 });
       
                 //Send message
-                await strapi.eventEmitter.emit('system::notify', {
+                strapi.eventEmitter.emit('system::notify', {
                   topic: `/console/setup/${app.id}/build_error`,
                   data: status.bad.info
                 });
@@ -153,14 +153,14 @@ module.exports = {
                 });
     
                 //Set status app
-                await strapi.services.app.update({
+                strapi.services.app.update({
                   id: app.id
                 }, {
                     app_status: status.ok.status
                 });
     
                 //Send message
-                await strapi.eventEmitter.emit('system::notify', {
+                strapi.eventEmitter.emit('system::notify', {
                   topic: `/console/setup/${app.id}/build_success`,
                   data: consoleItem.message
                 });
