@@ -69,12 +69,6 @@
     "automatic_cert": {
       "type": "boolean"
     },
-    "ci_template": {
-      "type": "string"
-    },
-    "ci_script": {
-      "type": "string"
-    },
     "service": {
       "model": "service",
       "via": "apps"
@@ -85,6 +79,10 @@
     "maintenance": {
       "model": "maintenance",
       "via": "apps"
+    },
+    "ci_template": {
+      "via": "apps",
+      "model": "ci-templates"
     }
   }
 }

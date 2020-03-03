@@ -39,7 +39,7 @@ module.exports = {
   },
 
   runScript: async (server, name) => {
-    await strapi.services.server.moveScriptsToServer(server);
+    await strapi.services.server.generateSubScripts(server);
 
     const ssh = `ssh -o StrictHostKeyChecking=no -i ${publicPath}${server.ssh_key.url} ${server.ssh_username}@${server.ssh_ip} -tt`
 
@@ -55,23 +55,6 @@ module.exports = {
     let status = strapi.services.console.runServerScript(server, command, (name === SETUP)?SERVER_SETUP_STATUS:SERVER_CLEANUP_STATUS);
     // strapi.services.server.deleteFolderRecursive(subscriptsPath);
     return status;
-  },
-
-  async moveScriptsToServer(server) {
-    //prepare all scripts for copying
-    await strapi.services.server.generateSubScripts(server);
-
-    if (server && server.ssh_key && server.ssh_key.url && server.ssh_username && server.ssh_ip) {
-      const ssh = `ssh -o StrictHostKeyChecking=no -i ${publicPath}${server.ssh_key.url} ${server.ssh_username}@${server.ssh_ip} -tt`
-
-      //create dir on remove machine
-      let command = `chmod 400 ${publicPath}${server.ssh_key.url}; `;
-      command += `${ssh} "rm -fr ${scriptsPathOnServer}"; `;
-      command += `${ssh} "mkdir -p ${scriptsPathOnServer}"; `;
-      command += `scp -r -o StrictHostKeyChecking=no -i ${publicPath}${server.ssh_key.url} ${subscriptsPath}/* ${server.ssh_username}@${server.ssh_ip}:${scriptsPathOnServer}/; `;
-
-      await strapi.services.console.runServerScript(server, command, SERVER_COPYING_STATUS);
-    }
   },
   
   async generateSubScripts(server) {

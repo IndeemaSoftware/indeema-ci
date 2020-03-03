@@ -9,8 +9,8 @@ const fs = require('fs');
 const exec = require('child_process').exec;
 
 const publicPath = path.resolve() + "/public";
-const resourcesPath = publicPath + "/uploads/scripts/" 
-const subscriptsPath = resourcesPath + "subscripts";
+const resourcesPath = publicPath + "/uploads/" 
+const subscriptsPath = resourcesPath + `scripts/subscripts`;
 const scriptsPathOnServer = `/tmp/indeema_ci`;
 
 const SETUP = "setup";
@@ -31,15 +31,15 @@ const APP_CLEANUP_STATUS = {ok:{status:"cleanup_success", info:"Cleanup succed"}
 
 module.exports = {
     setupApp: async (app) => {
-      return strapi.services.app.runScript(app, SETUP);
+      return await strapi.services.app.runScript(app, SETUP);
     },
 
     cleanupApp: async (app) => {
-      return strapi.services.app.runScript(app, CLEANUP);
+      return await strapi.services.app.runScript(app, CLEANUP);
     },
 
     runScript: async (app, name) => {
-      await strapi.services.app.moveScriptsToServer(app);
+      await strapi.services.app.generateSubScripts(app);
       let server = app.server;
 
       const ssh = `ssh -o StrictHostKeyChecking=no -i ${publicPath}${server.ssh_key.url} ${server.ssh_username}@${server.ssh_ip} -tt`
@@ -53,30 +53,12 @@ module.exports = {
       let script = scriptsPathOnServer + `/` + app.service.service_name + `_` + name;
       command += `${ssh} "${script}"`;
 
-      let status = strapi.services.console.runAppScript(app, command, APP_SETUP_STATUS);
+      let status = await strapi.services.console.runAppScript(app, command, APP_SETUP_STATUS);
       // strapi.services.app.deleteFolderRecursive(subscriptsPath);
       return status;
     },
 
-    async moveScriptsToServer(app, name) {
-      //prepare all scripts for copying
-      await strapi.services.app.generateSubScripts(app);
-      let server = app.server;
-
-      if (server && server.ssh_key && server.ssh_key.url && server.ssh_username && server.ssh_ip) {
-        const ssh = `ssh -o StrictHostKeyChecking=no -i ${publicPath}${server.ssh_key.url} ${server.ssh_username}@${server.ssh_ip} -tt`
-  
-        //create dir on remove machine
-        let command = `chmod 400 ${publicPath}${server.ssh_key.url}; `;
-        // command += `${ssh} "rm -fr ${scriptsPathOnServer}"; `;
-        command += `${ssh} "mkdir -p ${scriptsPathOnServer}"; `;
-        command += `scp -r -o StrictHostKeyChecking=no -i ${publicPath}${server.ssh_key.url} ${subscriptsPath}/* ${server.ssh_username}@${server.ssh_ip}:${scriptsPathOnServer}/; `;
-  
-        await strapi.services.console.runServerScript(server, command, (name === SETUP)?APP_SETUP_STATUS:APP_CLEANUP_STATUS);
-      }
-    },
-
-    async generateSubScripts(app) {
+    generateSubScripts: async (app) => {
       return new Promise((rs, rj) => {
         strapi.services.app.deleteFolderRecursive(subscriptsPath);
   
@@ -95,7 +77,6 @@ module.exports = {
           fs.writeFile(maintenance_file_path, app.maintenance.html_code, (err) => {
             if (err) rs({"status":"bad", "data":err});
               exec(`chmod a+x ${maintenance_file_path}`);
-              rs();
           });               
         }
 
@@ -107,11 +88,13 @@ module.exports = {
 
         for (let key in app) {
             if (key !== "createdAt" && key !== "updatedAt" && key !== "id") {
-              if (key !== "ci_template") {
-                const directoryPath = publicPath + `/uploads/ci_templates/${app.ci_script}/${app.ci_template}`;
-                exec(`cp ${directoryPath} ${subscriptsPath};`);
-                script += key.toUpperCase() + `=` + `"${app[key]}"` + "\n";
-              } else if (app[key] !== null && typeof app[key] !== 'object') {
+              if (key === "ci_template") {
+                let ci_path = subscriptsPath + "/" + app.ci_template.name;
+                fs.writeFile(ci_path, app.ci_template.yml_code, (err) => {
+                });  
+                script += key.toUpperCase() + `=${scriptsPathOnServer}/${app.ci_template.name}\n`;                
+              } 
+               if (app[key] !== null && typeof app[key] !== 'object') {
                 script += key.toUpperCase() + `=` + `"${app[key]}"` + "\n";
               }
             }

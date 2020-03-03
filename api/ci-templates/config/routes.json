@@ -1,0 +1,52 @@
+{
+  "routes": [
+    {
+      "method": "GET",
+      "path": "/ci-templates",
+      "handler": "ci-templates.find",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/ci-templates/count",
+      "handler": "ci-templates.count",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/ci-templates/:id",
+      "handler": "ci-templates.findOne",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/ci-templates",
+      "handler": "ci-templates.create",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "PUT",
+      "path": "/ci-templates/:id",
+      "handler": "ci-templates.update",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "DELETE",
+      "path": "/ci-templates/:id",
+      "handler": "ci-templates.delete",
+      "config": {
+        "policies": []
+      }
+    }
+  ]
+}

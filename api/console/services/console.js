@@ -20,9 +20,9 @@ module.exports = {
       
               //Set status server
               await strapi.services.server.update({
-              id: server.id
-              }, {
-              server_status: status.progress.status
+                id: server.id
+                }, {
+                server_status: status.progress.status
               });
       
               //Send message
@@ -101,9 +101,9 @@ module.exports = {
       
               //Set status app
               await strapi.services.app.update({
-              id: app.id
+                id: app.id
               }, {
-              app_status: status.progress.status
+                app_status: status.progress.status
               });
       
               //Send message
@@ -113,6 +113,7 @@ module.exports = {
               });
           }
           });
+
           commandConnect.on('close', async (code) => {
               const consoleItem = await strapi.services.console.create({
                 message: `Child process exited with code ${code}`,

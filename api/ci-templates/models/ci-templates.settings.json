@@ -1,0 +1,23 @@
+{
+  "info": {
+    "name": "Ci Templates"
+  },
+  "options": {
+    "increments": true,
+    "timestamps": true
+  },
+  "attributes": {
+    "name": {
+      "type": "string"
+    },
+    "yml_code": {
+      "type": "richtext"
+    },
+    "apps": {
+      "collection": "app",
+      "via": "ci_template"
+    }
+  },
+  "connection": "default",
+  "collectionName": "ci_templates"
+}

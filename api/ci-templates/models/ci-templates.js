@@ -1,7 +1,7 @@
 'use strict';
 
 /**
- * Lifecycle callbacks for the `project` model.
+ * Lifecycle callbacks for the `ci-templates` model.
  */
 
 module.exports = {
