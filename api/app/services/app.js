@@ -20,7 +20,7 @@ const APP_SETUP_STATUS = {ok:{status:"success", info:"Setup succed"},
                             bad:{status:"failed", info:"Setup failed"},
                             progress:{status:"progress", info:"Setup is in progress"}}
 
-const SERVER_COPYING_STATUS = {ok:{status:"success", info:"Resource copied to server"},
+const APP_COPYING_STATUS = {ok:{status:"success", info:"Resource copied to server"},
                             bad:{status:"failed", info:"Resource copying failed"},
                             progress:{status:"progress", info:"Copying resources to server"}}
 
@@ -31,131 +31,144 @@ const APP_CLEANUP_STATUS = {ok:{status:"cleanup_success", info:"Cleanup succed"}
 
 module.exports = {
     setupApp: async (app) => {
-        return strapi.services.app.runScript(app, "setup");
+      return strapi.services.app.runScript(app, SETUP);
     },
 
     cleanupApp: async (app) => {
-        return strapi.services.app.runScript(app, "cleanup");
+      return strapi.services.app.runScript(app, CLEANUP);
     },
 
     runScript: async (app, name) => {
-        await strapi.services.app.moveScriptsToServer(app);
-        let server = app.server;
+      await strapi.services.app.moveScriptsToServer(app);
+      let server = app.server;
 
-        const ssh = `ssh -o StrictHostKeyChecking=no -i ${publicPath}${server.ssh_key.url} ${server.ssh_username}@${server.ssh_ip} -tt`
+      const ssh = `ssh -o StrictHostKeyChecking=no -i ${publicPath}${server.ssh_key.url} ${server.ssh_username}@${server.ssh_ip} -tt`
 
-        //create dir on remove machine
-        let command = `chmod 400 ${publicPath}${server.ssh_key.url}; `;
-        command += `${ssh} "rm -fr ${scriptsPathOnServer}"; `;
-        command += `${ssh} "mkdir -p ${scriptsPathOnServer}"; `;
-        command += `scp -r -o StrictHostKeyChecking=no -i ${publicPath}${server.ssh_key.url} ${subscriptsPath}/* ${server.ssh_username}@${server.ssh_ip}:${scriptsPathOnServer}/; `;
+      //create dir on remove machine
+      let command = `chmod 400 ${publicPath}${server.ssh_key.url}; `;
+      command += `${ssh} "rm -fr ${scriptsPathOnServer}"; `;
+      command += `${ssh} "mkdir -p ${scriptsPathOnServer}"; `;
+      command += `scp -r -o StrictHostKeyChecking=no -i ${publicPath}${server.ssh_key.url} ${subscriptsPath}/* ${server.ssh_username}@${server.ssh_ip}:${scriptsPathOnServer}/; `;
 
-        let script = scriptsPathOnServer + `/` + app.service.service_name + `_` + name;
-        command += `${ssh} "${script}"`;
+      let script = scriptsPathOnServer + `/` + app.service.service_name + `_` + name;
+      command += `${ssh} "${script}"`;
 
-        let status = strapi.services.console.runAppScript(app, command, APP_SETUP_STATUS);
-        // strapi.services.app.deleteFolderRecursive(subscriptsPath);
-        return status;
+      let status = strapi.services.console.runAppScript(app, command, APP_SETUP_STATUS);
+      // strapi.services.app.deleteFolderRecursive(subscriptsPath);
+      return status;
     },
 
-    async moveScriptsToServer(app) {
-        //prepare all scripts for copying
-        await strapi.services.app.generateSubScripts(app);
-        let server = app.server;
+    async moveScriptsToServer(app, name) {
+      //prepare all scripts for copying
+      await strapi.services.app.generateSubScripts(app);
+      let server = app.server;
 
-    
-        if (server && server.ssh_key && server.ssh_key.url && server.ssh_username && server.ssh_ip) {
-          const ssh = `ssh -o StrictHostKeyChecking=no -i ${publicPath}${server.ssh_key.url} ${server.ssh_username}@${server.ssh_ip} -tt`
-    
-          //create dir on remove machine
-          let command = `chmod 400 ${publicPath}${server.ssh_key.url}; `;
-          command += `${ssh} "rm -fr ${scriptsPathOnServer}"; `;
-          command += `${ssh} "mkdir -p ${scriptsPathOnServer}"; `;
-          command += `scp -r -o StrictHostKeyChecking=no -i ${publicPath}${server.ssh_key.url} ${subscriptsPath}/* ${server.ssh_username}@${server.ssh_ip}:${scriptsPathOnServer}/; `;
-    
-          await strapi.services.console.runServerScript(server, command, (name === SETUP)?SERVER_SETUP_STATUS:SERVER_CLEANUP_STATUS);
-        }
+      if (server && server.ssh_key && server.ssh_key.url && server.ssh_username && server.ssh_ip) {
+        const ssh = `ssh -o StrictHostKeyChecking=no -i ${publicPath}${server.ssh_key.url} ${server.ssh_username}@${server.ssh_ip} -tt`
+  
+        //create dir on remove machine
+        let command = `chmod 400 ${publicPath}${server.ssh_key.url}; `;
+        // command += `${ssh} "rm -fr ${scriptsPathOnServer}"; `;
+        command += `${ssh} "mkdir -p ${scriptsPathOnServer}"; `;
+        command += `scp -r -o StrictHostKeyChecking=no -i ${publicPath}${server.ssh_key.url} ${subscriptsPath}/* ${server.ssh_username}@${server.ssh_ip}:${scriptsPathOnServer}/; `;
+  
+        await strapi.services.console.runServerScript(server, command, (name === SETUP)?APP_SETUP_STATUS:APP_CLEANUP_STATUS);
+      }
     },
 
     async generateSubScripts(app) {
-        return new Promise((rs, rj) => {
-          strapi.services.app.deleteFolderRecursive(subscriptsPath);
-    
-          if (!fs.existsSync(subscriptsPath)){
-            fs.mkdirSync(subscriptsPath);
+      return new Promise((rs, rj) => {
+        strapi.services.app.deleteFolderRecursive(subscriptsPath);
+  
+        if (!fs.existsSync(subscriptsPath)){
+          fs.mkdirSync(subscriptsPath);
+        }
+
+        let setup_script = subscriptsPath + `/${app.service.service_name}_setup`;
+        let cleanup_script = subscriptsPath + `/${app.service.service_name}_cleanup`;
+        let maintenance_file_path = subscriptsPath + `/maintenance.html`;
+
+        let script = "#!/bin/bash\n";
+
+        if (app.maintenance) {
+          script += `MAINTENANCE=${scriptsPathOnServer}/maintenance.html` + "\n";
+          fs.writeFile(maintenance_file_path, app.maintenance.html_code, (err) => {
+            if (err) rs({"status":"bad", "data":err});
+              exec(`chmod a+x ${maintenance_file_path}`);
+              rs();
+          });               
+        }
+
+        if (Object.keys(app.service.variables).length > 0) {
+          for (let key of app.service.variables) {
+            script += key.name.toUpperCase() + `=` + `"${key.value}"` + "\n";
           }
+        }
 
-          let setup_script = subscriptsPath + `/${app.service.service_name}_setup`;
-          let cleanup_script = subscriptsPath + `/${app.service.service_name}_cleanup`;
-          let maintenance_file_path = subscriptsPath + `/maintenance.html`;
-
-          let script = "#!/bin/bash\n";
-
-          if (app.maintenance) {
-            script += `MAINTENANCE=${scriptsPathOnServer}/maintenance.html` + "\n";
-            fs.writeFile(maintenance_file_path, app.maintenance.html_code, (err) => {
-              if (err) rs({"status":"bad", "data":err});
-                exec(`chmod a+x ${maintenance_file_path}`);
-                rs();
-            });               
-          }
-
-          if (Object.keys(app.service.variables).length > 0) {
-            for (let key of app.service.variables) {
-              script += key.name.toUpperCase() + `=` + `"${key.value}"` + "\n";
-            }
-          }
-
-          for (let key in app) {
-              if (key !== "createdAt" && key !== "updatedAt" && key !== "id") {
-                  if (app[key] !== null && typeof app[key] !== 'object') {
-                    script += key.toUpperCase() + `=` + `"${app[key]}"` + "\n";
-                  }
+        for (let key in app) {
+            if (key !== "createdAt" && key !== "updatedAt" && key !== "id") {
+              if (key !== "ci_template") {
+                const directoryPath = publicPath + `/uploads/ci_templates/${app.ci_script}/${app.ci_template}`;
+                exec(`cp ${directoryPath} ${subscriptsPath};`);
+                script += key.toUpperCase() + `=` + `"${app[key]}"` + "\n";
+              } else if (app[key] !== null && typeof app[key] !== 'object') {
+                script += key.toUpperCase() + `=` + `"${app[key]}"` + "\n";
               }
-          }
-          script += `project_name=`.toUpperCase() + `"${app.project.project_name}"` + "\n";
-          if (app.project.environments &&  Object.keys(app.project.environments).length) {
-            script += "ENVIRONMENTS=(";
-            for (let env of app.project.environments) {
-              script += env + " ";
-            }  
-            script += ")\n";
-          }
+            }
+        }
+        script += `project_name=`.toUpperCase() + `"${app.project.project_name}"` + "\n";
+        if (app.project.environments &&  Object.keys(app.project.environments).length) {
+          script += "ENVIRONMENTS=(";
+          for (let env of app.project.environments) {
+            script += env + " ";
+          }  
+          script += ")\n";
+        }
 
-          //generating server dependency script files
-          if (app.service.setup_script) {
-            script += app.service.setup_script;
-            fs.writeFile(setup_script, script, (err) => {
-              if (err) rs({"status":"bad", "data":err});
-                exec(`chmod a+x ${setup_script}`);
-                rs();
-            });               
-          }
-          
-          if (app.service.cleanup_script) {
-            script += app.service.cleanup_script;
-            fs.writeFile(cleanup_script, app.service.cleanup_script, (err) => {
-              if (err) rs({"status":"bad", "data":err});
-                exec(`chmod a+x ${cleanup_script}`);
-                rs();
-            });   
-          }
-    
-          rs();
-        });
+        //generating server dependency script files
+        if (app.service.setup_script) {
+          script += app.service.setup_script;
+          fs.writeFile(setup_script, script, (err) => {
+            if (err) rs({"status":"bad", "data":err});
+              exec(`chmod a+x ${setup_script}`);
+              rs();
+          });               
+        }
+        
+        if (app.service.cleanup_script) {
+          script += app.service.cleanup_script;
+          fs.writeFile(cleanup_script, app.service.cleanup_script, (err) => {
+            if (err) rs({"status":"bad", "data":err});
+              exec(`chmod a+x ${cleanup_script}`);
+              rs();
+          });   
+        }
+  
+        rs();
+      });
+    },
+
+    async downloadCiScript(app) {
+      return new Promise((rs, rj) => {
+        let server = app.server;
+        let ciPath = path.resolve() + `/public/uploads/builds/${app.project.project_name}/${app.app_name}/`;
+        exec(`mkdir -p ${ciPath}`);
+        let command = `scp -o StrictHostKeyChecking=no -i ${publicPath}${server.ssh_key.url} ${server.ssh_username}@${server.ssh_ip}:${scriptsPathOnServer}/${app.ci_template} ${ciPath}/gitlab-ci.yml; `;
+        rs(strapi.services.console.runAppScript(app, command, APP_SETUP_STATUS));
+      });
     },
 
     async deleteFolderRecursive(del_path) {
-        if (fs.existsSync(del_path)) {
-          fs.readdirSync(del_path).forEach((file, index) => {
-            const curPath = path.join(del_path, file);
-            if (fs.lstatSync(curPath).isDirectory()) { // recurse
-              deleteFolderRecursive(curPath);
-            } else { // delete file
-              fs.unlinkSync(curPath);
-            }
-          });
-          fs.rmdirSync(del_path);
-        }
+      if (fs.existsSync(del_path)) {
+        fs.readdirSync(del_path).forEach((file, index) => {
+          const curPath = path.join(del_path, file);
+          if (fs.lstatSync(curPath).isDirectory()) { // recurse
+            deleteFolderRecursive(curPath);
+          } else { // delete file
+            fs.unlinkSync(curPath);
+          }
+        });
+        fs.rmdirSync(del_path);
+      }
     },
 };

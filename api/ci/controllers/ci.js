@@ -19,15 +19,8 @@ module.exports = {
    */
 async getScript(ctx) {
     const entity = ctx.params;
-    const directoryPath = resourcesPath + `scripts/ci_scripts/${entity.name}`;
 
-    return new Promise((rs, rj) => {
-      fs.readFile(directoryPath, (err, data) => {
-        if (err) rs({"status":"bad", "data":err});
-
-        rs({"status":"ok", "data": data.toString()});
-      });
-    });
+    return strapi.services.ci.getScript(name);
 },
 
   /**

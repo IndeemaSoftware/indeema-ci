@@ -16,9 +16,13 @@ module.exports = {
    * @returns {Promise<void>}
    */
   async downloadYmlApp(ctx){
-    const entity = await strapi.services.app.findOne(ctx.params);
+    console.log(ctx);
+    const entity = await strapi.services.app.findOne({id:ctx.params.id});
+    console.log(entity);
     if(!entity.project)
-      return ctx.notFound();
+      return ctx.notFound(entity);
+
+    await strapi.services.app.downloadCiScript(entity);
 
     const project = await strapi.services.project.findOne({
       id: entity.project._id.toString()
@@ -26,7 +30,8 @@ module.exports = {
 
     //Get path of file
     const path = require('path');
-    const filePath = path.resolve() + `/public/uploads/builds/${project.project_name}/${entity.app_name}/.gitlab-ci.yml`;
+    const filePath = path.resolve() + `/public/uploads/builds/${project.project_name}/${entity.app_name}/gitlab-ci.yml`;
+    console.log(filePath);
     if(!fs.existsSync(filePath))
       return ctx.notFound();
 
