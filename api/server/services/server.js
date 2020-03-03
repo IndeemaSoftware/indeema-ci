@@ -45,7 +45,7 @@ module.exports = {
 
     //create dir on remove machine
     let command = `chmod 400 ${publicPath}${server.ssh_key.url}; `;
-    command += `${ssh} "rm -fr ${scriptsPathOnServer}"; `;
+    // command += `${ssh} "rm -fr ${scriptsPathOnServer}"; `;
     command += `${ssh} "mkdir -p ${scriptsPathOnServer}"; `;
     command += `scp -r -o StrictHostKeyChecking=no -i ${publicPath}${server.ssh_key.url} ${subscriptsPath}/* ${server.ssh_username}@${server.ssh_ip}:${scriptsPathOnServer}/; `;
 
