@@ -12,40 +12,37 @@ module.exports = {
           var messages = [];
 
           const commandConnect = exec(command);
-                                      commandConnect.stdout.on('data', async function(data) { 
-          for (let tmp of JSON.stringify(data).split(`\\r\\n`)) {
-            tmp = tmp.replace('\"', '');
-            tmp = tmp.replace('\\"', '');
-            tmp = tmp.replace('\\t', '');
-            tmp = tmp.replace('\\', '');
-            tmp = tmp.replace('"', '');
-            tmp = tmp.replace('"', '');
-        
-            if (tmp !== '') {
-              messages.push(tmp);
+          commandConnect.stdout.on('data', async function (data) {
+            for (let tmp of JSON.stringify(data).split(`\\r\\n`)) {
+              tmp = tmp.replace('\"', '');
+              tmp = tmp.replace('\\"', '');
+              tmp = tmp.replace('\\t', '');
+              tmp = tmp.replace('\\', '');
+              tmp = tmp.replace('"', '');
+              tmp = tmp.replace('"', '');
+              if (tmp !== '') {
+                messages.push(tmp);
+              }
             }
-          }
-          while (messages.length > 0) {
-            const consoleItem = await strapi.services.console.create({
-            message: `${messages.shift()}`,
-            type: 'message',
-            server: server.id
-            });
-            messages.splice(-1,1)
-    
-            //Set status server
-            await strapi.services.server.update({
-              id: server.id
+            while (messages.length > 0) {
+              const consoleItem = await strapi.services.console.create({
+                message: `${messages.shift()}`,
+                type: 'message',
+                server: server.id
+              });
+              messages.splice(-1, 1);
+              //Set status server
+              strapi.services.server.update({
+                id: server.id
               }, {
-              server_status: status.progress.status
-            });
-    
-            //Send message
-            strapi.eventEmitter.emit('system::notify', {
-            topic: `/console/setup/${server.id}/message`,
-            data: consoleItem.message
-            });
-          }
+                server_status: status.progress.status
+              });
+              //Send message
+              strapi.eventEmitter.emit('system::notify', {
+                topic: `/console/setup/${server.id}/message`,
+                data: consoleItem.message
+              });
+            }
           });
           commandConnect.on('close', async (code) => {
             const consoleItem = await strapi.services.console.create({
@@ -54,7 +51,7 @@ module.exports = {
               server: server.id
             });
             //Send message
-            await strapi.eventEmitter.emit('system::notify', {
+            strapi.eventEmitter.emit('system::notify', {
               topic: `/console/setup/${server.id}/end`,
               data: consoleItem.message
             });
@@ -67,7 +64,7 @@ module.exports = {
               });
     
               //Set status server
-              await strapi.services.server.update({
+              strapi.services.server.update({
                 id: server.id
               }, {
                 server_status: status.bad.status
@@ -86,7 +83,7 @@ module.exports = {
               });
   
               //Set status server
-              await strapi.services.server.update({
+              strapi.services.server.update({
                 id: server.id
               }, {
                 server_status: status.ok.status
