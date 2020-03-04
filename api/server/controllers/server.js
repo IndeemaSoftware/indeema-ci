@@ -60,6 +60,7 @@ module.exports = {
   },
 
   async cleanup(ctx) {
+    console.log("cleanup");
     const user = ctx.state.user;
 
     const server = await strapi.services.server.findOne({id:ctx.params.id});
