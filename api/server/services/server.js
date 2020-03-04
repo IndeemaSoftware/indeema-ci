@@ -41,31 +41,34 @@ module.exports = {
   runScript: async (server, name) => {
     await strapi.services.server.generateSubScripts(server);
 
+    let serverSubscriptsPath = subscriptsPath + `/${server.id}`;
+
     const ssh = `ssh -o StrictHostKeyChecking=no -i ${publicPath}${server.ssh_key.url} ${server.ssh_username}@${server.ssh_ip} -tt`
 
     //create dir on remove machine
     let command = `chmod 400 ${publicPath}${server.ssh_key.url}; `;
     // command += `${ssh} "rm -fr ${scriptsPathOnServer}"; `;
     command += `${ssh} "mkdir -p ${scriptsPathOnServer}"; `;
-    command += `scp -r -o StrictHostKeyChecking=no -i ${publicPath}${server.ssh_key.url} ${subscriptsPath}/* ${server.ssh_username}@${server.ssh_ip}:${scriptsPathOnServer}/; `;
+    command += `scp -r -o StrictHostKeyChecking=no -i ${publicPath}${server.ssh_key.url} ${serverSubscriptsPath}/* ${server.ssh_username}@${server.ssh_ip}:${scriptsPathOnServer}/; `;
 
     let script = scriptsPathOnServer + `/` + server.platform.platform_name + `_` + name;
     command += `${ssh} "${script}"`;
 
     let status = strapi.services.console.runServerScript(server, command, (name === SETUP)?SERVER_SETUP_STATUS:SERVER_CLEANUP_STATUS);
-    // strapi.services.server.deleteFolderRecursive(subscriptsPath);
+    // strapi.services.server.deleteFolderRecursive(serverSubscriptsPath);
     return status;
   },
   
   async generateSubScripts(server) {
     return new Promise((rs, rj) => {
-      strapi.services.server.deleteFolderRecursive(subscriptsPath);
+      let serverSubscriptsPath = subscriptsPath + `/${server.id}`;
+      strapi.services.server.deleteFolderRecursive(serverSubscriptsPath);
 
-      if (!fs.existsSync(subscriptsPath)){
-        fs.mkdirSync(subscriptsPath);
+      if (!fs.existsSync(serverSubscriptsPath)){
+        fs.mkdirSync(serverSubscriptsPath);
       }
-      let setup_script = subscriptsPath + `/${server.platform.platform_name}_setup`;
-      let cleanup_script = subscriptsPath + `/${server.platform.platform_name}_cleanup`;
+      let setup_script = serverSubscriptsPath + `/${server.platform.platform_name}_setup`;
+      let cleanup_script = serverSubscriptsPath + `/${server.platform.platform_name}_cleanup`;
       
       let script = "#!/bin/bash\n";
 
@@ -110,9 +113,9 @@ module.exports = {
 
       if (server.server_dependencies && server.server_dependencies.length) {
         for (let obj of server.server_dependencies) {
-          let i_script = subscriptsPath + `/${obj.name}_install`;
-          let pre_script = subscriptsPath + `/${obj.name}_pre`;
-          let post_script = subscriptsPath + `/${obj.name}_post`;
+          let i_script = serverSubscriptsPath + `/${obj.name}_install`;
+          let pre_script = serverSubscriptsPath + `/${obj.name}_pre`;
+          let post_script = serverSubscriptsPath + `/${obj.name}_post`;
 
           //generating server dependency script files
           if (obj.install_script) {
@@ -142,7 +145,7 @@ module.exports = {
       //generating custom dependency script files
       if (server.custom_dependencies && server.custom_dependencies.length) {
         for (let obj of server.custom_dependencies) {
-          let i_script = subscriptsPath + `/${obj.name}_install`;
+          let i_script = serverSubscriptsPath + `/${obj.name}_install`;
 
           if (obj.install_script) {
             fs.writeFile(i_script, obj.install_script, (err) => {

@@ -41,6 +41,7 @@ module.exports = {
     runScript: async (app, name) => {
       await strapi.services.app.generateSubScripts(app);
       let server = app.server;
+      let appSubscriptsPath = subscriptsPath + `/${app.id}`;
 
       const ssh = `ssh -o StrictHostKeyChecking=no -i ${publicPath}${server.ssh_key.url} ${server.ssh_username}@${server.ssh_ip} -tt`
 
@@ -48,27 +49,28 @@ module.exports = {
       let command = `chmod 400 ${publicPath}${server.ssh_key.url}; `;
       // command += `${ssh} "rm -fr ${scriptsPathOnServer}"; `;
       command += `${ssh} "mkdir -p ${scriptsPathOnServer}"; `;
-      command += `scp -r -o StrictHostKeyChecking=no -i ${publicPath}${server.ssh_key.url} ${subscriptsPath}/* ${server.ssh_username}@${server.ssh_ip}:${scriptsPathOnServer}/; `;
+      command += `scp -r -o StrictHostKeyChecking=no -i ${publicPath}${server.ssh_key.url} ${appSubscriptsPath}/* ${server.ssh_username}@${server.ssh_ip}:${scriptsPathOnServer}/; `;
 
       let script = scriptsPathOnServer + `/` + app.service.service_name + `_` + name;
       command += `${ssh} "${script}"`;
 
       let status = await strapi.services.console.runAppScript(app, command, APP_SETUP_STATUS);
-      // strapi.services.app.deleteFolderRecursive(subscriptsPath);
+      // strapi.services.app.deleteFolderRecursive(appSubscriptsPath);
       return status;
     },
 
     generateSubScripts: async (app) => {
       return new Promise((rs, rj) => {
-        strapi.services.app.deleteFolderRecursive(subscriptsPath);
+        let appSubscriptsPath = subscriptsPath + `/${app.id}`;
+        strapi.services.app.deleteFolderRecursive(appSubscriptsPath);
   
-        if (!fs.existsSync(subscriptsPath)){
-          fs.mkdirSync(subscriptsPath);
+        if (!fs.existsSync(appSubscriptsPath)){
+          fs.mkdirSync(appSubscriptsPath);
         }
 
-        let setup_script = subscriptsPath + `/${app.service.service_name}_setup`;
-        let cleanup_script = subscriptsPath + `/${app.service.service_name}_cleanup`;
-        let maintenance_file_path = subscriptsPath + `/maintenance.html`;
+        let setup_script = appSubscriptsPath + `/${app.service.service_name}_setup`;
+        let cleanup_script = appSubscriptsPath + `/${app.service.service_name}_cleanup`;
+        let maintenance_file_path = appSubscriptsPath + `/maintenance.html`;
 
         let script = "#!/bin/bash\n";
 
@@ -89,7 +91,7 @@ module.exports = {
         for (let key in app) {
             if (key !== "createdAt" && key !== "updatedAt" && key !== "id") {
               if (key === "ci_template") {
-                let ci_path = subscriptsPath + "/" + app.ci_template.name;
+                let ci_path = appSubscriptsPath + "/" + app.ci_template.name;
                 fs.writeFile(ci_path, app.ci_template.yml_code, (err) => {
                 });  
                 script += key.toUpperCase() + `=${scriptsPathOnServer}/${app.ci_template.name}\n`;                
