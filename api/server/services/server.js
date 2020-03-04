@@ -93,18 +93,20 @@ module.exports = {
       }
 
       //generating server dependency script files
+      let tmp_script = script;
       if (server.platform.setup_script) {
-        script += server.platform.setup_script;
-        fs.writeFile(setup_script, script, (err) => {
+        tmp_script += server.platform.setup_script;
+        fs.writeFile(setup_script, tmp_script, (err) => {
           if (err) rs({"status":"bad", "data":err});
             exec(`chmod a+x ${setup_script}`);
             rs();
         });               
       }
-      
+
+      tmp_script = script;      
       if (server.platform.cleanup_script) {
-        script += server.platform.cleanup_script;
-        fs.writeFile(cleanup_script, server.platform.cleanup_script, (err) => {
+        tmp_script += server.platform.cleanup_script;
+        fs.writeFile(cleanup_script, tmp_script, (err) => {
           if (err) rs({"status":"bad", "data":err});
             exec(`chmod a+x ${cleanup_script}`);
             rs();
