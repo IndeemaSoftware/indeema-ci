@@ -1,12 +1,11 @@
 #Project deploy variables
 variables:
   APP_NAME: "indeema_ci_api"
-  DEPLOY_PATH: "/home/gitlab-runner/runner/connect-runner-web"
-  BACKUP_PATH: "/home/gitlab-runner/runner/connect-runner-web/backups"
-  URL_DEV: "localhost:1337"
-  URL_PROD: "localhost:1337"
-  DEV_HOST: "gitlab-runner@194.168.1.124"
-  PROD_HOST: "gitlab-runner@192.168.1.124"
+  DEPLOY_PATH: "/home/indeema/Indeema"
+  BACKUP_PATH: "/home/indeema/Indeema/backups"
+  JS_SERVER_FILE: "server.js"
+  URL_DEV: "http://198.199.125.240:1337"
+  HOST_DEV: "indeema@198.199.125.240"
 #######################################################################################################
 ##!!!Important!!! Do not change the following code start from line 10 if you don`t know how it works!##
 #######################################################################################################
