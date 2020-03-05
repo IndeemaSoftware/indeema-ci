@@ -3,7 +3,7 @@ variables:
   DEPLOY_PATH: "/home/indeema/Indeema"
   BACKUP_PATH: "/home/indeema/Indeema/backups"
   JS_SERVER_FILE: "server.js"
-  URL_DEV: "http://198.199.125.240:1337"
+  URL_DEV: "http://198.199.125.240:1338"
   HOST_DEV: "indeema@198.199.125.240"
 #Project deploy variables
 
