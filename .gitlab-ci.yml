@@ -4,8 +4,8 @@ variables:
   DEPLOY_PATH: "/home/indeema/Indeema"
   BACKUP_PATH: "/home/indeema/Indeema/backups"
   JS_SERVER_FILE: "server.js"
-  URL_DEV: "http://198.199.125.240:1337"
-  HOST_DEV: "indeema@198.199.125.240"
+  URL_DEV: "http://37.139.17.146:1337"
+  HOST_DEV: "root@37.139.17.146"
 #######################################################################################################
 ##!!!Important!!! Do not change the following code start from line 10 if you don`t know how it works!##
 #######################################################################################################
