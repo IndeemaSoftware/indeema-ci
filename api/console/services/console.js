@@ -8,7 +8,6 @@ const exec = require('child_process').exec;
 var express = require('express');
 var server = express();
 var app = express();
-const letterNumber = /^[0-9a-zA-Z#-+><\[\].,_://]+$/;
 
 app.listen(3000, function () {
   messages();
@@ -31,7 +30,6 @@ async function messages() {
 async function updateAppMessage() {
   while (gAppMessages.length > 0) {
     let object = gAppMessages.shift(); 
-    console.log(object);
     if (object.key === 'data') {
       const consoleItem = await strapi.services.console.create({
         message: object.value,
@@ -147,19 +145,19 @@ async function updateServerMessage() {
         await strapi.services.console.create({
           message: gServerStatus.bad.info,
           type: 'build_error',
-          server: server.id
+          server: gServer.id
         });
 
         //Set status server
         await strapi.services.server.update({
-          id: server.id
+          id: gServer.id
         }, {
           server_status: gServerStatus.bad.status
         });
 
         //Send message
         await strapi.eventEmitter.emit('system::notify', {
-          topic: `/console/setup/${server.id}/build_error`,
+          topic: `/console/setup/${gServer.id}/build_error`,
           data: gServerStatus.bad.info
         });
       } else {
@@ -198,13 +196,14 @@ module.exports = {
           tmp = tmp.replace('"', '');
           if (tmp.includes('\\r\\r') 
             || (!tmp.includes('-->')
-            && !tmp.includes('Error')
             && !tmp.includes('Err')
             && !tmp.includes('err')
-            && !tmp.includes('failed')
-            && !tmp.includes('Failed')
             && !tmp.includes('fail')
-            && !tmp.includes('Fail'))) {
+            && !tmp.includes('Fail')
+            && !tmp.includes('Success')
+            && !tmp.includes('success')
+            && !tmp.includes('Finish')
+            && !tmp.includes('Finish'))) {
             continue;
           }  
 
