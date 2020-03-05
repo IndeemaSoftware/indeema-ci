@@ -1,11 +1,12 @@
-#Project deploy variables
 variables:
   APP_NAME: "indeema_ci_api"
   DEPLOY_PATH: "/home/indeema/Indeema"
   BACKUP_PATH: "/home/indeema/Indeema/backups"
   JS_SERVER_FILE: "server.js"
-  URL_DEV: "http://198.199.125.240:1338"
+  URL_DEV: "http://198.199.125.240:1337"
   HOST_DEV: "indeema@198.199.125.240"
+#Project deploy variables
+
 #######################################################################################################
 ##!!!Important!!! Do not change the following code start from line 10 if you don`t know how it works!##
 #######################################################################################################
@@ -20,52 +21,55 @@ stages:
   script:
     - echo "Install dependencies"
     - npm install
-    - npm run build
     - echo "Compress project folder"
     - tar -czf $APP_NAME.tar.gz ./*
     - echo "Create project folder on server, where all resources will be copy to"
-    - mkdir -p $DEPLOY_PATH/$APP_NAME
-    - cp $APP_NAME.tar.gz /tmp
+    - ssh -o StrictHostKeyChecking=no $HOST -t "mkdir -p $DEPLOY_PATH/$APP_NAME"
+    - echo "Upload build archive to server"
+    - scp -o StrictHostKeyChecking=no $APP_NAME.tar.gz $HOST:/tmp
     - echo "Make backup, uncompress project, remove archive"
-    - mkdir -p $BACKUP_PATH
-    - rm -rf $BACKUP_PATH/$APP_NAME
-    - mv $DEPLOY_PATH/$APP_NAME $BACKUP_PATH/
-    - mkdir -p $DEPLOY_PATH/$APP_NAME
-    - cd $DEPLOY_PATH/$APP_NAME
-    - tar -xzf /tmp/$APP_NAME.tar.gz
-    - rm -fr /tmp/$APP_NAME.tar.gz
-    - cp -r $BACKUP_PATH/$APP_NAME/public/uploads/* $DEPLOY_PATH/$APP_NAME/public/uploads/
+    - ssh -o StrictHostKeyChecking=no $HOST -t "mkdir -p $BACKUP_PATH;
+        rm -rf $BACKUP_PATH/$APP_NAME;
+        mv $DEPLOY_PATH/$APP_NAME $BACKUP_PATH/;
+        mkdir -p $DEPLOY_PATH/$APP_NAME;
+        cd $DEPLOY_PATH/$APP_NAME;
+        tar -xzf /tmp/$APP_NAME.tar.gz;
+        rm -fr /tmp/$APP_NAME.tar.gz;
+        cp -r $BACKUP_PATH/$APP_NAME/public/uploads/* $DEPLOY_PATH/$APP_NAME/public/uploads/ 2>/dev/null || exit 0"
+
 .job_launch: &tpl_launch
   stage: launch
   script:
     - echo "Launch back-end service"
-    - source ~/.profile
-    - cd $DEPLOY_PATH/$APP_NAME
-    - pm2 stop $APP_NAME
-    - sleep 5
-    - pm2 start --name $APP_NAME npm -- start
+    - ssh -o StrictHostKeyChecking=no $HOST -t "source ~/.profile;
+        cd $DEPLOY_PATH/$APP_NAME;
+        pm2 stop $APP_NAME >> /dev/null || true;
+        sleep 5;
+        pm2 start --name $APP_NAME npm -- start"
 .job_helthcheck: &tpl_helthcheck
   stage: helthcheck
   script:
     - curl $URL --connect-timeout 10 -s -f -o /dev/null && echo 'Success! API is working' || echo "Error! API is not answering on $URL"
-    - curl $URL --connect-timeout 10 -s -f -o /dev/null && echo 'No need to show PM2 logs' || source ~/.profile; pm2 logs --nostream
+    - curl $URL --connect-timeout 10 -s -f -o /dev/null && echo 'No need to show PM2 logs' || ssh -o StrictHostKeyChecking=no $HOST -t "source ~/.profile; pm2 logs --nostream"
     - curl $URL --connect-timeout 10 -s -f -o /dev/null && echo 'No need to stop deployment' || exit 1
 .job_restore: &tpl_restore
   stage: restore
   script:
     - echo "Restore from previous version"
-    - source ~/.profile
-    - rm -fr $DEPLOY_PATH/$APP_NAME
-    - mv $BACKUP_PATH/$APP_NAME $DEPLOY_PATH/$APP_NAME
-    - cd $DEPLOY_PATH/$APP_NAME
-    - pm2 delete $APP_NAME
-    - sleep 5
-    - pm2 start --name $APP_NAME npm -- start
+    - ssh -o StrictHostKeyChecking=no $HOST -t "source ~/.profile;
+        rm -fr $DEPLOY_PATH/$APP_NAME;
+        mv $BACKUP_PATH/$APP_NAME $DEPLOY_PATH/$APP_NAME;
+        cd $DEPLOY_PATH/$APP_NAME;
+        pm2 stop $APP_NAME;
+        sleep 5;
+        pm2 delete $APP_NAME >> /dev/null || true;
+        sleep 5;
+        pm2 start $JS_SERVER_FILE --name $APP_NAME"
   when: on_failure
 #Stages for devevelopment
 development install:
   variables:
-    HOST: $DEV_HOST
+    HOST: $HOST_DEV
   environment:
     name: development
     url: $URL_DEV
@@ -76,81 +80,81 @@ development install:
   <<: *tpl_install
 development launch:
   variables:
-    HOST: $DEV_HOST
+    HOST: $HOST_DEV
   environment:
     name: development
     url: $URL_DEV
   tags:
     - web
   only:
-    - ci_api_settings
+    - ci_api_settings 
   <<: *tpl_launch
 development helthcheck:
   variables:
     URL: $URL_DEV
-    HOST: $DEV_HOST
+    HOST: $HOST_DEV
   environment:
     name: development
     url: $URL_DEV
   tags:
     - web
   only:
-    - ci_api_settings
+    - ci_api_settings 
   <<: *tpl_helthcheck
 development restore:
   variables:
-    HOST: $DEV_HOST
+    HOST: $HOST_DEV
   environment:
     name: development
     url: $URL_DEV
   tags:
     - web
   only:
-    - ci_api_settings
+    - ci_api_settings 
   <<: *tpl_restore
 #Stages for production
 production install:
   variables:
-    HOST: $PROD_HOST
+    HOST: $HOST_PROD
   environment:
     name: production
     url: $URL_PROD
   tags:
-    - scripts
+    - web
   only:
-    - ci_api
+    - production
   <<: *tpl_install
 production launch:
   variables:
-    HOST: $PROD_HOST
+    HOST: $HOST_PROD
   environment:
     name: production
     url: $URL_PROD
   tags:
-    - scripts
+    - web
   only:
-    - ci_api
+    - production
   <<: *tpl_launch
 production helthcheck:
   variables:
     URL: $URL_PROD
-    HOST: $PROD_HOST
+    HOST: $HOST_PROD
   environment:
     name: production
     url: $URL_PROD
   tags:
-    - scripts
+    - web
   only:
-    - ci_api
+    - production
   <<: *tpl_helthcheck
 production restore:
   variables:
-    HOST: $PROD_HOST
+    HOST: $HOST_PROD
   environment:
     name: production
     url: $URL_PROD
   tags:
-    - scripts
+    - web
   only:
-    - ci_api
+    - production
   <<: *tpl_restore
