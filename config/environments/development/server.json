@@ -1,6 +1,6 @@
 {
   "host": "37.139.17.146",
-  "port": 1337,
+  "port": "${process.env.PORT || 1338}",
   "proxy": {
     "enabled": false
   },
