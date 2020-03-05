@@ -72,7 +72,7 @@ development install:
   tags:
     - web
   only:
-    - development
+    - ci_api_settings
   <<: *tpl_install
 development launch:
   variables:
@@ -83,7 +83,7 @@ development launch:
   tags:
     - web
   only:
-    - development
+    - ci_api_settings
   <<: *tpl_launch
 development helthcheck:
   variables:
@@ -95,7 +95,7 @@ development helthcheck:
   tags:
     - web
   only:
-    - development
+    - ci_api_settings
   <<: *tpl_helthcheck
 development restore:
   variables:
@@ -106,7 +106,7 @@ development restore:
   tags:
     - web
   only:
-    - development
+    - ci_api_settings
   <<: *tpl_restore
 #Stages for production
 production install:
