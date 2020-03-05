@@ -1,8 +1,8 @@
 #Project deploy variables
 variables:
   APP_NAME: "indeema_ci_api"
-  DEPLOY_PATH: "/home/indeema/Indeema"
-  BACKUP_PATH: "/home/indeema/Indeema/backups"
+  DEPLOY_PATH: "/home/root/Indeema"
+  BACKUP_PATH: "/home/root/Indeema/backups"
   JS_SERVER_FILE: "server.js"
   URL_DEV: "http://37.139.17.146:1337"
   HOST_DEV: "root@37.139.17.146"
