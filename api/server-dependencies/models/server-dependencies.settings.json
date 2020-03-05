@@ -25,15 +25,17 @@
       "required": true
     },
     "servers": {
-      "via": "server_dependencies",
       "collection": "server",
+      "via": "server_dependencies",
       "dominant": true
     },
     "pre_install_script": {
-      "type": "richtext"
+      "type": "richtext",
+      "default": "#/bin/bash"
     },
     "post_install_script": {
-      "type": "richtext"
+      "type": "richtext",
+      "default": "#!/bin/bash"
     }
   }
 }

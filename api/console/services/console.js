@@ -8,23 +8,20 @@ const exec = require('child_process').exec;
 var express = require('express');
 var server = express();
 var app = express();
+const letterNumber = /^[0-9a-zA-Z#-+><\[\].,_://]+$/;
 
 app.listen(3000, function () {
   messages();
   setInterval(messages, 1000);
 });
 
-var gServerMessages = [{key:"",value:""}];
+var gServerMessages = [];
 var gServer = null;
 var gServerStatus = null;
 
-var gAppMessages = [{key:"",value:""}];
+var gAppMessages = [];
 var gApp = null;
 var gAppStatus = null;
-
-function msleep(n) {
-  Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, n);
-}
 
 async function messages() {
   updateAppMessage();
@@ -43,19 +40,19 @@ async function updateAppMessage() {
         });
 
         //Set status app
-        strapi.services.app.update({
+        await strapi.services.app.update({
           id: gApp.id
         }, {
           app_status: gAppStatus.progress.status
         });
 
         //Send message
-        strapi.eventEmitter.emit('system::notify', {
+        await strapi.eventEmitter.emit('system::notify', {
         topic: `/console/setup/${gApp.id}/message`,
         data: consoleItem.message
         });
     } else if (object.key === 'close') {
-      let code = object.value
+      let code = parseInt(object.value, 10)
 
       const consoleItem = await strapi.services.console.create({
         message: `Child process exited with code ${code}`,
@@ -63,27 +60,27 @@ async function updateAppMessage() {
         app: gApp.id
       });
       //Send message
-      strapi.eventEmitter.emit('system::notify', {
+      await strapi.eventEmitter.emit('system::notify', {
         topic: `/console/setup/${gApp.id}/end`,
         data: consoleItem.message
       });
 
       if(code !== 0){
-         strapi.services.console.create({
+        await strapi.services.console.create({
           message: gAppStatus.bad.info,
           type: 'build_error',
           app: gApp.id
         });
 
         //Set status app
-        strapi.services.app.update({
+        await strapi.services.app.update({
             id: gApp.id
         }, {
             app_status: gAppStatus.bad.status
         });
 
         //Send message
-        strapi.eventEmitter.emit('system::notify', {
+        await strapi.eventEmitter.emit('system::notify', {
           topic: `/console/setup/${gApp.id}/build_error`,
           data: gAppStatus.bad.info
         });
@@ -95,14 +92,14 @@ async function updateAppMessage() {
         });
 
         //Set status app
-        strapi.services.app.update({
+        await strapi.services.app.update({
           id: gApp.id
         }, {
             app_status: gAppStatus.ok.status
         });
 
         //Send message
-        strapi.eventEmitter.emit('system::notify', {
+        await strapi.eventEmitter.emit('system::notify', {
           topic: `/console/setup/${gApp.id}/build_success`,
           data: consoleItem.message
         });
@@ -133,7 +130,7 @@ async function updateServerMessage() {
         data: consoleItem.message
       }); 
     } else if (object.key === 'close') {
-      let code = object.value
+      let code = parseInt(object.value, 10)
 
       const consoleItem = await strapi.services.console.create({
         message: `Child process exited with code ${code}`,
@@ -188,6 +185,7 @@ async function updateServerMessage() {
     }  
   } 
 }
+
 module.exports = {
   async runServerScript(server, command, status) {
     return new Promise((rs, rj) => {
@@ -196,20 +194,22 @@ module.exports = {
       
       const commandConnect = exec(command);
       commandConnect.stdout.on('data', async function (data) {
-        for (let tmpData of JSON.stringify(data).split(`\\r\\n`)) {
-          for (let tmp of tmpData.split(`\\r`)) {
-            tmp = tmp.replace('\"', '');
-            tmp = tmp.replace('\"', '');
-            tmp = tmp.replace('\\"', '');
-            tmp = tmp.replace('\\t', '');
-            tmp = tmp.replace('\n', '');
-            tmp = tmp.replace('\\', '');
-            tmp = tmp.replace('"', '');
-            tmp = tmp.replace('"', '');
-            // console.log(tmp);
-            if (tmp !== '' && tmp !== '\\r' && tmp !== '\\n' && tmp !== ' ') {    
-              gServerMessages.push({key:"data", value:tmp});        
-            }
+        for (let tmp of JSON.stringify(data).split(`\\r\\n`)) {
+          tmp = tmp.replace('"', '');
+          if (tmp.includes('\\r\\r') 
+            || (!tmp.includes('-->')
+            && !tmp.includes('Error')
+            && !tmp.includes('Err')
+            && !tmp.includes('err')
+            && !tmp.includes('failed')
+            && !tmp.includes('Failed')
+            && !tmp.includes('fail')
+            && !tmp.includes('Fail'))) {
+            continue;
+          }  
+
+          if (tmp !== '' && tmp !== '\\' ) {    
+            gServerMessages.push({key:"data", value:tmp});        
           }
         }
       });
@@ -227,21 +227,23 @@ module.exports = {
 
       const commandConnect = exec(command);
       commandConnect.stdout.on('data', async function(data) {
-        for (let tmpData of JSON.stringify(data).split(`\\r\\n`)) {
-          for (let tmp of tmpData.split(`\\r`)) {
-            console.log(tmp);
-            tmp = tmp.replace('\"', '');
-            tmp = tmp.replace('\"', '');
-            tmp = tmp.replace('\\"', '');
-            tmp = tmp.replace('\\t', '');
-            tmp = tmp.replace('\n', '');
-            tmp = tmp.replace('\\', '');
-            tmp = tmp.replace('"', '');
-            tmp = tmp.replace('"', '');
-            // console.log(tmp);
-            if (tmp !== '' && tmp !== '\\r' && tmp !== '\\n' && tmp !== ' ') {    
-              gAppMessages.push({key:"data", value:tmp});        
-            }
+        for (let tmp of JSON.stringify(data).split(`\\r\\n`)) {
+          tmp = tmp.replace('"', '');
+          if (tmp.includes('\\r\\r') 
+            || (!tmp.includes('-->')
+            && !tmp.includes('Error')
+            && !tmp.includes('Err')
+            && !tmp.includes('err')
+            && !tmp.includes('failed')
+            && !tmp.includes('Failed')
+            && !tmp.includes('fail')
+            && !tmp.includes('Fail'))) {
+            continue;
+          }  
+          tmp = tmp.replace('\\n', '').replace('\\\\n', '');
+          // console.log(tmp);
+          if (tmp !== '') {    
+            gAppMessages.push({key:"data", value:tmp});        
           }
         }
       });

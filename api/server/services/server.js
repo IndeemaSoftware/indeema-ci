@@ -72,6 +72,8 @@ module.exports = {
       
       let script = "#!/bin/bash\n";
 
+      script += `PWD=${scriptsPathOnServer}\n`
+
       if (Object.keys(server.platform.variables).length > 0) {
         for (let key of server.platform.variables) {
           script += key.name.toUpperCase() + `=` + `"${key.value}"` + "\n";
@@ -90,6 +92,52 @@ module.exports = {
           }  
           script += ")\n";
         }
+      }
+
+      if (server.server_dependencies && server.server_dependencies.length) {
+        let list = '';
+        for (let obj of server.server_dependencies) {
+          let pre_script = serverSubscriptsPath + `/${obj.package}_pre`;
+          let post_script = serverSubscriptsPath + `/${obj.package}_post`;
+
+          list +=`${obj.package} `;
+
+          //generating server dependency script files
+          if (obj.pre_install_script) {
+            fs.writeFile(pre_script, obj.pre_install_script, (err) => {
+              if (err) rs({"status":"bad", "data":err});
+              exec(`chmod a+x ${pre_script}`);
+                rs();
+            });   
+          }
+          if (obj.post_install_script) {
+            fs.writeFile(post_script, obj.post_install_script, (err) => {
+              if (err) rs({"status":"bad", "data":err});
+              exec(`chmod a+x ${post_script}`);
+                rs();
+            });   
+          }
+        } 
+        script += `SERVER_DEPENDENCIES=(${list})\n` 
+      }
+
+      //generating custom dependency script files
+      if (server.custom_dependencies && server.custom_dependencies.length) {
+        let list = '';
+        for (let obj of server.custom_dependencies) {
+          let i_script = serverSubscriptsPath + `/${obj.name}_install`;
+
+          list +=`${obj.name} `;
+
+          if (obj.install_script) {
+            fs.writeFile(i_script, obj.install_script, (err) => {
+              if (err) rs({"status":"bad", "data":err});
+              exec(`chmod a+x ${i_script}`);
+                rs();
+            });   
+          }
+        }  
+        script += `CUSTOM_DEPENDENCIES=(${list})\n`
       }
 
       //generating server dependency script files
@@ -111,52 +159,6 @@ module.exports = {
             exec(`chmod a+x ${cleanup_script}`);
             rs();
         });   
-      }
-
-      if (server.server_dependencies && server.server_dependencies.length) {
-        for (let obj of server.server_dependencies) {
-          let i_script = serverSubscriptsPath + `/${obj.name}_install`;
-          let pre_script = serverSubscriptsPath + `/${obj.name}_pre`;
-          let post_script = serverSubscriptsPath + `/${obj.name}_post`;
-
-          //generating server dependency script files
-          if (obj.install_script) {
-            fs.writeFile(i_script, obj.install_script, (err) => {
-              if (err) rs({"status":"bad", "data":err});
-              exec(`chmod a+x ${i_script}`);
-                rs();
-            });               
-          }
-          if (obj.pre_install_script) {
-            fs.writeFile(pre_script, obj.pre_install_script, (err) => {
-              if (err) rs({"status":"bad", "data":err});
-              exec(`chmod a+x ${pre_script}`);
-                rs();
-            });   
-          }
-          if (obj.post_install_script) {
-            fs.writeFile(post_script, obj.post_install_script, (err) => {
-              if (err) rs({"status":"bad", "data":err});
-              exec(`chmod a+x ${post_script}`);
-                rs();
-            });   
-          }
-        }  
-      }
-
-      //generating custom dependency script files
-      if (server.custom_dependencies && server.custom_dependencies.length) {
-        for (let obj of server.custom_dependencies) {
-          let i_script = serverSubscriptsPath + `/${obj.name}_install`;
-
-          if (obj.install_script) {
-            fs.writeFile(i_script, obj.install_script, (err) => {
-              if (err) rs({"status":"bad", "data":err});
-              exec(`chmod a+x ${i_script}`);
-                rs();
-            });   
-          }
-        }  
       }
 
       rs();
