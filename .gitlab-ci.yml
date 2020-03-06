@@ -21,6 +21,7 @@ stages:
   script:
     - echo "Install dependencies"
     - npm install
+    - npm run build
     - echo "Compress project folder"
     - tar -czf $APP_NAME.tar.gz ./*
     - echo "Create project folder on server, where all resources will be copy to"
