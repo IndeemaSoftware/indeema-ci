@@ -18,7 +18,7 @@ module.exports = () => {
   strapi.eventEmitter = new MyEmitter();
 
   //Setup socket.io
-  const io = require('socket.io')(2337);
+  const io = require('socket.io')(2338);
 
   //Setup cross domain requests
   //io.set('transports', ['websocket']);
