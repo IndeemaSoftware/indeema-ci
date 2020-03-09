@@ -72,6 +72,10 @@
     "ci_templates": {
       "via": "users",
       "collection": "ci-templates"
+    },
+    "maintenances": {
+      "via": "users",
+      "collection": "maintenance"
     }
   }
 }

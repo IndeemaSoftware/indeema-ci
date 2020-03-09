@@ -18,6 +18,12 @@
     "apps": {
       "collection": "app",
       "via": "maintenance"
+    },
+    "users": {
+      "plugin": "users-permissions",
+      "collection": "user",
+      "via": "maintenances",
+      "dominant": true
     }
   }
 }
