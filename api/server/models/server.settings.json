@@ -60,8 +60,8 @@
       "collection": "custom-dependencies"
     },
     "platform": {
-      "model": "platform",
-      "via": "servers"
+      "via": "servers",
+      "model": "platform"
     },
     "users": {
       "plugin": "users-permissions",

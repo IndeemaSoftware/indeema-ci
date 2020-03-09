@@ -80,6 +80,14 @@
     "apps": {
       "via": "users",
       "collection": "app"
+    },
+    "services": {
+      "via": "users",
+      "collection": "service"
+    },
+    "platforms": {
+      "via": "users",
+      "collection": "platform"
     }
   }
 }

@@ -70,8 +70,8 @@
       "type": "boolean"
     },
     "service": {
-      "model": "service",
-      "via": "apps"
+      "via": "apps",
+      "model": "service"
     },
     "environment": {
       "type": "string"

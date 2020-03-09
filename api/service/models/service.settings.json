@@ -16,24 +16,7 @@
       "type": "json"
     },
     "doc": {
-      "type": "json",
-      "default": {
-        "project_name": "",
-        "app_name": "",
-        "app_port": "",
-        "custom_ssl_key": "",
-        "custom_ssl_crt": "",
-        "custom_ssl_pem": "",
-        "domain_name": "",
-        "project": "",
-        "environment": "",
-        "desc": "",
-        "server": "",
-        "automatic_cert": "",
-        "ci_template": "",
-        "ci_script": "",
-        "environments": ""
-      }
+      "type": "json"
     },
     "setup_script": {
       "type": "richtext"
@@ -42,8 +25,14 @@
       "type": "richtext"
     },
     "apps": {
-      "via": "service",
-      "collection": "app"
+      "collection": "app",
+      "via": "service"
+    },
+    "users": {
+      "plugin": "users-permissions",
+      "collection": "user",
+      "via": "services",
+      "dominant": true
     }
   }
 }

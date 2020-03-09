@@ -15,20 +15,6 @@
     "variables": {
       "type": "json"
     },
-    "doc": {
-      "type": "json",
-      "doc": {
-        "server_name": "",
-        "description": "",
-        "ssh_ip": "",
-        "ssh_key": "",
-        "ssh_username": "",
-        "ports": "",
-        "server_dependencies": "",
-        "custom_dependencies": "",
-        "platform": ""
-      }
-    },
     "setup_script": {
       "type": "richtext"
     },
@@ -36,8 +22,17 @@
       "type": "richtext"
     },
     "servers": {
-      "via": "platform",
-      "collection": "server"
+      "collection": "server",
+      "via": "platform"
+    },
+    "users": {
+      "plugin": "users-permissions",
+      "collection": "user",
+      "via": "platforms",
+      "dominant": true
+    },
+    "doc": {
+      "type": "json"
     }
   }
 }
