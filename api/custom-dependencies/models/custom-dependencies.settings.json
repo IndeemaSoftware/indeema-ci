@@ -19,8 +19,14 @@
       "type": "richtext"
     },
     "servers": {
-      "via": "custom_dependencies",
       "collection": "server",
+      "via": "custom_dependencies",
+      "dominant": true
+    },
+    "users": {
+      "plugin": "users-permissions",
+      "collection": "user",
+      "via": "custom_dependencies",
       "dominant": true
     }
   }

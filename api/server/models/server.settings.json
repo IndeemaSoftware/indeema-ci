@@ -56,8 +56,8 @@
       "via": "server"
     },
     "custom_dependencies": {
-      "collection": "custom-dependencies",
-      "via": "servers"
+      "via": "servers",
+      "collection": "custom-dependencies"
     },
     "platform": {
       "model": "platform",

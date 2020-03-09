@@ -60,6 +60,10 @@
     "server_dependencies": {
       "via": "users",
       "collection": "server-dependencies"
+    },
+    "custom_dependencies": {
+      "via": "users",
+      "collection": "custom-dependencies"
     }
   }
 }
