@@ -56,6 +56,10 @@
     "servers": {
       "via": "users",
       "collection": "server"
+    },
+    "server_dependencies": {
+      "via": "users",
+      "collection": "server-dependencies"
     }
   }
 }
