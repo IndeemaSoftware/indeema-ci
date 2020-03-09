@@ -15,14 +15,20 @@
       "unique": false
     },
     "apps": {
-      "via": "project",
-      "collection": "app"
+      "collection": "app",
+      "via": "project"
     },
     "desc": {
       "type": "text"
     },
     "environments": {
       "type": "json"
+    },
+    "users": {
+      "plugin": "users-permissions",
+      "collection": "user",
+      "via": "projects",
+      "dominant": true
     }
   }
 }

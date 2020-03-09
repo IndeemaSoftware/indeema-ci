@@ -64,6 +64,10 @@
     "custom_dependencies": {
       "via": "users",
       "collection": "custom-dependencies"
+    },
+    "projects": {
+      "via": "users",
+      "collection": "project"
     }
   }
 }

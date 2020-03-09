@@ -38,8 +38,8 @@
       "type": "string"
     },
     "project": {
-      "model": "project",
-      "via": "apps"
+      "via": "apps",
+      "model": "project"
     },
     "app_status": {
       "type": "enumeration",
