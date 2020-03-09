@@ -76,6 +76,10 @@
     "maintenances": {
       "via": "users",
       "collection": "maintenance"
+    },
+    "apps": {
+      "via": "users",
+      "collection": "app"
     }
   }
 }

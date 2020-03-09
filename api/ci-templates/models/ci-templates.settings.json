@@ -16,8 +16,8 @@
       "type": "richtext"
     },
     "apps": {
-      "collection": "app",
-      "via": "ci_template"
+      "via": "ci_template",
+      "collection": "app"
     },
     "users": {
       "plugin": "users-permissions",

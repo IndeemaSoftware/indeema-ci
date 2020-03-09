@@ -38,8 +38,8 @@
       "type": "string"
     },
     "project": {
-      "via": "apps",
-      "model": "project"
+      "model": "project",
+      "via": "apps"
     },
     "app_status": {
       "type": "enumeration",
@@ -63,8 +63,8 @@
       "type": "text"
     },
     "server": {
-      "via": "apps",
-      "model": "server"
+      "model": "server",
+      "via": "apps"
     },
     "automatic_cert": {
       "type": "boolean"
@@ -77,12 +77,18 @@
       "type": "string"
     },
     "maintenance": {
-      "via": "apps",
-      "model": "maintenance"
+      "model": "maintenance",
+      "via": "apps"
     },
     "ci_template": {
+      "model": "ci-templates",
+      "via": "apps"
+    },
+    "users": {
+      "plugin": "users-permissions",
+      "collection": "user",
       "via": "apps",
-      "model": "ci-templates"
+      "dominant": true
     }
   }
 }
