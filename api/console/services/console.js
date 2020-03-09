@@ -109,7 +109,6 @@ async function updateAppMessage() {
 async function updateServerMessage() {
   while (gServerMessages.length > 0) {
     let object = gServerMessages.shift(); 
-    console.log(object);
     if (object.key === 'data') {
       const consoleItem = await strapi.services.console.create({
         message: object.value,
