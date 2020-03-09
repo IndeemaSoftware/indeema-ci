@@ -20,14 +20,8 @@
       "type": "string"
     },
     "server_dependencies": {
-      "via": "servers",
-      "collection": "server-dependencies"
-    },
-    "users": {
-      "plugin": "users-permissions",
-      "collection": "user",
-      "via": "servers",
-      "dominant": true
+      "collection": "server-dependencies",
+      "via": "servers"
     },
     "description": {
       "type": "richtext"
@@ -66,8 +60,14 @@
       "via": "servers"
     },
     "platform": {
+      "model": "platform",
+      "via": "servers"
+    },
+    "users": {
+      "plugin": "users-permissions",
+      "collection": "user",
       "via": "servers",
-      "model": "platform"
+      "dominant": true
     }
   }
 }

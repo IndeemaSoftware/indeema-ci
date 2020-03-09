@@ -21,12 +21,6 @@
     "desc": {
       "type": "text"
     },
-    "users": {
-      "plugin": "users-permissions",
-      "collection": "user",
-      "via": "projects",
-      "dominant": true
-    },
     "environments": {
       "type": "json"
     }

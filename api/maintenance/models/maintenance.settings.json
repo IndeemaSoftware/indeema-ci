@@ -16,8 +16,8 @@
       "type": "richtext"
     },
     "apps": {
-      "via": "maintenance",
-      "collection": "app"
+      "collection": "app",
+      "via": "maintenance"
     }
   }
 }

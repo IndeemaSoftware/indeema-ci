@@ -1,5 +1,6 @@
 {
   "LDAP_URL": "ldaps://ldap.indeema.com:636",
   "LDAP_USER_DN": "cn=Users,dc=indeema,dc=com",
-  "LDAP_GROUP_DN": "cn=Groups,dc=indeema,dc=com"
+  "LDAP_GROUP_DN": "cn=Groups,dc=indeema,dc=com",
+  "ENABLED":true
 }

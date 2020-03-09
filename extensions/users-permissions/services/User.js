@@ -58,7 +58,7 @@ module.exports = {
           }
 
           //Try to verify user
-          if(!password){
+          if (!password) {
 
             //check if authed user is in list of Admins
             LDAPClient.search(LDAPConfig.LDAP_GROUP_DN, groupOpts, function (err, result) {
@@ -82,7 +82,7 @@ module.exports = {
               });
             });
 
-          }else{
+          } else {
 
             LDAPClient.bind(ldapUser.dn, password, function (err) {
               if (err){
@@ -96,7 +96,7 @@ module.exports = {
                 result.on('searchEntry', function (entry) {
                   let isPermited = false;
 
-                  for(let memberUid of entry.object.memberUid) {
+                  for (let memberUid of entry.object.memberUid) {
                     if (memberUid == userId) {
                       isPermited = true;
                       break;

@@ -77,8 +77,8 @@
       "type": "string"
     },
     "maintenance": {
-      "model": "maintenance",
-      "via": "apps"
+      "via": "apps",
+      "model": "maintenance"
     },
     "ci_template": {
       "via": "apps",

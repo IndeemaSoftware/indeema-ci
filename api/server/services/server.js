@@ -64,6 +64,12 @@ module.exports = {
       let serverSubscriptsPath = subscriptsPath + `/${server.id}`;
       strapi.services.server.deleteFolderRecursive(serverSubscriptsPath);
 
+      if (!fs.existsSync(resourcesPath)){
+        fs.mkdirSync(resourcesPath);
+      }
+      if (!fs.existsSync(subscriptsPath)){
+        fs.mkdirSync(subscriptsPath);
+      }
       if (!fs.existsSync(serverSubscriptsPath)){
         fs.mkdirSync(serverSubscriptsPath);
       }

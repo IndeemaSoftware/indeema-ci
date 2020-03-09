@@ -56,10 +56,6 @@
     "servers": {
       "via": "users",
       "collection": "server"
-    },
-    "projects": {
-      "via": "users",
-      "collection": "project"
     }
   }
 }

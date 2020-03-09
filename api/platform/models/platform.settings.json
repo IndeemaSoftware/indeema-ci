@@ -18,15 +18,15 @@
     "doc": {
       "type": "json",
       "doc": {
-        "server_name":"",
-        "description":"",
-        "ssh_ip":"",
-        "ssh_key":"",
-        "ssh_username":"",
-        "ports":"",
-        "server_dependencies":"",
-        "custom_dependencies":"",
-        "platform":""
+        "server_name": "",
+        "description": "",
+        "ssh_ip": "",
+        "ssh_key": "",
+        "ssh_username": "",
+        "ports": "",
+        "server_dependencies": "",
+        "custom_dependencies": "",
+        "platform": ""
       }
     },
     "setup_script": {
@@ -36,8 +36,8 @@
       "type": "richtext"
     },
     "servers": {
-      "collection": "server",
-      "via": "platform"
+      "via": "platform",
+      "collection": "server"
     }
   }
 }
