@@ -18,6 +18,12 @@
     "apps": {
       "collection": "app",
       "via": "ci_template"
+    },
+    "users": {
+      "plugin": "users-permissions",
+      "collection": "user",
+      "via": "ci_templates",
+      "dominant": true
     }
   }
 }

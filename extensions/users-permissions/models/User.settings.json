@@ -68,6 +68,10 @@
     "projects": {
       "via": "users",
       "collection": "project"
+    },
+    "ci_templates": {
+      "via": "users",
+      "collection": "ci-templates"
     }
   }
 }
