@@ -67,17 +67,17 @@ module.exports = {
         query.username = params.identifier;
       }
 
-      if(strapi.config.LDAP_AUTH_ENABLE){
+      if (strapi.config.LDAP_AUTH_ENABLE) {
 
         //LDAP Search
         const ldapUser = await strapi.plugins['users-permissions'].services.user.ldapFindUser(query.email || query.username, params.password);
 
         //If user not found
-        if(!ldapUser){
+        if (!ldapUser) {
           return ctx.badRequest(null, 'User not found.');
         }
 
-        if(typeof ldapUser === typeof 'str'){
+        if (typeof ldapUser === typeof 'str') {
           return ctx.badRequest(null, ldapUser);
         }
 
@@ -92,7 +92,7 @@ module.exports = {
             .query('role', 'users-permissions')
             .findOne({ type: 'administrator' }, []);
 
-          if(!role){
+          if (!role) {
             return ctx.badRequest(null, 'Role administrator not found. Please ask root to create this role.');
           }
 
@@ -118,7 +118,7 @@ module.exports = {
             model: strapi.query('user', 'users-permissions').model,
           }),
         });
-      }else{
+      } else {
         // Check if the user exists.
         const user = await strapi
           .query('user', 'users-permissions')
