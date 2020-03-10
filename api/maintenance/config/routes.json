@@ -3,7 +3,7 @@
     {
       "method": "GET",
       "path": "/maintenances",
-      "handler": "maintenance.find",
+      "handler": "maintenance.findAll",
       "config": {
         "policies": []
       }

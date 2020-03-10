@@ -3,7 +3,7 @@
     {
       "method": "GET",
       "path": "/services",
-      "handler": "service.find",
+      "handler": "service.findAll",
       "config": {
         "policies": []
       }

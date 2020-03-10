@@ -3,7 +3,7 @@
     {
       "method": "GET",
       "path": "/custom-dependencies",
-      "handler": "custom-dependencies.find",
+      "handler": "custom-dependencies.findAll",
       "config": {
         "policies": []
       }

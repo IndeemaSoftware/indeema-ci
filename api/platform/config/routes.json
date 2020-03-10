@@ -3,7 +3,7 @@
     {
       "method": "GET",
       "path": "/platforms",
-      "handler": "platform.find",
+      "handler": "platform.findAll",
       "config": {
         "policies": []
       }

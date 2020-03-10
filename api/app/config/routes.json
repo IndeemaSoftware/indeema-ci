@@ -11,7 +11,7 @@
     {
       "method": "GET",
       "path": "/apps",
-      "handler": "app.find",
+      "handler": "app.findAll",
       "config": {
         "policies": []
       }

@@ -3,7 +3,7 @@
     {
       "method": "GET",
       "path": "/server-dependencies",
-      "handler": "server-dependencies.find",
+      "handler": "server-dependencies.findAll",
       "config": {
         "policies": []
       }

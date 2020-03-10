@@ -16,7 +16,7 @@ module.exports = {
 
     //For non admin roles
     if(user.role.type !== 'administrator')
-      query.user = user._id.toString();
+      query.users = [user._id.toString()];
 
     let entities;
     if (query._q) {

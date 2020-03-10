@@ -9,6 +9,23 @@ const fs = require('fs');
  */
 
 module.exports = {
+  async findAll(ctx) {
+    const user = ctx.state.user;
+    const query = ctx.query;
+
+    //For non admin roles
+    if(user.role.type !== 'administrator')
+      query.users = [user._id.toString()];
+
+    let entities;
+    if (query._q) {
+      entities = await strapi.services.apps.search(query);
+    } else {
+      entities = await strapi.services.app.find(query);
+    }
+  
+    return entities.map(entity => sanitizeEntity(entity, { model: strapi.models.app }));
+  },
 
   /**
    * Download yml file of app
@@ -16,9 +33,7 @@ module.exports = {
    * @returns {Promise<void>}
    */
   async downloadYmlApp(ctx){
-    console.log(ctx);
     const entity = await strapi.services.app.findOne({id:ctx.params.id});
-    console.log(entity);
     if(!entity.project)
       return ctx.notFound(entity);
 
@@ -31,7 +46,6 @@ module.exports = {
     //Get path of file
     const path = require('path');
     const filePath = path.resolve() + `/public/uploads/builds/${project.project_name}/${entity.app_name}/gitlab-ci.yml`;
-    console.log(filePath);
     if(!fs.existsSync(filePath))
       return ctx.notFound();
 

@@ -3,7 +3,7 @@
     {
       "method": "GET",
       "path": "/ci-templates",
-      "handler": "ci-templates.find",
+      "handler": "ci-templates.findAll",
       "config": {
         "policies": []
       }
