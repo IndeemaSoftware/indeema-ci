@@ -25,7 +25,7 @@ module.exports = async (ctx, next) => {
         const ldapUser = await strapi.plugins['users-permissions'].services.user.ldapFindUser(ctx.state.user.username);
 
         //If user not exists or blocked or not permitted then we block this user
-        if(!ldapUser){
+        if(!ldapUser && strapi.config.LDAP_AUTH_ENABLE){
           await strapi.plugins['users-permissions'].services.user.edit({
             id: ctx.state.user._id.toString()
           }, {

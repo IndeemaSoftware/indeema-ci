@@ -67,55 +67,131 @@ module.exports = {
         query.username = params.identifier;
       }
 
-      //LDAP Search
-      const ldapUser = await strapi.plugins['users-permissions'].services.user.ldapFindUser(query.email || query.username, params.password);
+      if(strapi.config.LDAP_AUTH_ENABLE){
 
-      //If user not found
-      if(!ldapUser){
-        return ctx.badRequest(null, 'User not found.');
-      }
+        //LDAP Search
+        const ldapUser = await strapi.plugins['users-permissions'].services.user.ldapFindUser(query.email || query.username, params.password);
 
-      if(typeof ldapUser === typeof 'str'){
-        return ctx.badRequest(null, ldapUser);
-      }
-
-      // Check if the user exists.
-      let user = await strapi
-        .query('user', 'users-permissions')
-        .findOne(query);
-
-      if (!user) {
-        //Get role of user - only Admin permitted
-        const role = await strapi
-          .query('role', 'users-permissions')
-          .findOne({ type: 'administrator' }, []);
-
-        if(!role){
-          return ctx.badRequest(null, 'Role administrator not found. Please ask root to create this role.');
+        //If user not found
+        if(!ldapUser){
+          return ctx.badRequest(null, 'User not found.');
         }
 
-        //Create new user
-        user = await strapi
-          .query('user', 'users-permissions')
-          .create({
-            role: role.id,
-            username: query.username || ldapUser.mail.split('@')[0],
-            email: ldapUser.mail,
-            password: params.password,
-            confirmed: true,
-            blocked: false,
-          });
-      }
+        if(typeof ldapUser === typeof 'str'){
+          return ctx.badRequest(null, ldapUser);
+        }
 
-      //Send user
-      ctx.send({
-        jwt: strapi.plugins['users-permissions'].services.jwt.issue({
-          id: user.id,
-        }),
-        user: sanitizeEntity(user.toJSON ? user.toJSON() : user, {
-          model: strapi.query('user', 'users-permissions').model,
-        }),
-      });
+        // Check if the user exists.
+        let user = await strapi
+          .query('user', 'users-permissions')
+          .findOne(query);
+
+        if (!user) {
+          //Get role of user - only Admin permitted
+          const role = await strapi
+            .query('role', 'users-permissions')
+            .findOne({ type: 'administrator' }, []);
+
+          if(!role){
+            return ctx.badRequest(null, 'Role administrator not found. Please ask root to create this role.');
+          }
+
+          //Create new user
+          user = await strapi
+            .query('user', 'users-permissions')
+            .create({
+              role: role.id,
+              username: query.username || ldapUser.mail.split('@')[0],
+              email: ldapUser.mail,
+              password: params.password,
+              confirmed: true,
+              blocked: false,
+            });
+        }
+
+        //Send user
+        ctx.send({
+          jwt: strapi.plugins['users-permissions'].services.jwt.issue({
+            id: user.id,
+          }),
+          user: sanitizeEntity(user.toJSON ? user.toJSON() : user, {
+            model: strapi.query('user', 'users-permissions').model,
+          }),
+        });
+      }else{
+        // Check if the user exists.
+        const user = await strapi
+          .query('user', 'users-permissions')
+          .findOne(query);
+
+        if (!user) {
+          return ctx.badRequest(
+            null,
+            formatError({
+              id: 'Auth.form.error.invalid',
+              message: 'Identifier or password invalid.',
+            })
+          );
+        }
+
+        if (
+          _.get(await store.get({ key: 'advanced' }), 'email_confirmation') &&
+          user.confirmed !== true
+        ) {
+          return ctx.badRequest(
+            null,
+            formatError({
+              id: 'Auth.form.error.confirmed',
+              message: 'Your account email is not confirmed',
+            })
+          );
+        }
+
+        if (user.blocked === true) {
+          return ctx.badRequest(
+            null,
+            formatError({
+              id: 'Auth.form.error.blocked',
+              message: 'Your account has been blocked by an administrator',
+            })
+          );
+        }
+
+        // The user never authenticated with the `local` provider.
+        if (!user.password) {
+          return ctx.badRequest(
+            null,
+            formatError({
+              id: 'Auth.form.error.password.local',
+              message:
+                'This user never set a local password, please login with the provider used during account creation.',
+            })
+          );
+        }
+
+        const validPassword = strapi.plugins[
+          'users-permissions'
+          ].services.user.validatePassword(params.password, user.password);
+
+        if (!validPassword) {
+          return ctx.badRequest(
+            null,
+            formatError({
+              id: 'Auth.form.error.invalid',
+              message: 'Identifier or password invalid.',
+            })
+          );
+        } else {
+          ctx.send({
+            jwt: strapi.plugins['users-permissions'].services.jwt.issue({
+              id: user.id,
+            }),
+            user: sanitizeEntity(user.toJSON ? user.toJSON() : user, {
+              model: strapi.query('user', 'users-permissions').model,
+            }),
+          });
+        }
+      }
     } else {
       if (!_.get(await store.get({ key: 'grant' }), [provider, 'enabled'])) {
         return ctx.badRequest(
