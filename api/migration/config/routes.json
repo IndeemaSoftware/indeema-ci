@@ -1,0 +1,28 @@
+{
+  "routes": [
+    {
+      "method": "GET",
+      "path": "/migrations/export",
+      "handler": "migration.export",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/migrations/download/:id",
+      "handler": "migration.download",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/migrations/import/:id",
+      "handler": "migration.import",
+      "config": {
+        "policies": []
+      }
+    }
+  ]
+}

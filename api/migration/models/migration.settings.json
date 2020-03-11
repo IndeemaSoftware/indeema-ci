@@ -1,0 +1,14 @@
+{
+  "connection": "default",
+  "collectionName": "migrations",
+  "info": {
+    "name": "migration",
+    "description": ""
+  },
+  "options": {
+    "increments": true,
+    "timestamps": true,
+    "comment": ""
+  },
+  "attributes": {}
+}
