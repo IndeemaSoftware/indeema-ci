@@ -108,7 +108,7 @@ module.exports = {
                 for (var t of content) {
                     t.users = [ctx.state.user.id];
                     strapi.query('custom-dependencies').create(t);
-                }
+                } 
             }
         });
     },
@@ -157,7 +157,7 @@ module.exports = {
                 for (var t of content) {
                     t.users = [ctx.state.user.id];
                     strapi.query('maintenance').create(t);
-                }
+                } 
             }
         });
     },
@@ -261,7 +261,7 @@ module.exports = {
                 for (var t of content) {
                     t.users = [ctx.state.user.id];
                     strapi.query('server-dependencies').create(t);
-                }
+                }  
             }
         });
     },
@@ -328,13 +328,13 @@ module.exports = {
     async compressAllFiles(ctx) {
         const user = ctx.state.user;
 
-        var fileName = path.resolve() + `/public/uploads/${user._id.toString()}.ici`;
+        var fileName = path.resolve() + `/public/uploads/${user._id.toString()}.tar.gz`;
 
         exec(`cd ${subscriptsPath}/${user._id.toString()} && tar zcvf ${fileName} .`);
     },
 
     async decompressAllFiles(id) {
-        var fileName = path.resolve() + `/public/uploads/${id}.ici`;
+        var fileName = path.resolve() + `/public/uploads/${id}.gz`;
 
         return new Promise((rs, rj) => {
             exec(`tar -C ${subscriptsPath}/${id} -xvf ${fileName}`).on('close', rs);

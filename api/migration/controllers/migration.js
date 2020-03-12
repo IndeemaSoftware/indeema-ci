@@ -26,7 +26,7 @@ module.exports = {
 
             //Get path of file
         const path = require('path');
-        const filePath = path.resolve() + `/public/uploads/${user._id.toString()}.ici`;
+        const filePath = path.resolve() + `/public/uploads/${user._id.toString()}.tar.gz`;
 
         if (!fs.existsSync(filePath))
             return ctx.notFound();
@@ -36,7 +36,7 @@ module.exports = {
 
     async download(ctx) {
         const path = require('path');
-        const filePath = path.resolve() + `/public/uploads/${ctx.params.id}.ici`;
+        const filePath = path.resolve() + `/public/uploads/${ctx.params.id}.tar.gz`;
         if(!fs.existsSync(filePath))
           return ctx.notFound();
     
