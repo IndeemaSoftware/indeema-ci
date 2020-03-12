@@ -30,10 +30,19 @@ module.exports = {
 
   async findServer(ctx) {
     const user = ctx.state.user;
+    var isPermited = false;
 
     const entity = await strapi.services.server.findOne({id:ctx.params.id});
+    if (entity.users.length) {
+      for (let u of entity.users) {
+        console.log(u);
+        if (u._id.toString() === user._id.toString()) {
+          isPermited = true;
+        }
+      }
+    }
     //For non admin roles
-    if(user.role.type !== 'administrator' && (!entity.user || entity.user._id.toString() !== user._id.toString()))
+    if(user.role.type !== 'administrator' && !isPermited)
       return ctx.notFound();
 
     return sanitizeEntity(entity, { model: strapi.models.server });
