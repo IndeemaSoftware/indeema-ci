@@ -37,6 +37,10 @@
       "type": "richtext",
       "default": "#!/bin/bash"
     },
+    "module": {
+      "type": "string",
+      "configurable": false
+    },
     "users": {
       "plugin": "users-permissions",
       "collection": "user",

@@ -24,6 +24,10 @@
     "cleanup_script": {
       "type": "richtext"
     },
+    "module": {
+      "type": "string",
+      "configurable": false
+    },
     "apps": {
       "collection": "app",
       "via": "service"

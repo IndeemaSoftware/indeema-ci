@@ -18,6 +18,10 @@
     "install_script": {
       "type": "richtext"
     },
+    "module": {
+      "type": "string",
+      "configurable": false
+    },
     "servers": {
       "collection": "server",
       "via": "custom_dependencies",

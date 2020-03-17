@@ -48,7 +48,7 @@ module.exports = {
         }
     },
 
-    async importCiTemplates(ctx, id) {
+    async importCiTemplates(ctx, id, moduleId) {
         var fileName = `${subscriptsPath}/${id}/ci-templates`;
         fs.readFile(fileName, function read(err, data) {
             if (err) {
@@ -57,10 +57,29 @@ module.exports = {
                 const content = JSON.parse(data);
                 for (var t of content) {
                     t.users = [ctx.state.user.id];
+                    t.module = moduleId;
                     strapi.query('ci-templates').create(t);
                 }
             }
         });
+    },
+
+    async uninstallCiTemplates(ctx, id, moduleId) {
+        const user = ctx.state.user;
+        const query = ctx.query;
+       
+        let entities;
+        if (query._q) {
+            entities = await strapi.query('ci-templates').search(query);
+        } else {
+            entities = await strapi.query('ci-templates').find(query);
+        }
+
+        for (var t of entities) {
+            if (t.module === moduleId) {
+                strapi.query('ci-templates').delete({id:t.id});
+            }
+        }
     },
 
     async prepareCustomDependencies(ctx) {
@@ -98,7 +117,7 @@ module.exports = {
         }
     },
 
-    async importCustomDependencies (ctx, id) {
+    async importCustomDependencies (ctx, id, moduleId) {
         var fileName = `${subscriptsPath}/${id}/custom-dependencies`;
         fs.readFile(fileName, function read(err, data) {
             if (err) {
@@ -107,10 +126,29 @@ module.exports = {
                 const content = JSON.parse(data);
                 for (var t of content) {
                     t.users = [ctx.state.user.id];
+                    t.module = moduleId;
                     strapi.query('custom-dependencies').create(t);
                 } 
             }
         });
+    },
+
+    async uninstallCustomDependencies (ctx, id, moduleId) {
+        const user = ctx.state.user;
+        const query = ctx.query;
+       
+        let entities;
+        if (query._q) {
+            entities = await strapi.query('custom-dependencies').search(query);
+        } else {
+            entities = await strapi.query('custom-dependencies').find(query);
+        }
+
+        for (var t of entities) {
+            if (t.module === moduleId) {
+                strapi.query('custom-dependencies').delete({id:t.id});
+            }
+        }
     },
 
     async prepareMaintenance (ctx) {
@@ -147,7 +185,7 @@ module.exports = {
         }
     },
 
-    async importMaintenance (ctx, id) {
+    async importMaintenance (ctx, id, moduleId) {
         var fileName = `${subscriptsPath}/${id}/maintenance`;
         fs.readFile(fileName, function read(err, data) {
             if (err) {
@@ -156,10 +194,29 @@ module.exports = {
                 const content = JSON.parse(data);
                 for (var t of content) {
                     t.users = [ctx.state.user.id];
+                    t.module = moduleId;
                     strapi.query('maintenance').create(t);
                 } 
             }
         });
+    },
+
+    async uninstallMaintenance (ctx, id, moduleId) {
+        const user = ctx.state.user;
+        const query = ctx.query;
+       
+        let entities;
+        if (query._q) {
+            entities = await strapi.query('maintenance').search(query);
+        } else {
+            entities = await strapi.query('maintenance').find(query);
+        }
+
+        for (var t of entities) {
+            if (t.module === moduleId) {
+                strapi.query('maintenance').delete({id:t.id});
+            }
+        }
     },
 
     async preparePlatform (ctx) {
@@ -199,7 +256,7 @@ module.exports = {
         }
     },
 
-    async importPlatform (ctx, id) {
+    async importPlatform (ctx, id, moduleId) {
         var fileName = `${subscriptsPath}/${id}/platform`;
         fs.readFile(fileName, function read(err, data) {
             if (err) {
@@ -208,10 +265,28 @@ module.exports = {
                 const content = JSON.parse(data);
                 for (var t of content) {
                     t.users = [ctx.state.user.id];
+                    t.module = moduleId;
                     strapi.query('platform').create(t);
                 }
             }
         });
+    },
+    async uninstallPlatform (ctx, id, moduleId) {
+        const user = ctx.state.user;
+        const query = ctx.query;
+       
+        let entities;
+        if (query._q) {
+            entities = await strapi.query('platform').search(query);
+        } else {
+            entities = await strapi.query('platform').find(query);
+        }
+
+        for (var t of entities) {
+            if (t.module === moduleId) {
+                strapi.query('platform').delete({id:t.id});
+            }
+        }
     },
 
     async prepareServerDependencies (ctx) {
@@ -251,7 +326,7 @@ module.exports = {
         }
     },
 
-    async importServerDependencies (ctx, id) {
+    async importServerDependencies (ctx, id, moduleId) {
         var fileName = `${subscriptsPath}/${id}/server-dependencies`;
         fs.readFile(fileName, function read(err, data) {
             if (err) {
@@ -260,10 +335,29 @@ module.exports = {
                 const content = JSON.parse(data);
                 for (var t of content) {
                     t.users = [ctx.state.user.id];
+                    t.module = moduleId;
                     strapi.query('server-dependencies').create(t);
                 }  
             }
         });
+    },
+
+    async uninstallServerDependencies (ctx, id, moduleId) {
+        const user = ctx.state.user;
+        const query = ctx.query;
+       
+        let entities;
+        if (query._q) {
+            entities = await strapi.query('server-dependencies').search(query);
+        } else {
+            entities = await strapi.query('server-dependencies').find(query);
+        }
+
+        for (var t of entities) {
+            if (t.module === moduleId) {
+                strapi.query('server-dependencies').delete({id:t.id});
+            }
+        }
     },
 
     async prepareService (ctx) {
@@ -303,7 +397,7 @@ module.exports = {
         }
     },
 
-    async importService (ctx, id) {
+    async importService (ctx, id, moduleId) {
         var fileName = `${subscriptsPath}/${id}/service`;
         fs.readFile(fileName, function read(err, data) {
             if (err) {
@@ -312,10 +406,29 @@ module.exports = {
                 const content = JSON.parse(data);
                 for (var t of content) {
                     t.users = [ctx.state.user.id];
+                    t.module = moduleId;
                     strapi.query('service').create(t);
                 }
             }
         });
+    },
+
+    async uninstallService (ctx, id, moduleId) {
+        const user = ctx.state.user;
+        const query = ctx.query;
+       
+        let entities;
+        if (query._q) {
+            entities = await strapi.query('service').search(query);
+        } else {
+            entities = await strapi.query('service').find(query);
+        }
+
+        for (var t of entities) {
+            if (t.module === moduleId) {
+                strapi.query('service').delete({id:t.id});
+            }
+        }
     },
 
     async prepareFolders(id) {

@@ -2,6 +2,14 @@
   "routes": [
     {
       "method": "GET",
+      "path": "/migrations",
+      "handler": "migration.findAll",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
       "path": "/migrations/export",
       "handler": "migration.export",
       "config": {
@@ -20,6 +28,14 @@
       "method": "GET",
       "path": "/migrations/import/:id",
       "handler": "migration.import",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/migrations/uninstall/:id",
+      "handler": "migration.uninstall",
       "config": {
         "policies": []
       }

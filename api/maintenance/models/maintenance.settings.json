@@ -15,6 +15,10 @@
     "html_code": {
       "type": "richtext"
     },
+    "module": {
+      "type": "string",
+      "configurable": false
+    },
     "apps": {
       "via": "maintenance",
       "collection": "app"

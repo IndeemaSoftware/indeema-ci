@@ -10,5 +10,29 @@
     "timestamps": true,
     "comment": ""
   },
-  "attributes": {}
+  "attributes": {
+    "name": {
+      "type": "string"
+    },
+    "description": {
+      "type": "richtext"
+    },
+    "version": {
+      "type": "string"
+    },
+    "module": {
+      "collection": "file",
+      "via": "related",
+      "plugin": "upload",
+      "required": false
+    },
+    "author": {
+      "type": "string"
+    },
+    "identifier": {
+      "type": "string",
+      "required": true,
+      "unique": true
+    }
+  }
 }

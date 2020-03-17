@@ -15,6 +15,10 @@
     "yml_code": {
       "type": "richtext"
     },
+    "module": {
+      "type": "string",
+      "configurable": false
+    },
     "apps": {
       "via": "ci_template",
       "collection": "app"

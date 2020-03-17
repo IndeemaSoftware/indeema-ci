@@ -21,6 +21,10 @@
     "cleanup_script": {
       "type": "richtext"
     },
+    "module": {
+      "type": "string",
+      "configurable": false
+    },
     "servers": {
       "collection": "server",
       "via": "platform"
