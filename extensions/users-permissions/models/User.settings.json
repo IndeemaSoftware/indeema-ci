@@ -28,7 +28,8 @@
     },
     "module": {
       "type": "json",
-      "configurable": false
+      "configurable": false,
+      "default": []
     },
     "password": {
       "type": "password",
