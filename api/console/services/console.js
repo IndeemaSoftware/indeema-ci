@@ -202,7 +202,9 @@ module.exports = {
             && !tmp.includes('Success')
             && !tmp.includes('success')
             && !tmp.includes('Finish')
-            && !tmp.includes('Finish'))) {
+            && !tmp.includes('Finish')
+            && !tmp.includes('Depend')
+            && !tmp.includes('depend'))) {
             continue;
           }  
 
