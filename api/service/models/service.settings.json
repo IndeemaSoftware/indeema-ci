@@ -29,8 +29,8 @@
       "configurable": false
     },
     "apps": {
-      "collection": "app",
-      "via": "service"
+      "via": "service",
+      "collection": "app"
     },
     "users": {
       "plugin": "users-permissions",

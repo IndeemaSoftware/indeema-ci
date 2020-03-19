@@ -67,11 +67,12 @@
       "via": "apps"
     },
     "automatic_cert": {
-      "type": "boolean"
+      "type": "boolean",
+      "default": false
     },
     "service": {
-      "via": "apps",
-      "model": "service"
+      "model": "service",
+      "via": "apps"
     },
     "environment": {
       "type": "string"

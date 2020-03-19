@@ -73,7 +73,7 @@ module.exports = {
     const user = ctx.state.user;
     var isPermited = false;
 
-    const entity = await strapi.services.server.findOne({id:ctx.params.id});
+    const entity = await strapi.services.project.findOne({id:ctx.params.id});
     if (entity.users.length) {
       for (let u of entity.users) {
         console.log(u);

@@ -71,10 +71,6 @@ module.exports = {
       _id: entity.project._id.toString()
     });
 
-    //For non admin roles
-    if(user.role.type !== 'administrator' && (!project.user || project.user._id.toString() !== user._id.toString()))
-      return ctx.notFound();
-
     return sanitizeEntity(entity, { model: strapi.models.app });
   },
 
