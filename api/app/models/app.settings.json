@@ -90,6 +90,10 @@
       "collection": "user",
       "via": "apps",
       "dominant": true
+    },
+    "isSecure": {
+      "type": "boolean",
+      "default": false
     }
   }
 }

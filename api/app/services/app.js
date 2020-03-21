@@ -54,7 +54,8 @@ module.exports = {
       let script = scriptsPathOnServer + `/` + app.service.service_name + `_` + name;
       command += `${ssh} "${script}"`;
 
-      let status = await strapi.services.console.runAppScript(app, command, APP_SETUP_STATUS);
+
+      let status = await strapi.services.console.runAppScript(app, command, name===SETUP?APP_SETUP_STATUS:APP_CLEANUP_STATUS);
       // strapi.services.app.deleteFolderRecursive(appSubscriptsPath);
       return status;
     },
@@ -112,8 +113,8 @@ module.exports = {
 
         //generating server dependency script files
         if (app.service.setup_script) {
-          script += app.service.setup_script;
-          fs.writeFile(setup_script, script, (err) => {
+          var install_script_tmp = script + app.service.setup_script;
+          fs.writeFile(setup_script, install_script_tmp, (err) => {
             if (err) rs({"status":"bad", "data":err});
               exec(`chmod a+x ${setup_script}`);
               rs();
@@ -121,8 +122,8 @@ module.exports = {
         }
         
         if (app.service.cleanup_script) {
-          script += app.service.cleanup_script;
-          fs.writeFile(cleanup_script, app.service.cleanup_script, (err) => {
+          var cleanup_script_tmp = script + app.service.cleanup_script;
+          fs.writeFile(cleanup_script, cleanup_script_tmp, (err) => {
             if (err) rs({"status":"bad", "data":err});
               exec(`chmod a+x ${cleanup_script}`);
               rs();

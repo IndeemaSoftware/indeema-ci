@@ -76,7 +76,6 @@ module.exports = {
     const entity = await strapi.services.project.findOne({id:ctx.params.id});
     if (entity.users.length) {
       for (let u of entity.users) {
-        console.log(u);
         if (u._id.toString() === user._id.toString()) {
           isPermited = true;
         }
@@ -149,9 +148,9 @@ module.exports = {
     //Check project owner
     const project = await strapi.services.project.findOne(ctx.params);
 
-    //For non admin roles
-    if(user.role.type !== 'administrator' && (!project.user || project.user._id.toString() !== user._id.toString()))
-      return ctx.notFound();
+    // //For non admin roles
+    // if(user.role.type !== 'administrator' && (!project.user || project.user._id.toString() !== user._id.toString()))
+    //   return ctx.notFound();
 
     //First let`s update project model
     ctx.request.body.user = user._id;
