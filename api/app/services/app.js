@@ -42,6 +42,11 @@ module.exports = {
       await strapi.services.app.generateSubScripts(app);
       let server = app.server;
       let appSubscriptsPath = subscriptsPath + `/${app.id}`;
+      // var ci_path = `${path.resolve()}/public/uploads/builds/${app.project.project_name}/${app.app_name}`;
+
+      // if (!fs.existsSync(ci_path)){
+      //   fs.mkdirSync(ci_path);
+      // }
 
       const ssh = `ssh -o StrictHostKeyChecking=no -i ${publicPath}${server.ssh_key.url} ${server.ssh_username}@${server.ssh_ip} -tt`
 
@@ -52,8 +57,10 @@ module.exports = {
       command += `scp -r -o StrictHostKeyChecking=no -i ${publicPath}${server.ssh_key.url} ${appSubscriptsPath}/* ${server.ssh_username}@${server.ssh_ip}:${scriptsPathOnServer}/; `;
 
       let script = scriptsPathOnServer + `/` + app.service.service_name + `_` + name;
-      command += `${ssh} "${script}"`;
+      command += `${ssh} "${script}"; `;
+      // command += `scp -r -o StrictHostKeyChecking=no -i ${publicPath}${server.ssh_key.url} ${server.ssh_username}@${server.ssh_ip}:${scriptsPathOnServer}/${app.ci_template.name} ${ci_path}/gitlab-ci.yml;`;
 
+      // console.log(command);
 
       let status = await strapi.services.console.runAppScript(app, command, name===SETUP?APP_SETUP_STATUS:APP_CLEANUP_STATUS);
       // strapi.services.app.deleteFolderRecursive(appSubscriptsPath);
@@ -74,6 +81,7 @@ module.exports = {
         let maintenance_file_path = appSubscriptsPath + `/maintenance.html`;
 
         let script = "#!/bin/bash\n";
+        script += `PWD=${scriptsPathOnServer}\n`
 
         if (app.maintenance) {
           script += `MAINTENANCE=${scriptsPathOnServer}/maintenance.html` + "\n";
@@ -97,8 +105,14 @@ module.exports = {
                 });  
                 script += key.toUpperCase() + `=${scriptsPathOnServer}/${app.ci_template.name}\n`;                
               } 
-               if (app[key] !== null && typeof app[key] !== 'object') {
+              if (app[key] !== null && typeof app[key] !== 'object') {
                 script += key.toUpperCase() + `=` + `"${app[key]}"` + "\n";
+              } else if ((key === 'custom_ssl_key'
+                      || key === 'custom_ssl_crt'
+                      || key === 'custom_ssl_pem')
+                      && app[key]) {
+                script += key.toUpperCase() + `=` + `"${app[key].name}"` + "\n";
+                exec(`cp ${publicPath}/${app[key].url} ${appSubscriptsPath}/${app[key].name}`);
               }
             }
         }
@@ -137,9 +151,14 @@ module.exports = {
     async downloadCiScript(app) {
       return new Promise((rs, rj) => {
         let server = app.server;
-        let ciPath = path.resolve() + `/public/uploads/builds/${app.project.project_name}/${app.app_name}/`;
-        exec(`mkdir -p ${ciPath}`);
-        let command = `scp -o StrictHostKeyChecking=no -i ${publicPath}${server.ssh_key.url} ${server.ssh_username}@${server.ssh_ip}:${scriptsPathOnServer}/${app.ci_template} ${ciPath}/gitlab-ci.yml; `;
+        var ci_path = `${path.resolve()}/public/uploads/builds/${app.project.project_name}/${app.app_name}`;
+
+        if (!fs.existsSync(ci_path)){
+          fs.mkdirSync(ci_path);
+        }
+          
+        let command = `scp -o StrictHostKeyChecking=no -i ${publicPath}${server.ssh_key.url} ${server.ssh_username}@${server.ssh_ip}:${scriptsPathOnServer}/${app.ci_template.name} ${ci_path}/gitlab-ci.yml; `;
+        console.log(command);
         rs(strapi.services.console.runAppScript(app, command, APP_SETUP_STATUS));
       });
     },
