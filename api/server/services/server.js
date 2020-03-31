@@ -80,7 +80,7 @@ module.exports = {
 
       script += `PWD=${scriptsPathOnServer}\n`
 
-      if (Object.keys(server.platform.variables).length > 0) {
+      if (server.platform.variables && Object.keys(server.platform.variables).length > 0) {
         for (let key of server.platform.variables) {
           script += key.name.toUpperCase() + `=` + `"${key.value}"` + "\n";
         }
