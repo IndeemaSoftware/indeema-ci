@@ -53,8 +53,11 @@ module.exports = {
       //create dir on remove machine
       let command = `chmod 400 ${publicPath}${server.ssh_key.url}; `;
       // command += `${ssh} "rm -fr ${scriptsPathOnServer}"; `;
+      command += ` echo "-->Checking credentials to server";`;
       command += `${ssh} "mkdir -p ${scriptsPathOnServer}"; `;
+      command += ` echo "-->Copying all the scripts to server...";`;
       command += `scp -r -o StrictHostKeyChecking=no -i ${publicPath}${server.ssh_key.url} ${appSubscriptsPath}/* ${server.ssh_username}@${server.ssh_ip}:${scriptsPathOnServer}/; `;
+      command += ` echo "-->Successfully copied all the scripts to server";`;
 
       let script = scriptsPathOnServer + `/` + app.service.service_name + `_` + name;
       command += `${ssh} "${script}"; `;
