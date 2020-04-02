@@ -64,8 +64,28 @@ module.exports = {
         });
     },
 
+    async isUsedCiTemplates(ctx, id, moduleId) {
+        const query = ctx.query;
+
+        var apps = [];
+       
+        let entities;
+        if (query._q) {
+            entities = await strapi.query('ci-templates').search(query);
+        } else {
+            entities = await strapi.query('ci-templates').find(query);
+        }
+
+        for (var t of entities) {
+            if (t.module === moduleId) {
+                Array.prototype.push.apply(apps, t.apps);
+            }
+        }
+
+        return apps;
+    },
+
     async uninstallCiTemplates(ctx, id, moduleId) {
-        const user = ctx.state.user;
         const query = ctx.query;
        
         let entities;
@@ -133,8 +153,27 @@ module.exports = {
         });
     },
 
+    async isUsedCustomDependencies(ctx, id, moduleId) {
+        const query = ctx.query;
+        var servers = [];
+       
+        let entities;
+        if (query._q) {
+            entities = await strapi.query('custom-dependencies').search(query);
+        } else {
+            entities = await strapi.query('custom-dependencies').find(query);
+        }
+
+        for (var t of entities) {
+            if (t.module === moduleId) {
+                Array.prototype.push.apply(servers, t.servers)
+            }
+        }  
+        
+        return servers;
+    },
+
     async uninstallCustomDependencies (ctx, id, moduleId) {
-        const user = ctx.state.user;
         const query = ctx.query;
        
         let entities;
@@ -201,8 +240,28 @@ module.exports = {
         });
     },
 
+    async isUsedMaintenance (ctx, id, moduleId) {
+        const query = ctx.query;
+
+        var apps = [];
+       
+        let entities;
+        if (query._q) {
+            entities = await strapi.query('maintenance').search(query);
+        } else {
+            entities = await strapi.query('maintenance').find(query);
+        }
+
+        for (var t of entities) {
+            if (t.module === moduleId) {
+                Array.prototype.push.apply(apps, t.apps);
+            }
+        }
+
+        return apps;
+    },
+
     async uninstallMaintenance (ctx, id, moduleId) {
-        const user = ctx.state.user;
         const query = ctx.query;
        
         let entities;
@@ -271,8 +330,31 @@ module.exports = {
             }
         });
     },
+
+    async isUsedPlatform (ctx, id, moduleId) {
+        const query = ctx.query;
+
+        var servers = [];
+       
+        let entities;
+        if (query._q) {
+            entities = await strapi.query('platform').search(query);
+        } else {
+            entities = await strapi.query('platform').find(query);
+        }
+
+        for (var t of entities) {
+            if (t.module === moduleId) {
+                Array.prototype.push.apply(servers, t.servers);
+            }
+        }
+
+        console.log(servers);
+
+        return servers;
+    },
+
     async uninstallPlatform (ctx, id, moduleId) {
-        const user = ctx.state.user;
         const query = ctx.query;
        
         let entities;
@@ -340,6 +422,27 @@ module.exports = {
                 }  
             }
         });
+    },
+
+    async isUsedServerDependencies (ctx, id, moduleId) {
+        const query = ctx.query;
+
+        var servers = [];
+       
+        let entities;
+        if (query._q) {
+            entities = await strapi.query('server-dependencies').search(query);
+        } else {
+            entities = await strapi.query('server-dependencies').find(query);
+        }
+
+        for (var t of entities) {
+            if (t.module === moduleId) {
+                Array.prototype.push.apply(servers, t.servers);
+            }
+        }
+
+        return servers;
     },
 
     async uninstallServerDependencies (ctx, id, moduleId) {
@@ -413,8 +516,28 @@ module.exports = {
         });
     },
 
+    async isUsedService (ctx, id, moduleId) {
+        const query = ctx.query;
+
+        var apps = [];
+       
+        let entities;
+        if (query._q) {
+            entities = await strapi.query('service').search(query);
+        } else {
+            entities = await strapi.query('service').find(query);
+        }
+
+        for (var t of entities) {
+            if (t.module === moduleId) {
+                Array.prototype.push.apply(apps, t.apps);
+            }
+        }
+
+        return apps;
+    },
+
     async uninstallService (ctx, id, moduleId) {
-        const user = ctx.state.user;
         const query = ctx.query;
        
         let entities;

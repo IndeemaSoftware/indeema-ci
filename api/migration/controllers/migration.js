@@ -98,6 +98,57 @@ module.exports = {
         return {status:true};
     },
 
+    async isUsed(ctx) {
+        const user = ctx.state.user;
+        const query = ctx.query;
+        var identifier = null;
+
+        let entities;
+        if (query._q) {
+          entities = await strapi.services.migration.search(query);
+        } else {
+          entities = await strapi.services.migration.find(query);
+        }
+
+        for (var m of entities) {
+            for (var f of m.module) {
+                if (f.hash === ctx.params.id) {
+                    identifier = m.identifier;
+                }
+            }
+        }
+        
+        var modules = [];
+        for (var m of user.module) {
+            if (m !== identifier) {
+                modules.push(m);
+            }
+        }
+
+        user.module = modules;
+
+        var response = {
+            apps:[],
+            servers:[]
+        };
+
+        Array.prototype.push.apply(response.apps,await strapi.services.migration.isUsedCiTemplates(ctx, ctx.params.id, identifier)); 
+        // response.apps.assign(await strapi.services.migration.isUsedCiTemplates(ctx, ctx.params.id, identifier));
+        Array.prototype.push.apply(response.apps, await strapi.services.migration.isUsedMaintenance(ctx, ctx.params.id, identifier));
+        // response.apps.assign(await strapi.services.migration.isUsedMaintenance(ctx, ctx.params.id, identifier));
+        Array.prototype.push.apply(response.apps, await strapi.services.migration.isUsedService(ctx, ctx.params.id, identifier));
+        // response.apps.assign(await strapi.services.migration.isUsedService(ctx, ctx.params.id, identifier));
+
+        Array.prototype.push.apply(response.servers, await strapi.services.migration.isUsedCustomDependencies(ctx, ctx.params.id, identifier));
+        // response.servers.assign(await strapi.services.migration.isUsedCustomDependencies(ctx, ctx.params.id, identifier));
+        Array.prototype.push.apply(response.servers, await strapi.services.migration.isUsedPlatform(ctx, ctx.params.id, identifier));
+        // response.servers.assign(await strapi.services.migration.isUsedPlatform(ctx, ctx.params.id, identifier));
+        Array.prototype.push.apply(response.servers, await strapi.services.migration.isUsedServerDependencies(ctx, ctx.params.id, identifier));
+        // response.servers.assign(await strapi.services.migration.isUsedServerDependencies(ctx, ctx.params.id, identifier));
+
+        return response;
+    },
+
     async uninstall(ctx) {
         const user = ctx.state.user;
         const query = ctx.query;

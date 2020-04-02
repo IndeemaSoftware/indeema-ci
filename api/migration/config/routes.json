@@ -34,6 +34,14 @@
     },
     {
       "method": "GET",
+      "path": "/migrations/isused/:id",
+      "handler": "migration.isUsed",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
       "path": "/migrations/uninstall/:id",
       "handler": "migration.uninstall",
       "config": {
