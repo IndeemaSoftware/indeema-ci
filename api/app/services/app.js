@@ -9,8 +9,9 @@ const fs = require('fs');
 const exec = require('child_process').exec;
 
 const publicPath = path.resolve() + "/public";
-const resourcesPath = publicPath + "/uploads/" 
-const subscriptsPath = resourcesPath + `scripts/subscripts`;
+const resourcesPath = publicPath + "/uploads/"
+const scriptsPath = resourcesPath + `scripts`;
+const subscriptsPath = scriptsPath + `/subscripts`;
 const scriptsPathOnServer = `/tmp/indeema_ci`;
 
 const SETUP = "setup";
@@ -74,7 +75,15 @@ module.exports = {
       return new Promise((rs, rj) => {
         let appSubscriptsPath = subscriptsPath + `/${app.id}`;
         strapi.services.app.deleteFolderRecursive(appSubscriptsPath);
-  
+
+        if (!fs.existsSync(scriptsPath)){
+          fs.mkdirSync(scriptsPath);
+        }
+
+        if (!fs.existsSync(subscriptsPath)){
+          fs.mkdirSync(subscriptsPath);
+        }
+
         if (!fs.existsSync(appSubscriptsPath)){
           fs.mkdirSync(appSubscriptsPath);
         }
@@ -91,7 +100,7 @@ module.exports = {
           fs.writeFile(maintenance_file_path, app.maintenance.html_code, (err) => {
             if (err) rs({"status":"bad", "data":err});
               exec(`chmod a+x ${maintenance_file_path}`);
-          });               
+          });
         }
 
         if (Object.keys(app.service.variables).length > 0) {
@@ -105,9 +114,9 @@ module.exports = {
               if (key === "ci_template") {
                 let ci_path = appSubscriptsPath + "/" + app.ci_template.name;
                 fs.writeFile(ci_path, app.ci_template.yml_code, (err) => {
-                });  
-                script += key.toUpperCase() + `=${scriptsPathOnServer}/${app.ci_template.name}\n`;                
-              } 
+                });
+                script += key.toUpperCase() + `=${scriptsPathOnServer}/${app.ci_template.name}\n`;
+              }
               if (app[key] !== null && typeof app[key] !== 'object') {
                 script += key.toUpperCase() + `=` + `"${app[key]}"` + "\n";
               } else if ((key === 'custom_ssl_key'
@@ -124,7 +133,7 @@ module.exports = {
           script += "ENVIRONMENTS=(";
           for (let env of app.project.environments) {
             script += env + " ";
-          }  
+          }
           script += ")\n";
         }
 
@@ -135,18 +144,18 @@ module.exports = {
             if (err) rs({"status":"bad", "data":err});
               exec(`chmod a+x ${setup_script}`);
               rs();
-          });               
+          });
         }
-        
+
         if (app.service.cleanup_script) {
           var cleanup_script_tmp = script + app.service.cleanup_script;
           fs.writeFile(cleanup_script, cleanup_script_tmp, (err) => {
             if (err) rs({"status":"bad", "data":err});
               exec(`chmod a+x ${cleanup_script}`);
               rs();
-          });   
+          });
         }
-  
+
         rs();
       });
     },
@@ -159,7 +168,7 @@ module.exports = {
         if (!fs.existsSync(ci_path)){
           fs.mkdirSync(ci_path);
         }
-          
+
         let command = `scp -o StrictHostKeyChecking=no -i ${publicPath}${server.ssh_key.url} ${server.ssh_username}@${server.ssh_ip}:${scriptsPathOnServer}/${app.ci_template.name} ${ci_path}/gitlab-ci.yml; `;
         console.log(command);
         rs(strapi.services.console.runAppScript(app, command, APP_SETUP_STATUS));
