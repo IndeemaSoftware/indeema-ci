@@ -5,14 +5,14 @@ const fs = require('fs');
 const exec = require('child_process').exec;
 
 const publicPath = path.resolve() + "/public";
-const resourcesPath = publicPath + "/uploads/scripts/" 
+const resourcesPath = publicPath + "/uploads/scripts/"
 const subscriptsPath = resourcesPath + "subscripts";
 const scriptsPathOnServer = `/tmp/indeema_ci`;
 
 const SETUP = "setup";
 const CLEANUP = "cleanup";
 
-const SERVER_SETUP_STATUS = {ok:{status:"success", info:"Setup succed"},
+const SERVER_SETUP_STATUS = {ok:{status:"success", info:"Setup success"},
                             bad:{status:"failed", info:"Setup failed"},
                             progress:{status:"progress", info:"Setup is in progress"}}
 
@@ -21,7 +21,7 @@ const SERVER_COPYING_STATUS = {ok:{status:"success", info:"Resource copied to se
                             progress:{status:"progress", info:"Copying resources to server"}}
 
 
-const SERVER_CLEANUP_STATUS = {ok:{status:"cleanup_success", info:"Cleanup succed"},
+const SERVER_CLEANUP_STATUS = {ok:{status:"cleanup_success", info:"Cleanup success"},
                             bad:{status:"cleanup_failed", info:"Cleanup failed"},
                             progress:{status:"progress", info:"Cleanup is in progress"}}
 /**
@@ -61,7 +61,7 @@ module.exports = {
     // strapi.services.server.deleteFolderRecursive(serverSubscriptsPath);
     return status;
   },
-  
+
   async generateSubScripts(server) {
     return new Promise((rs, rj) => {
       let serverSubscriptsPath = subscriptsPath + `/${server.id}`;
@@ -78,7 +78,7 @@ module.exports = {
       }
       let setup_script = serverSubscriptsPath + `/${server.platform.platform_name}_setup`;
       let cleanup_script = serverSubscriptsPath + `/${server.platform.platform_name}_cleanup`;
-      
+
       let script = "#!/bin/bash\n";
 
       script += `PWD=${scriptsPathOnServer}\n`
@@ -86,7 +86,7 @@ module.exports = {
       if (server.platform.variables && Object.keys(server.platform.variables).length > 0) {
         for (let key of server.platform.variables) {
           if (key.name) {
-            script += key.name.toUpperCase() + `=` + `"${key.value}"` + "\n";  
+            script += key.name.toUpperCase() + `=` + `"${key.value}"` + "\n";
           }
         }
       }
@@ -100,7 +100,7 @@ module.exports = {
           script += "PORTS=(";
           for (let port of server.ports) {
             script += port + " ";
-          }  
+          }
           script += ")\n";
         }
       }
@@ -119,17 +119,17 @@ module.exports = {
               if (err) rs({"status":"bad", "data":err});
               exec(`chmod a+x ${pre_script}`);
                 rs();
-            });   
+            });
           }
           if (obj.post_install_script) {
             fs.writeFile(post_script, obj.post_install_script, (err) => {
               if (err) rs({"status":"bad", "data":err});
               exec(`chmod a+x ${post_script}`);
                 rs();
-            });   
+            });
           }
-        } 
-        script += `SERVER_DEPENDENCIES=(${list})\n` 
+        }
+        script += `SERVER_DEPENDENCIES=(${list})\n`
       }
 
       //generating custom dependency script files
@@ -145,9 +145,9 @@ module.exports = {
               if (err) rs({"status":"bad", "data":err});
               exec(`chmod a+x ${i_script}`);
                 rs();
-            });   
+            });
           }
-        }  
+        }
         script += `CUSTOM_DEPENDENCIES=(${list})\n`
       }
 
@@ -159,17 +159,17 @@ module.exports = {
           if (err) rs({"status":"bad", "data":err});
             exec(`chmod a+x ${setup_script}`);
             rs();
-        });               
+        });
       }
 
-      tmp_script = script;      
+      tmp_script = script;
       if (server.platform.cleanup_script) {
         tmp_script += server.platform.cleanup_script;
         fs.writeFile(cleanup_script, tmp_script, (err) => {
           if (err) rs({"status":"bad", "data":err});
             exec(`chmod a+x ${cleanup_script}`);
             rs();
-        });   
+        });
       }
 
       rs();

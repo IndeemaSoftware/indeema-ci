@@ -17,7 +17,7 @@ const scriptsPathOnServer = `/tmp/indeema_ci`;
 const SETUP = "setup";
 const CLEANUP = "cleanup";
 
-const APP_SETUP_STATUS = {ok:{status:"success", info:"Setup succed"},
+const APP_SETUP_STATUS = {ok:{status:"success", info:"Setup success"},
                             bad:{status:"failed", info:"Setup failed"},
                             progress:{status:"progress", info:"Setup is in progress"}}
 
@@ -26,7 +26,7 @@ const APP_COPYING_STATUS = {ok:{status:"success", info:"Resource copied to serve
                             progress:{status:"progress", info:"Copying resources to server"}}
 
 
-const APP_CLEANUP_STATUS = {ok:{status:"cleanup_success", info:"Cleanup succed"},
+const APP_CLEANUP_STATUS = {ok:{status:"cleanup_success", info:"Cleanup success"},
                             bad:{status:"cleanup_failed", info:"Cleanup failed"},
                             progress:{status:"progress", info:"Cleanup is in progress"}}
 
