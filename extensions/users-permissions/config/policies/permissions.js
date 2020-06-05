@@ -22,22 +22,24 @@ module.exports = async (ctx, next) => {
           .query('user', 'users-permissions')
           .findOne({ id }, ['role']);
 
-        const ldapUser = await strapi.plugins['users-permissions'].services.user.ldapFindUser(ctx.state.user.username);
+        if (strapi.config.LDAP_AUTH_ENABLE) {
+          const ldapUser = await strapi.plugins['users-permissions'].services.user.ldapFindUser(ctx.state.user.username);
 
-        //If user not exists or blocked or not permitted then we block this user
-        if(!ldapUser && strapi.config.LDAP_AUTH_ENABLE){
-          await strapi.plugins['users-permissions'].services.user.edit({
-            id: ctx.state.user._id.toString()
-          }, {
-            blocked: true
-          });
+          //If user not exists or blocked or not permitted then we block this user
+          if (!ldapUser && strapi.config.LDAP_AUTH_ENABLE) {
+            await strapi.plugins['users-permissions'].services.user.edit({
+              id: ctx.state.user._id.toString()
+            }, {
+              blocked: true
+            });
 
-          throw new Error('User not exists');
-        }
+            throw new Error('User not exists');
+          }
 
-        //If LDAP has some errors
-        if(typeof ldapUser === typeof 'str'){
-          throw new Error(ldapUser);
+          //If LDAP has some errors
+          if (typeof ldapUser === typeof 'str') {
+            throw new Error(ldapUser);
+          }
         }
       }
     } catch (err) {
