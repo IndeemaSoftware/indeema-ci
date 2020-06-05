@@ -258,8 +258,19 @@ module.exports = {
     const project = await strapi.services.project.findOne(ctx.params);
 
     //For non admin roles
-    if(user.role.type !== 'administrator' && (!project.user || project.user._id.toString() !== user._id.toString()))
-      return ctx.notFound();
+    if(user.role.type !== 'administrator'){
+      let isOwner = false;
+
+      for(let user of project.users){
+        if(!project.user || project.user._id.toString() !== user._id.toString()){
+          isOwner = true;
+          break;
+        }
+      }
+
+      if(!isOwner)
+        return ctx.notFound();
+    }
 
     //Make cleanup
     for(let appProject of project.apps){
