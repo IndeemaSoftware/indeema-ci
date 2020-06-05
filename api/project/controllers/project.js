@@ -225,8 +225,19 @@ module.exports = {
     });
 
     //For non admin roles
-    if(user.role.type !== 'administrator' && (!project.user || project.user._id.toString() !== user._id.toString()))
-      return ctx.notFound();
+    if(user.role.type !== 'administrator'){
+      let isOwner = false;
+
+      for(let user of project.users){
+        if(!project.user || project.user._id.toString() !== user._id.toString()){
+          isOwner = true;
+          break;
+        }
+      }
+
+      if(!isOwner)
+        return ctx.notFound();
+    }
 
     const deletedApp = await strapi.services.app.delete({
       id: entity._id.toString()
