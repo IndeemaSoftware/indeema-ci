@@ -5,7 +5,7 @@ const fs = require('fs');
 const exec = require('child_process').exec;
 
 const publicPath = path.resolve() + "/public";
-const resourcesPath = publicPath + "/uploads/scripts/" 
+const resourcesPath = publicPath + "/uploads/scripts/"
 const subscriptsPath = resourcesPath + "migration";
 
 /**
@@ -17,11 +17,11 @@ module.exports = {
     async prepareCiTemplates(ctx) {
         const user = ctx.state.user;
         const query = ctx.query;
-   
+
         //For non admin roles
         if(user.role.type !== 'administrator')
           query.users = [user._id.toString()];
-    
+
         let entities;
         if (query._q) {
             entities = await strapi.query('ci-templates').search(query);
@@ -35,7 +35,7 @@ module.exports = {
         for (let v of entities) {
             data.push(
                 {
-                    name:v.name, 
+                    name:v.name,
                     yml_code: v.yml_code
                 }
             );
@@ -44,7 +44,7 @@ module.exports = {
         //generating server dependency script files
         if (data) {
           fs.writeFile(script, JSON.stringify(data), (err) => {
-          });   
+          });
         }
     },
 
@@ -66,9 +66,10 @@ module.exports = {
 
     async isUsedCiTemplates(ctx, id, moduleId) {
         const query = ctx.query;
+        query.users = [ctx.state.user._id.toString()];
 
         var apps = [];
-       
+
         let entities;
         if (query._q) {
             entities = await strapi.query('ci-templates').search(query);
@@ -87,7 +88,7 @@ module.exports = {
 
     async uninstallCiTemplates(ctx, id, moduleId) {
         const query = ctx.query;
-       
+
         let entities;
         if (query._q) {
             entities = await strapi.query('ci-templates').search(query);
@@ -105,11 +106,11 @@ module.exports = {
     async prepareCustomDependencies(ctx) {
         const user = ctx.state.user;
         const query = ctx.query;
-   
+
         //For non admin roles
         if(user.role.type !== 'administrator')
           query.users = [user._id.toString()];
-    
+
         let entities;
         if (query._q) {
             entities = await strapi.query('custom-dependencies').search(query);
@@ -123,7 +124,7 @@ module.exports = {
         for (let v of entities) {
             data.push(
                 {
-                    name:v.name, 
+                    name:v.name,
                     label: v.label,
                     install_script: v.install_script
                 }
@@ -133,7 +134,7 @@ module.exports = {
         //generating server dependency script files
         if (data) {
           fs.writeFile(script, JSON.stringify(data), (err) => {
-          });   
+          });
         }
     },
 
@@ -148,15 +149,16 @@ module.exports = {
                     t.users = [ctx.state.user.id];
                     t.module = moduleId;
                     strapi.query('custom-dependencies').create(t);
-                } 
+                }
             }
         });
     },
 
     async isUsedCustomDependencies(ctx, id, moduleId) {
         const query = ctx.query;
+        query.users = [ctx.state.user._id.toString()];
         var servers = [];
-       
+
         let entities;
         if (query._q) {
             entities = await strapi.query('custom-dependencies').search(query);
@@ -168,14 +170,14 @@ module.exports = {
             if (t.module === moduleId) {
                 Array.prototype.push.apply(servers, t.servers)
             }
-        }  
-        
+        }
+
         return servers;
     },
 
     async uninstallCustomDependencies (ctx, id, moduleId) {
         const query = ctx.query;
-       
+
         let entities;
         if (query._q) {
             entities = await strapi.query('custom-dependencies').search(query);
@@ -193,11 +195,11 @@ module.exports = {
     async prepareMaintenance (ctx) {
         const user = ctx.state.user;
         const query = ctx.query;
-   
+
         //For non admin roles
         if(user.role.type !== 'administrator')
           query.users = [user._id.toString()];
-    
+
         let entities;
         if (query._q) {
             entities = await strapi.query('maintenance').search(query);
@@ -211,7 +213,7 @@ module.exports = {
         for (let v of entities) {
             data.push(
                 {
-                    name: v.name, 
+                    name: v.name,
                     html_code: v.html_code
                 }
             );
@@ -220,7 +222,7 @@ module.exports = {
         //generating server dependency script files
         if (data) {
           fs.writeFile(script, JSON.stringify(data), (err) => {
-          });   
+          });
         }
     },
 
@@ -235,16 +237,17 @@ module.exports = {
                     t.users = [ctx.state.user.id];
                     t.module = moduleId;
                     strapi.query('maintenance').create(t);
-                } 
+                }
             }
         });
     },
 
     async isUsedMaintenance (ctx, id, moduleId) {
         const query = ctx.query;
+        query.users = [ctx.state.user._id.toString()];
 
         var apps = [];
-       
+
         let entities;
         if (query._q) {
             entities = await strapi.query('maintenance').search(query);
@@ -263,7 +266,7 @@ module.exports = {
 
     async uninstallMaintenance (ctx, id, moduleId) {
         const query = ctx.query;
-       
+
         let entities;
         if (query._q) {
             entities = await strapi.query('maintenance').search(query);
@@ -281,11 +284,11 @@ module.exports = {
     async preparePlatform (ctx) {
         const user = ctx.state.user;
         const query = ctx.query;
-   
+
         //For non admin roles
         if(user.role.type !== 'administrator')
           query.users = [user._id.toString()];
-    
+
         let entities;
         if (query._q) {
             entities = await strapi.query('platform').search(query);
@@ -299,7 +302,7 @@ module.exports = {
         for (let v of entities) {
             data.push(
                 {
-                    platform_name: v.platform_name, 
+                    platform_name: v.platform_name,
                     setup_script: v.setup_script,
                     cleanup_script: v.cleanup_script,
                     doc: v.doc,
@@ -311,7 +314,7 @@ module.exports = {
         //generating server dependency script files
         if (data) {
           fs.writeFile(script, JSON.stringify(data), (err) => {
-          });   
+          });
         }
     },
 
@@ -333,9 +336,10 @@ module.exports = {
 
     async isUsedPlatform (ctx, id, moduleId) {
         const query = ctx.query;
+        query.users = [ctx.state.user._id.toString()];
 
         var servers = [];
-       
+
         let entities;
         if (query._q) {
             entities = await strapi.query('platform').search(query);
@@ -356,7 +360,7 @@ module.exports = {
 
     async uninstallPlatform (ctx, id, moduleId) {
         const query = ctx.query;
-       
+
         let entities;
         if (query._q) {
             entities = await strapi.query('platform').search(query);
@@ -374,11 +378,11 @@ module.exports = {
     async prepareServerDependencies (ctx) {
         const user = ctx.state.user;
         const query = ctx.query;
-   
+
         //For non admin roles
         if(user.role.type !== 'administrator')
           query.users = [user._id.toString()];
-    
+
         let entities;
         if (query._q) {
             entities = await strapi.query('server-dependencies').search(query);
@@ -404,7 +408,7 @@ module.exports = {
         //generating server dependency script files
         if (data) {
           fs.writeFile(script, JSON.stringify(data), (err) => {
-          });   
+          });
         }
     },
 
@@ -419,16 +423,17 @@ module.exports = {
                     t.users = [ctx.state.user.id];
                     t.module = moduleId;
                     strapi.query('server-dependencies').create(t);
-                }  
+                }
             }
         });
     },
 
     async isUsedServerDependencies (ctx, id, moduleId) {
         const query = ctx.query;
+        query.users = [ctx.state.user._id.toString()];
 
         var servers = [];
-       
+
         let entities;
         if (query._q) {
             entities = await strapi.query('server-dependencies').search(query);
@@ -448,7 +453,7 @@ module.exports = {
     async uninstallServerDependencies (ctx, id, moduleId) {
         const user = ctx.state.user;
         const query = ctx.query;
-       
+
         let entities;
         if (query._q) {
             entities = await strapi.query('server-dependencies').search(query);
@@ -466,11 +471,11 @@ module.exports = {
     async prepareService (ctx) {
         const user = ctx.state.user;
         const query = ctx.query;
-   
+
         //For non admin roles
         if(user.role.type !== 'administrator')
           query.users = [user._id.toString()];
-    
+
         let entities;
         if (query._q) {
             entities = await strapi.query('service').search(query);
@@ -496,7 +501,7 @@ module.exports = {
         //generating server dependency script files
         if (data) {
           fs.writeFile(script, JSON.stringify(data), (err) => {
-          });   
+          });
         }
     },
 
@@ -518,9 +523,10 @@ module.exports = {
 
     async isUsedService (ctx, id, moduleId) {
         const query = ctx.query;
+        query.users = [ctx.state.user._id.toString()];
 
         var apps = [];
-       
+
         let entities;
         if (query._q) {
             entities = await strapi.query('service').search(query);
@@ -539,7 +545,7 @@ module.exports = {
 
     async uninstallService (ctx, id, moduleId) {
         const query = ctx.query;
-       
+
         let entities;
         if (query._q) {
             entities = await strapi.query('service').search(query);
