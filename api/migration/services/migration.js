@@ -88,6 +88,7 @@ module.exports = {
 
     async uninstallCiTemplates(ctx, id, moduleId) {
         const query = ctx.query;
+        query.users = [ctx.state.user._id.toString()];
 
         let entities;
         if (query._q) {
@@ -177,6 +178,7 @@ module.exports = {
 
     async uninstallCustomDependencies (ctx, id, moduleId) {
         const query = ctx.query;
+        query.users = [ctx.state.user._id.toString()];
 
         let entities;
         if (query._q) {
@@ -266,6 +268,7 @@ module.exports = {
 
     async uninstallMaintenance (ctx, id, moduleId) {
         const query = ctx.query;
+        query.users = [ctx.state.user._id.toString()];
 
         let entities;
         if (query._q) {
@@ -359,20 +362,21 @@ module.exports = {
     },
 
     async uninstallPlatform (ctx, id, moduleId) {
-        const query = ctx.query;
+      const query = ctx.query;
+      query.users = [ctx.state.user._id.toString()];
 
-        let entities;
-        if (query._q) {
-            entities = await strapi.query('platform').search(query);
-        } else {
-            entities = await strapi.query('platform').find(query);
-        }
+      let entities;
+      if (query._q) {
+          entities = await strapi.query('platform').search(query);
+      } else {
+          entities = await strapi.query('platform').find(query);
+      }
 
-        for (var t of entities) {
-            if (t.module === moduleId) {
-                strapi.query('platform').delete({id:t.id});
-            }
-        }
+      for (var t of entities) {
+          if (t.module === moduleId) {
+              strapi.query('platform').delete({id:t.id});
+          }
+      }
     },
 
     async prepareServerDependencies (ctx) {
@@ -451,8 +455,8 @@ module.exports = {
     },
 
     async uninstallServerDependencies (ctx, id, moduleId) {
-        const user = ctx.state.user;
         const query = ctx.query;
+        query.users = [ctx.state.user._id.toString()];
 
         let entities;
         if (query._q) {
@@ -545,6 +549,7 @@ module.exports = {
 
     async uninstallService (ctx, id, moduleId) {
         const query = ctx.query;
+        query.users = [ctx.state.user._id.toString()];
 
         let entities;
         if (query._q) {
