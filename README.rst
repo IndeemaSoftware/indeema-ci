@@ -129,5 +129,42 @@ By default, Indeema CI usign Strapi.io framework, so project structure is simila
 ``public``          Contains public assets and home page
 =================   =====================================================
     
-    
+
+User support
+------------
+
+Please use the following support channels:
+
+* `GitHub issues <https://github.com/IndeemaSoftware/indeema-ci/issues>`_
+  for bug reports and feature requests.
+* `Indeema CI <https://ci.indeema.com>`_
+  to ask questions, discuss features, and for general discussion.
+* `StackOverflow <https://stackoverflow.com>`_
+  to ask questions (please make sure to use the
+  `httpie <https://stackoverflow.com/questions/tagged/indeema-ci>`_ tag).
+* You can also send email directly to `mailto:support@indeema.com`_.
+
+
+Authors
+------------
+
+See `Authors.rst <https://github.com/IndeemaSoftware/indeema-ci/blob/master/Authors.rst>`_.
+
+
+Change log
+----------
+
+See `CHANGELOG <https://github.com/IndeemaSoftware/indeema-ci/blob/master/CHANGELOG.rst>`_.
+
+
+Licence
+-------
+
+LGPL: `LICENSE <https://github.com/IndeemaSoftware/indeema-ci/blob/master/LICENSE>`_.
+
+
+Powered by Indeema Software
+-------
+
+`Indeema Software Inc <https://indeema.com>`_
     
