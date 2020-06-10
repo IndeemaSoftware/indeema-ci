@@ -71,7 +71,7 @@ On macOS, HTTPie can be installed via `PORT <https://www.macports.org/>`_
     
 
 Fedora 31+
--------------
+-----
 
 
 .. code-block:: bash
@@ -93,7 +93,41 @@ Fedora 31+
     $ npm install
 
     $ npm run build
+    
+    
+
+Launch
+============
+
+
+.. code-block:: bash
 
     $ pm2 start --name indeema-ci-api npm -- start
+    
+    
+
+Admin panel URL
+===========
+
+After installing and launch, you able to sign in into admin panel:
+
+.. code-block:: bash
+
+    http://localhost:1338/admin
+    
+
+Project structure
+==============
+
+By default, Indeema CI usign Strapi.io framework, so project structure is similar to this framework:
+
+=================   =====================================================
+``api``             Contains main logic of back-end part
+``build``           Contains React.JS build of admin panel
+``config``          Contains configuration of back-end environment
+``extensions``      Contains extends of main parts of back-end logic
+``public``          Contains public assets and home page
+=================   =====================================================
+    
     
     
