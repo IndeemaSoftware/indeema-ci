@@ -1,8 +1,8 @@
 {
-  "name": "api",
+  "name": "Indeema CI",
   "private": true,
-  "version": "0.1.0",
-  "description": "A Strapi application",
+  "version": "1.0.0",
+  "description": "Indeema CI tools for automate and optimize time on setting up new servers for software development and creating scripts for continuous integration solutions.",
   "scripts": {
     "develop": "strapi develop",
     "start": "strapi start",
@@ -28,14 +28,30 @@
     "strapi-utils": "3.0.0-beta.18.1"
   },
   "author": {
-    "name": "A Strapi developer"
+    "email": "support@indeema.com",
+    "name": "Indeema Software Inc",
+    "url": "https://indeema.com"
+  },
+  "maintainers": [
+    {
+        "email": "support@indeema.com",
+        "name": "Indeema Software Inc",
+        "url": "https://indeema.com"
+    }
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/IndeemaSoftware/indeema-ci.git"
+  },
+  "bugs": {
+    "url": "https://github.com/IndeemaSoftware/indeema-ci/issues"
   },
   "strapi": {
-    "uuid": "824b53c2-9cc7-4900-84b2-03596ebaf942"
+    "uuid": "824b53c2-9cc7-4900-84b2-45876ebaf632"
   },
   "engines": {
     "node": ">=10.0.0",
     "npm": ">=6.0.0"
   },
-  "license": "MIT"
+  "license": "LGPL"
 }
