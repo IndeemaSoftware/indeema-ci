@@ -141,7 +141,7 @@ Please use the following support channels:
   to ask questions, discuss features, and for general discussion.
 * `StackOverflow <https://stackoverflow.com>`_
   to ask questions (please make sure to use the
-  `httpie <https://stackoverflow.com/questions/tagged/indeema-ci>`_ tag).
+  `indeema-ci <https://stackoverflow.com/questions/tagged/indeema-ci>`_ tag).
 * You can also send email directly to `<mailto:support@indeema.com>`_.
 
 
