@@ -44,8 +44,6 @@ We recommended to install into Ubuntu 18.04 or higher:
 
     $ npm run build
 
-    $ pm2 start --name indeema-ci-api npm -- start
-
 
 MacOS Mojave 10.14.6
 -----
@@ -66,8 +64,6 @@ On macOS, HTTPie can be installed via `PORT <https://www.macports.org/>`_
     $ npm install
 
     $ npm run build
-
-    $ pm2 start --name indeema-ci-api npm -- start
     
 
 Fedora 31+
