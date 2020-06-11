@@ -1,5 +1,5 @@
 ==============
-HTTPie authors
+Indeema CI authors
 ==============
 
 * `Vova Shevchyk <https://github.com/vshevchyk>`_
