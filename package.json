@@ -1,5 +1,5 @@
 {
-  "name": "Indeema CI",
+  "name": "IndeemaCI",
   "private": true,
   "version": "1.0.0",
   "description": "Indeema CI tools for automate and optimize time on setting up new servers for software development and creating scripts for continuous integration solutions.",
@@ -34,9 +34,9 @@
   },
   "maintainers": [
     {
-        "email": "support@indeema.com",
-        "name": "Indeema Software Inc",
-        "url": "https://indeema.com"
+      "email": "support@indeema.com",
+      "name": "Indeema Software Inc",
+      "url": "https://indeema.com"
     }
   ],
   "repository": {
