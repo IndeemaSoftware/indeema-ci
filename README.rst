@@ -144,7 +144,7 @@ Please use the following support channels:
 Authors
 ------------
 
-See `Authors.rst <https://github.com/IndeemaSoftware/indeema-ci/blob/master/Authors.rst>`_.
+See `AUTHORS.rst <https://github.com/IndeemaSoftware/indeema-ci/blob/master/AUTHORS.rst>`_.
 
 
 Change log
