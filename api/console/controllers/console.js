@@ -24,8 +24,19 @@ module.exports = {
     const entity = await strapi.services.project.findOne(ctx.params);
 
     //For non admin roles
-    if(user.role.type !== 'administrator' && (!entity.user || entity.user._id.toString() !== user._id.toString()))
-      return ctx.notFound();
+    if(user.role.type !== 'administrator'){
+      let isOwner = false;
+
+      for(let owner of entity.users){
+        if(owner._id.toString() === user._id.toString()){
+          isOwner = true;
+          break;
+        }
+      }
+
+      if(!isOwner)
+        return ctx.notFound();
+    }
 
     const output = await strapi.services.console.find({
       project: entity._id.toString()
@@ -52,12 +63,19 @@ module.exports = {
     });
 
     //For non admin roles
-    if(user.role.type !== 'administrator' && (!project.user || project.user._id.toString() !== user._id.toString()))
-      return ctx.notFound();
+    if(user.role.type !== 'administrator'){
+      let isOwner = false;
 
-    //For non admin roles
-    if(user.role.type !== 'administrator' && (!entity.user || entity.user._id.toString() !== user._id.toString()))
-      return ctx.notFound();
+      for(let owner of project.users){
+        if(owner._id.toString() === user._id.toString()){
+          isOwner = true;
+          break;
+        }
+      }
+
+      if(!isOwner)
+        return ctx.notFound();
+    }
 
     const output = await strapi.services.console.find({
       app: entity._id.toString(),

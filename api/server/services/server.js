@@ -52,7 +52,7 @@ module.exports = {
     command += `${ssh} "mkdir -p ${scriptsPathOnServer}"; `;
     command += ` echo "-->Copying all scripts to server...";`;
     command += ` scp -r -o StrictHostKeyChecking=no -i ${publicPath}${server.ssh_key.url} ${serverSubscriptsPath}/* ${server.ssh_username}@${server.ssh_ip}:${scriptsPathOnServer}/; `;
-    command += ` echo "-->Successfuly copied all scripts to server...";`;
+    command += ` echo "-->Successfully copied all scripts to server...";`;
 
     let script = scriptsPathOnServer + `/` + server.platform.platform_name + `_` + name;
     command += `${ssh} "${script}"`;

@@ -29,7 +29,7 @@ async function messages() {
 
 async function updateAppMessage() {
   while (gAppMessages.length > 0) {
-    let object = gAppMessages.shift(); 
+    let object = gAppMessages.shift();
     if (object.key === 'data') {
       const consoleItem = await strapi.services.console.create({
         message: object.value,
@@ -108,7 +108,7 @@ async function updateAppMessage() {
 
 async function updateServerMessage() {
   while (gServerMessages.length > 0) {
-    let object = gServerMessages.shift(); 
+    let object = gServerMessages.shift();
     if (object.key === 'data') {
       const consoleItem = await strapi.services.console.create({
         message: object.value,
@@ -125,7 +125,7 @@ async function updateServerMessage() {
       await strapi.eventEmitter.emit('system::notify', {
         topic: `/console/setup/${gServer.id}/message`,
         data: consoleItem.message
-      }); 
+      });
     } else if (object.key === 'close') {
       let code = parseInt(object.value, 10)
 
@@ -179,21 +179,21 @@ async function updateServerMessage() {
           data: consoleItem.message
         });
       }
-    }  
-  } 
+    }
+  }
 }
 
 module.exports = {
   async runServerScript(server, command, status) {
     return new Promise((rs, rj) => {
       gServer = server;
-      gServerStatus = status;    
-      
+      gServerStatus = status;
+
       const commandConnect = exec(command);
       commandConnect.stdout.on('data', async function (data) {
         for (let tmp of JSON.stringify(data).split(`\\r\\n`)) {
           tmp = tmp.replace('"', '');
-          if (tmp.includes('\\r\\r') 
+          if (tmp.includes('\\r\\r')
             || (!tmp.includes('-->')
             && !tmp.includes('Err')
             && !tmp.includes('err')
@@ -206,10 +206,10 @@ module.exports = {
             && !tmp.includes('Depend')
             && !tmp.includes('depend'))) {
             continue;
-          }  
+          }
 
-          if (tmp !== '' && tmp !== '\\' ) {    
-            gServerMessages.push({key:"data", value:tmp});        
+          if (tmp !== '' && tmp !== '\\' ) {
+            gServerMessages.push({key:"data", value:tmp});
           }
         }
       });
@@ -229,7 +229,7 @@ module.exports = {
       commandConnect.stdout.on('data', async function(data) {
         for (let tmp of JSON.stringify(data).split(`\\r\\n`)) {
           tmp = tmp.replace('"', '');
-          if (tmp.includes('\\r\\r') 
+          if (tmp.includes('\\r\\r')
             || (!tmp.includes('-->')
             && !tmp.includes('Error')
             && !tmp.includes('Err')
@@ -239,18 +239,18 @@ module.exports = {
             && !tmp.includes('fail')
             && !tmp.includes('Fail'))) {
             continue;
-          }  
+          }
           tmp = tmp.replace('\\n', '').replace('\\\\n', '');
           // console.log(tmp);
-          if (tmp !== '') {    
-            gAppMessages.push({key:"data", value:tmp});        
+          if (tmp !== '') {
+            gAppMessages.push({key:"data", value:tmp});
           }
         }
       });
       commandConnect.on('close', async (code) => {
         gAppMessages.push({key:"close", value:code});
+        rs({status:"ok", data:"Good"});
       });
-      rs({status:"ok", data:"Good"});
     });
   },
 };

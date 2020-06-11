@@ -163,15 +163,26 @@ module.exports = {
     async downloadCiScript(app) {
       return new Promise((rs, rj) => {
         let server = app.server;
-        var ci_path = `${path.resolve()}/public/uploads/builds/${app.project.project_name}/${app.app_name}`;
+        var build_path = `${path.resolve()}/public/uploads/builds`;
+        var project_path = `${build_path}/${app.project.project_name}`;
+        var ci_path = `${project_path}/${app.app_name}`;
+
+        if (!fs.existsSync(build_path)){
+          fs.mkdirSync(build_path);
+        }
+
+        if (!fs.existsSync(project_path)){
+          fs.mkdirSync(project_path);
+        }
 
         if (!fs.existsSync(ci_path)){
           fs.mkdirSync(ci_path);
         }
 
         let command = `scp -o StrictHostKeyChecking=no -i ${publicPath}${server.ssh_key.url} ${server.ssh_username}@${server.ssh_ip}:${scriptsPathOnServer}/${app.ci_template.name} ${ci_path}/gitlab-ci.yml; `;
-        console.log(command);
-        rs(strapi.services.console.runAppScript(app, command, APP_SETUP_STATUS));
+        strapi.services.console.runAppScript(app, command, APP_SETUP_STATUS).then(() => {
+          rs();
+        });
       });
     },
 
