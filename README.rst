@@ -1,4 +1,4 @@
-Indeema CI: Your personal online DevOps
+Indeema tambo: Your personal online DevOps
 ########################################
 
 This solution was created for web developers and DevOps to automize and speedup server setup process
@@ -115,7 +115,7 @@ After installing and launch, you able to sign in into admin panel:
 Project structure
 ==============
 
-By default, Indeema CI usign Strapi.io framework, so project structure is similar to this framework:
+By default, Indeema tambo usign Strapi.io framework, so project structure is similar to this framework:
 
 =================   =====================================================
 ``api``             Contains main logic of back-end part
@@ -133,7 +133,7 @@ Please use the following support channels:
 
 * `GitHub issues <https://github.com/IndeemaSoftware/indeema-ci/issues>`_
   for bug reports and feature requests.
-* `Indeema CI <https://ci.indeema.com>`_
+* `Indeema tambo <https://tambo.indeema.com>`_
   to ask questions, discuss features, and for general discussion.
 * `StackOverflow <https://stackoverflow.com>`_
   to ask questions (please make sure to use the
