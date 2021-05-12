@@ -17,7 +17,7 @@
     "ldapjs": "^1.0.2",
     "nodemailer": "^6.4.5",
     "socket.io": "^2.3.0",
-    "strapi": "3.0.0-beta.18.1",
+    "strapi": "3.2.5",
     "strapi-admin": "3.0.0-beta.18.1",
     "strapi-connector-mongoose": "3.0.0-beta.18.1",
     "strapi-plugin-content-manager": "3.0.0-beta.18.1",
